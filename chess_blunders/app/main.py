@@ -9,7 +9,10 @@ app = FastAPI()
 
 @app.get("/")
 async def root():
-    return [{"path": route.path} for route in app.routes]
+    exclude_paths = ["/openapi.json", "/docs", "/docs/oauth2-redirect", "/redoc"]
+    return [
+        {"path": route.path} for route in app.routes if route.path not in exclude_paths
+    ]
 
 
 app.include_router(games.router)
