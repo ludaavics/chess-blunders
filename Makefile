@@ -17,4 +17,10 @@ setuppy:
 
 deploy-app: ;
 
+start-app-prod:
+	@uvicorn chess_blunders:app
+
+start-app-dev:
+	@uvicorn chess_blunders:app --reload
+
 .PHONY: help Makefile docs tests

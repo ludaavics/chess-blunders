@@ -20,10 +20,15 @@ setup(
     author="Ludovic Tiako",
     author_email="ludovic.tiako@gmail.com",
     license="MIT",
-    packages=["chess_blunders"],
+    packages=["chess_blunders", "chess_blunders.app", "chess_blunders.app.routers"],
     package_dir={"": "."},
     package_data={},
-    install_requires=[],
+    install_requires=[
+        "fastapi==0.*,>=0.63.0",
+        "requests==2.*,>=2.25.1",
+        "requests-futures==1.*,>=1.0.0",
+        "uvicorn[standard]==0.*,>=0.13.3",
+    ],
     extras_require={
         "dev": [
             "black==20.*,>=20.8.0.b1",
