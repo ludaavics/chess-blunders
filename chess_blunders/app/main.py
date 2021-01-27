@@ -9,7 +9,7 @@ app = FastAPI()
 
 @app.get("/")
 async def root():
-    return {"message": "Hello World"}
+    return [{"path": route.path} for route in app.routes]
 
 
 app.include_router(games.router)

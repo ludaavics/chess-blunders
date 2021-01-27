@@ -54,7 +54,7 @@ def get_games_chessdotcom(username: str, limit: int = 10):
         for future in futures:
             monthly_games = future.result()
             sleep = 1
-            while monthly_games.status_code == 429:  # rate limits
+            while monthly_games.status_code == 429:  # pragma: no cover
                 msg = (
                     f"Sleeping for {sleep}s while "
                     f"getting chess.com games for {username}."
