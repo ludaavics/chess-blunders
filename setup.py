@@ -20,7 +20,7 @@ setup(
     author="Ludovic Tiako",
     author_email="ludovic.tiako@gmail.com",
     license="MIT",
-    packages=["chess_blunders", "chess_blunders.app", "chess_blunders.app.routers"],
+    packages=["chess_blunders", "chess_blunders.api", "chess_blunders.api.routers"],
     package_dir={"": "."},
     package_data={},
     install_requires=[

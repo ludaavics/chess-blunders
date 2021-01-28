@@ -15,12 +15,12 @@ integration:
 setuppy:
 	@dephell deps convert && black setup.py
 
-deploy-app: ;
+deploy-api: ;
 
-start-app-prod:
-	@uvicorn chess_blunders:app
+start-api-prod:
+	@uvicorn chess_blunders.api:app
 
-start-app-dev:
-	@uvicorn chess_blunders:app --reload
+start-api-dev:
+	@uvicorn chess_blunders.api:app --reload
 
 .PHONY: help Makefile docs tests

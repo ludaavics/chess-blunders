@@ -3,12 +3,12 @@ import random
 import pytest
 from fastapi.testclient import TestClient
 
-from chess_blunders import app
+from chess_blunders.api import app as api_app
 
 
 @pytest.fixture(scope="session")
-def client():
-    return TestClient(app)
+def api_client():
+    return TestClient(api_app)
 
 
 @pytest.fixture()
