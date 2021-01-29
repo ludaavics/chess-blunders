@@ -65,12 +65,3 @@ repos:
     stages:
     - merge-commit
     - push
-- repo: local
-  hooks:
-  - id: tests
-    name: Run doc tests
-    entry: make docs-tests
-    language: system
-    stages:
-    - merge-commit
-    - push
