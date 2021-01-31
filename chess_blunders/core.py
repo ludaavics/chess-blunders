@@ -12,6 +12,7 @@ import chess.pgn
 from .models import Blunder, BlunderThreshold, Game
 
 DEFAULT_ENGINE = os.environ["CHESS_BLUNDERS_ENGINE"]
+MATE_SCORE = 100_000
 
 
 def _logistic(score, *, scale=0.004):
@@ -68,9 +69,10 @@ async def blunders(
             )
         finally:
             await engine.quit()
+
         return getattr(
             result["score"], {chess.WHITE: "white", chess.BLACK: "black"}[side]
-        )().cp
+        )().score(mate_score=MATE_SCORE)
 
     async def add_lines(node: chess.pgn.GameNode) -> Blunder:
         """
@@ -100,8 +102,10 @@ async def blunders(
         finally:
             await engine.quit()
 
-        solution_score = solution["score"].white()
-        refutation_score = refutation["score"].white()
+        solution_score = solution["score"].white().score(mate_score=MATE_SCORE)
+        refutation_score = refutation["score"].white().score(mate_score=MATE_SCORE)
+        solution_probability_score = _logistic(solution_score, scale=logistic_scale)
+        refutation_probability_score = _logistic(refutation_score, scale=logistic_scale)
         node.add_line(
             solution["pv"][:max_variation_plies],
             starting_comment=f"Solution ({solution_score})",
@@ -115,13 +119,9 @@ async def blunders(
         blunder = Blunder(
             **{
                 "starting_fen": node.board().fen(),
-                "cp_loss": sign * (refutation_score.cp - solution_score.cp),
+                "cp_loss": sign * (refutation_score - solution_score),
                 "probability_loss": round(
-                    sign
-                    * (
-                        _logistic(refutation_score.cp, scale=logistic_scale)
-                        - _logistic(solution_score.cp, scale=logistic_scale)
-                    ),
+                    sign * (refutation_probability_score - solution_probability_score),
                     2,
                 ),
                 "pgn": str(node),
