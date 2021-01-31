@@ -116,10 +116,13 @@ async def blunders(
             **{
                 "starting_fen": node.board().fen(),
                 "cp_loss": sign * (refutation_score.cp - solution_score.cp),
-                "probability_loss": sign
-                * (
-                    _logistic(refutation_score.cp, scale=logistic_scale)
-                    - _logistic(solution_score.cp, scale=logistic_scale)
+                "probability_loss": round(
+                    sign
+                    * (
+                        _logistic(refutation_score.cp, scale=logistic_scale)
+                        - _logistic(solution_score.cp, scale=logistic_scale)
+                    ),
+                    2,
                 ),
                 "pgn": str(node),
             }

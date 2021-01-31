@@ -39,12 +39,12 @@ class BlunderThreshold(BaseModel):
     )
 
 
-class Tactic(BaseModel):
+class Puzzle(BaseModel):
     starting_fen: str
     pgn: str
 
 
-class Blunder(Tactic):
+class Blunder(Puzzle):
     cp_loss: float = Field(
         ..., lt=0, description="The centipawn loss must be greater than 0."
     )

@@ -14,7 +14,7 @@ def api_client():
     return TestClient(api_app)
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture()
 async def async_api_client():
     async with AsyncClient(app=api_app, base_url="http://test") as client:
         yield client

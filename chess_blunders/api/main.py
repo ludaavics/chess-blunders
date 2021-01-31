@@ -2,7 +2,7 @@ import requests
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
-from .routers import games
+from .routers import games, puzzles
 
 app = FastAPI()
 
@@ -16,6 +16,7 @@ async def root():
 
 
 app.include_router(games.router)
+app.include_router(puzzles.router)
 
 
 # ------------------------------------------------------------------------------------ #

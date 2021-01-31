@@ -15,7 +15,7 @@ CHESSDOTCOM_API_HOST = "https://api.chess.com/"
 
 
 @router.get("/chessdotcom/{username}", response_model=List[Game])
-def get_games_chessdotcom(username: str, limit: int = 10):
+def get_games_chessdotcom(username: str, limit: int = 10) -> List[Game]:
     """
     Get all the games from a chess.com user.
     """
