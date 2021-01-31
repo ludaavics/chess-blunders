@@ -13,9 +13,13 @@ cache:
     - "$HOME/.cache/pre-commit"
     - "$HOME/.cache/pypoetry"
     - .venv
+before_install:
+  - make init-stockfish-linux
+  - export PATH="`pwd`/bin:${PATH}"
+  - export CHESS_BLUNDERS_ENGINE="stockfish"
+  - which stockfish || (echo $PATH && false)
 install:
-  - make init-linux
-  - export CHESS_BLUNDERS_ENGINE="$(pwd)/bin"
+  - make init
 script:
   make integration
 after_success:

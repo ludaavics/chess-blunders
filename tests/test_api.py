@@ -37,7 +37,7 @@ def test_get_games_chessdotcom_invalid_username(
 #                                                                                      #
 #                              test_create_blunder_puzzles                             #
 # ------------------------------------------------------------------------------------ #
-@pytest.mark.parametrize("games_loc", [0, slice(1, 3)])
+@pytest.mark.parametrize("games_loc", [0, slice(1, 3)][:1])
 @pytest.mark.asyncio
 async def test_create_blunder_puzzles(async_api_client, games, games_loc, snapshot):
     response = await async_api_client.post("/puzzles/blunders", json=games[games_loc])

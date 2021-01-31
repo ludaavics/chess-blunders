@@ -16,8 +16,8 @@ init-stockfish-linux:
 	@rm stockfish-11-linux.zip
 
 init-linux:
-	@make init
 	@make init-stockfish-linux
+	@make init
 
 tests:
 	@python -m pytest --cov=chess_blunders --cov-branch --verbose

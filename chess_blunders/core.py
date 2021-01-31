@@ -1,5 +1,6 @@
 import asyncio
 import io
+import logging
 import os
 from copy import deepcopy
 from math import exp
@@ -11,6 +12,8 @@ import chess.pgn
 
 from .models import Blunder, BlunderThreshold, Game
 
+logger = logging.getLogger(__name__)
+logger.addHandler(logging.NullHandler())
 DEFAULT_ENGINE = os.environ["CHESS_BLUNDERS_ENGINE"]
 MATE_SCORE = 100_000
 
@@ -59,6 +62,7 @@ async def blunders(
         Return the score of a given FEN position.
         """
         try:
+            logger.critical(engine_path)
             _, engine = await chess.engine.popen_uci(engine_path)
             await engine.configure(engine_options)
             board = chess.Board(position)
