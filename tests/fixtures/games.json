@@ -2,13 +2,13 @@
   {
     "url": "https://www.chess.com/live/game/6127697792",
     "white": {
-      "username": "Cuervo_Ingenuo",
+      "name": "Cuervo_Ingenuo",
       "url": "https://api.chess.com/pub/player/cuervo_ingenuo",
       "rating": 1114,
       "result": "win"
     },
     "black": {
-      "username": "ludavics",
+      "name": "ludavics",
       "url": "https://api.chess.com/pub/player/ludavics",
       "rating": 1093,
       "result": "timeout"
@@ -26,13 +26,13 @@
   {
     "url": "https://www.chess.com/live/game/6127740086",
     "white": {
-      "username": "ludavics",
+      "name": "ludavics",
       "url": "https://api.chess.com/pub/player/ludavics",
       "rating": 1087,
       "result": "checkmated"
     },
     "black": {
-      "username": "fabio_srj",
+      "name": "fabio_srj",
       "url": "https://api.chess.com/pub/player/fabio_srj",
       "rating": 1176,
       "result": "win"
@@ -50,13 +50,13 @@
   {
     "url": "https://www.chess.com/live/game/6127785617",
     "white": {
-      "username": "mhughes127",
+      "name": "mhughes127",
       "url": "https://api.chess.com/pub/player/mhughes127",
       "rating": 1100,
       "result": "checkmated"
     },
     "black": {
-      "username": "ludavics",
+      "name": "ludavics",
       "url": "https://api.chess.com/pub/player/ludavics",
       "rating": 1096,
       "result": "win"
@@ -74,13 +74,13 @@
   {
     "url": "https://www.chess.com/live/game/6127807695",
     "white": {
-      "username": "Ozgurugzomert",
+      "name": "Ozgurugzomert",
       "url": "https://api.chess.com/pub/player/ozgurugzomert",
       "rating": 1094,
       "result": "repetition"
     },
     "black": {
-      "username": "ludavics",
+      "name": "ludavics",
       "url": "https://api.chess.com/pub/player/ludavics",
       "rating": 1096,
       "result": "repetition"
@@ -98,13 +98,13 @@
   {
     "url": "https://www.chess.com/live/game/6127824925",
     "white": {
-      "username": "dipeshbhatia",
+      "name": "dipeshbhatia",
       "url": "https://api.chess.com/pub/player/dipeshbhatia",
       "rating": 1058,
       "result": "win"
     },
     "black": {
-      "username": "ludavics",
+      "name": "ludavics",
       "url": "https://api.chess.com/pub/player/ludavics",
       "rating": 1087,
       "result": "resigned"
@@ -122,13 +122,13 @@
   {
     "url": "https://www.chess.com/live/game/6127870696",
     "white": {
-      "username": "sashamaenaomi",
+      "name": "sashamaenaomi",
       "url": "https://api.chess.com/pub/player/sashamaenaomi",
       "rating": 1046,
       "result": "win"
     },
     "black": {
-      "username": "ludavics",
+      "name": "ludavics",
       "url": "https://api.chess.com/pub/player/ludavics",
       "rating": 1078,
       "result": "checkmated"
@@ -146,13 +146,13 @@
   {
     "url": "https://www.chess.com/live/game/6127910303",
     "white": {
-      "username": "ludavics",
+      "name": "ludavics",
       "url": "https://api.chess.com/pub/player/ludavics",
       "rating": 1087,
       "result": "win"
     },
     "black": {
-      "username": "mastertchen",
+      "name": "mastertchen",
       "url": "https://api.chess.com/pub/player/mastertchen",
       "rating": 1131,
       "result": "checkmated"
@@ -170,13 +170,13 @@
   {
     "url": "https://www.chess.com/live/game/6127965625",
     "white": {
-      "username": "ludavics",
+      "name": "ludavics",
       "url": "https://api.chess.com/pub/player/ludavics",
       "rating": 1094,
       "result": "win"
     },
     "black": {
-      "username": "Venkat1507",
+      "name": "Venkat1507",
       "url": "https://api.chess.com/pub/player/venkat1507",
       "rating": 1056,
       "result": "checkmated"
@@ -194,13 +194,13 @@
   {
     "url": "https://www.chess.com/live/game/6132950019",
     "white": {
-      "username": "ludavics",
+      "name": "ludavics",
       "url": "https://api.chess.com/pub/player/ludavics",
       "rating": 1086,
       "result": "timeout"
     },
     "black": {
-      "username": "mandre92",
+      "name": "mandre92",
       "url": "https://api.chess.com/pub/player/mandre92",
       "rating": 1090,
       "result": "win"
@@ -218,13 +218,13 @@
   {
     "url": "https://www.chess.com/live/game/6133013307",
     "white": {
-      "username": "ludavics",
+      "name": "ludavics",
       "url": "https://api.chess.com/pub/player/ludavics",
       "rating": 1077,
       "result": "timeout"
     },
     "black": {
-      "username": "KeonCarter",
+      "name": "KeonCarter",
       "url": "https://api.chess.com/pub/player/keoncarter",
       "rating": 1071,
       "result": "win"

@@ -43,7 +43,9 @@ def get_games_chessdotcom(username: str, limit: int = 10):
                 monthly_games = session.get(url).result()
             monthly_games.raise_for_status()
             for game in monthly_games.json()["games"]:
+                game["white"]["name"] = game["white"].pop("username")
                 game["white"]["url"] = game["white"].pop("@id")
+                game["black"]["name"] = game["black"].pop("username")
                 game["black"]["url"] = game["black"].pop("@id")
                 game["eco_url"] = game.pop("eco", None)
                 game["tournament_url"] = game.pop("tournament", None)

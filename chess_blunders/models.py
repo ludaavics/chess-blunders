@@ -1,22 +1,16 @@
-from enum import Enum
 from typing import Optional
 
 from pydantic import BaseModel, Field
 
 
 class Player(BaseModel):
-    username: str
-    url: str
+    name: str
     rating: int
+    url: str
 
 
 class PlayerPlaying(Player):
     result: str
-
-
-class SideEnum(str, Enum):
-    white = "white"
-    black = "back"
 
 
 class Game(BaseModel):
@@ -36,7 +30,7 @@ class Game(BaseModel):
 
 class BlunderThreshold(BaseModel):
     threshold: float = Field(
-        0.1,
+        0.25,
         gt=0,
         lt=1,
         description=(
@@ -45,18 +39,18 @@ class BlunderThreshold(BaseModel):
     )
 
 
-class Line(BaseModel):
+class Tactic(BaseModel):
     starting_fen: str
     pgn: str
 
 
-class Blunder(Line):
+class Blunder(Tactic):
     cp_loss: float = Field(
-        ..., gt=0, description="The centipawn loss must be greater than 0."
+        ..., lt=0, description="The centipawn loss must be greater than 0."
     )
     probability_loss: float = Field(
         ...,
-        gt=0,
-        lt=1,
-        description="The winning probability loss must be between 0 and 1.",
+        gt=-1,
+        lt=0,
+        description="The probability-of-winning loss must be between -1 and 0.",
     )
