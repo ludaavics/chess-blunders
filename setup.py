@@ -27,11 +27,7 @@ setup(
         "chess==1.*,>=1.4.0",
         "fastapi==0.*,>=0.63.0",
         "httpx==0.*,>=0.16.1",
-        "pytest-asyncio==0.*,>=0.14.0",
         "requests==2.*,>=2.25.1",
-        "requests-futures==1.*,>=1.0.0",
-        "requests-mock==1.*,>=1.8.0",
-        "snapshottest==0.*,>=0.6.0",
         "uvicorn[standard]==0.*,>=0.13.3",
     ],
     extras_require={
@@ -40,8 +36,12 @@ setup(
             "dephell==0.*,>=0.8.3",
             "pre-commit==2.*,>=2.9.3",
             "pytest==6.*,>=6.2.2",
+            "pytest-asyncio==0.*,>=0.14.0",
             "pytest-cov==2.*,>=2.11.1",
             "pytest-rerunfailures==9.*,>=9.1.1",
+            "requests-futures==1.*,>=1.0.0",
+            "requests-mock==1.*,>=1.8.0",
+            "snapshottest==0.*,>=0.6.0",
         ]
     },
 )
