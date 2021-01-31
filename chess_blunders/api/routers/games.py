@@ -1,38 +1,17 @@
 import logging
 import time
-from typing import List, Optional
+from typing import List
 
 from fastapi import APIRouter
-from pydantic import BaseModel
 from requests.compat import urljoin  # type: ignore
 from requests_futures.sessions import FuturesSession
+
+from ...models import Game
 
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
 router = APIRouter(prefix="/games", tags=["games"])
 CHESSDOTCOM_API_HOST = "https://api.chess.com/"
-
-
-class Player(BaseModel):
-    username: str
-    url: str
-    rating: int
-    result: str
-
-
-class Game(BaseModel):
-    url: Optional[str]
-    white: Player
-    black: Player
-    pgn: str
-    fen: str
-    start_time: Optional[int]
-    end_time: int
-    time_control: str
-    rules: str
-    eco_url: Optional[str]
-    tournament_url: Optional[str]
-    match_url: Optional[str]
 
 
 @router.get("/chessdotcom/{username}", response_model=List[Game])

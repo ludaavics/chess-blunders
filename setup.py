@@ -24,7 +24,10 @@ setup(
     package_dir={"": "."},
     package_data={},
     install_requires=[
+        "chess==1.*,>=1.4.0",
         "fastapi==0.*,>=0.63.0",
+        "httpx==0.*,>=0.16.1",
+        "pytest-asyncio==0.*,>=0.14.0",
         "requests==2.*,>=2.25.1",
         "requests-futures==1.*,>=1.0.0",
         "requests-mock==1.*,>=1.8.0",

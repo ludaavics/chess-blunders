@@ -5,6 +5,20 @@ init:
 	@pre-commit install -t pre-push
 	@pre-commit install -t pre-merge-commit
 
+init-stockfish-linux:
+	@wget https://stockfish.s3.amazonaws.com/stockfish-11-linux.zip
+	@unzip stockfish-11-linux.zip
+	@mkdir -p bin
+	@cp stockfish-11-linux/Linux/stockfish_20011801_x64_bmi2 bin/stockfish
+	@chmod +x bin/stockfish
+	@rm -rf stockfish-11-linux
+	@rm -rf __MACOSX/
+	@rm stockfish-11-linux.zip
+
+init-linux:
+	@make init
+	@make init-stockfish-linux
+
 tests:
 	@python -m pytest --cov=chess_blunders --cov-branch --verbose
 

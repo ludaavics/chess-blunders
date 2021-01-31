@@ -14,7 +14,8 @@ cache:
     - "$HOME/.cache/pypoetry"
     - .venv
 install:
-  make init
+  - make init-linux
+  - export CHESS_BLUNDERS_ENGINE="$(pwd)/bin"
 script:
   make integration
 after_success:

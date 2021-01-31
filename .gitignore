@@ -26,6 +26,7 @@ build/
 *.mypy_cache/
 pip-wheel-metadata
 dist/
+bin/
 
 # testing
 .coverage
