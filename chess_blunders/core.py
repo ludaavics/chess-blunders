@@ -37,6 +37,7 @@ async def blunders(
     logistic_scale: float = 0.004,
     engine_path: Optional[str] = None,
     engine_options: Optional[dict] = {"Hash": 256, "Threads": 1},
+    n_engines: int = 1,
 ) -> List[Blunder]:
     """
     Return all the blunders in a game.
@@ -52,28 +53,27 @@ async def blunders(
             centi-pawn scores to probabilities-of-winning.
         engine_path: path to the UCI or XBoard engine.
         engine_options: options passed to the UCI or XBoard engine.
+        n_engines: number of concurrent engines to use to analyze the position.
 
     Returns:
         list of blunders data models.
     """
+    engine_path = engine_path or DEFAULT_ENGINE
+    scores_by_ply = {}
 
-    async def score(position: str, side: chess.Color) -> float:
+    async def score(
+        position: str, side: chess.Color, engine: chess.engine.Protocol
+    ) -> float:
         """
         Return the score of a given FEN position.
         """
-        try:
-            logger.critical(engine_path)
-            _, engine = await chess.engine.popen_uci(engine_path)
-            await engine.configure(engine_options)
-            board = chess.Board(position)
-            result = await engine.analyse(
-                board,
-                chess.engine.Limit(nodes=nodes),
-                info=chess.engine.INFO_SCORE,
-            )
-        finally:
-            await engine.quit()
-
+        engine._ucinewgame()  # for deterministic results
+        board = chess.Board(position)
+        result = await engine.analyse(
+            board,
+            chess.engine.Limit(nodes=nodes),
+            info=chess.engine.INFO_SCORE,
+        )
         return getattr(
             result["score"], {chess.WHITE: "white", chess.BLACK: "black"}[side]
         )().score(mate_score=MATE_SCORE)
@@ -134,20 +134,36 @@ async def blunders(
 
         return blunder
 
-    engine_path = engine_path or DEFAULT_ENGINE
+    async def scorer(queue: asyncio.Queue) -> None:
+        """
+        Worker that scores positions from a queue.
+        """
+        try:
+            _, engine = await chess.engine.popen_uci(engine_path)
+            await engine.configure(engine_options)
+            while True:
+                ply, position = await queue.get()
+                scores_by_ply[ply] = await score(position, side, engine)
+                queue.task_done()
+        finally:
+            await engine.quit()
 
-    # create the fen of each position
+    # create the fen of each position and push it in the work queue
+    positions: asyncio.Queue = asyncio.Queue()
     board = chess.Board()
     root = chess.pgn.read_game(io.StringIO(game.pgn))
-    positions = [chess.STARTING_FEN]
+    positions.put_nowait((board.ply(), chess.STARTING_FEN))
     for move in root.mainline_moves():
         board.push(move)
-        positions.append(board.fen())
+        positions.put_nowait((board.ply(), board.fen()))
+    n_plies = board.ply()
 
     # calculate the score at each position
-    scores = await asyncio.gather(
-        *(asyncio.create_task(score(position, side)) for position in positions)
-    )
+    workers = [asyncio.create_task(scorer(positions)) for _ in range(n_engines)]
+    await positions.join()
+    [worker.cancel() for worker in workers]
+    await asyncio.gather(*workers, return_exceptions=True)
+    scores = [scores_by_ply[ply] for ply in range(n_plies)]
     winning_chances = [_logistic(cp, scale=logistic_scale) for cp in scores]
 
     # look for blunders by the player we're interested in
