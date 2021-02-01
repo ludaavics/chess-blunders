@@ -6,14 +6,12 @@ init:
 	@pre-commit install -t pre-merge-commit
 
 init-stockfish-linux:
-	@wget https://stockfish.s3.amazonaws.com/stockfish-11-linux.zip
-	@unzip stockfish-11-linux.zip
+	@wget https://stockfishchess.org/files/stockfish_12_linux_x64_bmi2.zip
+	@unzip stockfish_12_linux_x64_bmi2.zip
 	@mkdir -p bin
-	@cp stockfish-11-linux/Linux/stockfish_20011801_x64_bmi2 bin/stockfish
+	@mv stockfish_20090216_x64_bmi2 bin/stockfish
 	@chmod +x bin/stockfish
-	@rm -rf stockfish-11-linux
-	@rm -rf __MACOSX/
-	@rm stockfish-11-linux.zip
+	@rm stockfish_12_linux_x64_bmi2.zip
 
 init-linux:
 	@make init-stockfish-linux
