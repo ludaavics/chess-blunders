@@ -1,22 +1,31 @@
+from enum import Enum
 from typing import Optional
 
 from pydantic import BaseModel, Field
 
 
+# ------------------------------------------------------------------------------------ #
+#                                         Games                                        #
+# ------------------------------------------------------------------------------------ #
+class Color(str, Enum):
+    white = "white"
+    black = "black"
+
+
 class Player(BaseModel):
     name: str
-    rating: int
     url: str
 
 
-class PlayerPlaying(Player):
+class PlayerInGame(Player):
+    rating: int
     result: str
 
 
 class Game(BaseModel):
     url: Optional[str]
-    white: PlayerPlaying
-    black: PlayerPlaying
+    white: PlayerInGame
+    black: PlayerInGame
     pgn: str
     fen: str
     start_time: Optional[int]
@@ -28,17 +37,9 @@ class Game(BaseModel):
     match_url: Optional[str]
 
 
-class BlunderThreshold(BaseModel):
-    threshold: float = Field(
-        0.25,
-        gt=0,
-        lt=1,
-        description=(
-            "The threshold for a blunder must be a probability between 0 and 1."
-        ),
-    )
-
-
+# ------------------------------------------------------------------------------------ #
+#                                        Puzzles                                       #
+# ------------------------------------------------------------------------------------ #
 class Puzzle(BaseModel):
     starting_fen: str
     pgn: str

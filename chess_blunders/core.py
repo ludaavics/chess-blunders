@@ -10,7 +10,7 @@ import chess.engine
 import chess.pgn
 from pydantic import validate_arguments
 
-from .models import Blunder, Game
+from .models import Blunder, Color, Game
 
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
@@ -20,7 +20,7 @@ MATE_SCORE = 100_000
 
 async def analyse_position(
     fen: str,
-    color: chess.Color,
+    color: Color,
     engine: chess.engine.Protocol,
     *,
     nodes: int,
@@ -32,7 +32,7 @@ async def analyse_position(
 
     Args:
         fen: FEN position.
-        color: from which player's point of view to score.
+        color: `white` or `black`. Point of view used to score.
         engine: UCI or XBoard engine.
         nodes: number of nodes to explore.
         logisitic_scale: scaling factor of the logistic transform.
@@ -55,9 +55,9 @@ async def analyse_position(
         chess.engine.Limit(nodes=nodes),
         info=(chess.engine.INFO_SCORE | chess.engine.INFO_PV),
     )
-    solution["pov_score"] = getattr(
-        solution["score"], {chess.WHITE: "white", chess.BLACK: "black"}[color]
-    )().score(mate_score=MATE_SCORE)
+    solution["pov_score"] = getattr(solution["score"], color)().score(
+        mate_score=MATE_SCORE
+    )
     solution["win_probability"] = 1 / (1 + exp(-logistic_scale * solution["pov_score"]))
 
     return solution
@@ -68,7 +68,7 @@ async def blunders(
     games: Union[Game, List[Game]],
     *,
     threshold: float = 0.25,
-    colors: Union[chess.Color, List[chess.Color]] = chess.WHITE,
+    colors: Union[Color, List[Color]] = Color.white,
     nodes: int = 1_000_000,
     max_variation_plies: Optional[int] = None,
     logistic_scale: float = 0.004,
@@ -82,7 +82,7 @@ async def blunders(
     Args:
         games: list of chess game data model.
         threshold: threshold of probability-of-winning loss to be considered a blunder.
-        colors: for each game, the color we monitor for blunders.
+        colors: for each game, the color we monitor for blunders. `white` or `black`.
         nodes: number of nodes to explore.
         max_variation_plies: maximum number of plies in the refutations and solutions.
         logistic_scale: scale (a.k.a growth rate) of the logistic curve used to convert
@@ -96,7 +96,7 @@ async def blunders(
     """
     if isinstance(games, Game):
         games = [games]
-    if isinstance(colors, chess.Color):
+    if isinstance(colors, Color):
         colors = [colors] * len(games)
     if len(colors) != len(games):
         msg = "`games` and `colors` must have the same length."
@@ -116,7 +116,7 @@ async def blunders(
                 game_iloc, ply, position = await queue.get()
                 scores[game_iloc][ply] = await analyse_position(
                     position,
-                    colors[game_iloc],
+                    colors[game_iloc],  # type: ignore
                     engine,
                     nodes=nodes,
                     logistic_scale=logistic_scale,
@@ -196,7 +196,7 @@ async def blunders(
     for game_iloc in scores:
         game_scores = scores[game_iloc]
         color = colors[game_iloc]
-        color_is_white = color == chess.WHITE
+        color_is_white = color == "white"
         root = roots[game_iloc]
         for ply in range(len(game_scores)):
             if ply == 0:
@@ -210,7 +210,7 @@ async def blunders(
                 node = root
                 for _ in range(ply):
                     node = node.next()
-                assert node.parent.turn() == color
+                assert node.parent.turn() == {"white": True, "black": False}[color]
                 assert node.ply() == ply
                 blunder_nodes.put_nowait((game_iloc, node))
 

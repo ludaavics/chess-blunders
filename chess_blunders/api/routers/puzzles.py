@@ -1,11 +1,11 @@
-import asyncio
 import logging
-from typing import List, Union
+from typing import List
 
-from fastapi import APIRouter, status
+from fastapi import APIRouter, Depends, status
 
 from ... import core
-from ...models import Blunder, Game
+from ...models import Blunder, Color, Game
+from ..dependencies import BlunderParameters
 
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
@@ -15,16 +15,13 @@ router = APIRouter(prefix="/puzzles", tags=["puzzles"])
 @router.post(
     "/blunders", response_model=List[Blunder], status_code=status.HTTP_201_CREATED
 )
-async def create_blunder_puzzles(games: Union[Game, List[Game]]) -> List[Blunder]:
+async def create_blunder_puzzles(
+    games: List[Game],
+    blunder_parameters: BlunderParameters = Depends(),
+) -> List[Blunder]:
     """
-    Create puzzles from blunders in a list of game.
+    Create puzzles from blunders in a list of games.
     """
-    if isinstance(games, Game):
-        games = [games]
-    blunders_by_game = await asyncio.gather(
-        *(asyncio.create_task(core.blunders(game)) for game in games)
-    )
-    blunders = [
-        blunder for game_blunders in blunders_by_game for blunder in game_blunders
-    ]
-    return blunders
+    if blunder_parameters.colors is None:
+        blunder_parameters.colors = [Color.white for _ in range(len(games))]
+    return await core.blunders(games, **vars(blunder_parameters), n_engines=10)
