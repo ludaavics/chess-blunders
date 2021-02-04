@@ -6,12 +6,19 @@ import requests_mock
 from chess_blunders.api.routers.games import CHESSDOTCOM_API_HOST
 
 
-def test_get_root(api_client, snapshot):
-    response = api_client.get("/")
+@pytest.mark.asyncio
+async def test_get_root(async_api_client, snapshot):
+    response = await async_api_client.get("/")
     assert response.status_code == 200
     snapshot.assert_match(response.json())
 
 
+# ------------------------------------------------------------------------------------ #
+#                                         Games                                        #
+#                                                                                      #
+#                              test_get_games_chessdotcom                              #
+#                      test_get_games_chessdotcom_invalid_username                     #
+# ------------------------------------------------------------------------------------ #
 def test_get_games_chessdotcom(api_client, chessdotcom_username):
     response = api_client.get(f"/games/chessdotcom/{chessdotcom_username}")
     assert response.status_code == 200
@@ -25,6 +32,29 @@ def test_get_games_chessdotcom_invalid_username(
     assert response.status_code == 404
 
 
+# ------------------------------------------------------------------------------------ #
+#                                        Puzzles                                       #
+#                                                                                      #
+#                              test_create_blunder_puzzles                             #
+# ------------------------------------------------------------------------------------ #
+@pytest.mark.parametrize(
+    "games_loc,colors", [(slice(None, 1), None), (slice(1, 3), ["white", "black"])]
+)
+@pytest.mark.asyncio
+async def test_create_blunder_puzzles(
+    async_api_client, games, games_loc, colors, snapshot
+):
+    payload = {"games": games[games_loc], "colors": colors}
+    response = await async_api_client.post("/puzzles/blunders", json=payload)
+    assert response.status_code == 201
+    snapshot.assert_match(response.json())
+
+
+# ------------------------------------------------------------------------------------ #
+#                                      Exceptions                                      #
+#                                                                                      #
+#                                test_exception_handling                               #
+# ------------------------------------------------------------------------------------ #
 def test_exception_handling(api_client, chessdotcom_username):
     with requests_mock.Mocker(real_http=True) as m:
         m.get(re.compile(CHESSDOTCOM_API_HOST), status_code=500)

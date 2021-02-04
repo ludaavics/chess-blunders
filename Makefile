@@ -5,6 +5,18 @@ init:
 	@pre-commit install -t pre-push
 	@pre-commit install -t pre-merge-commit
 
+init-stockfish-linux:
+	@wget https://stockfishchess.org/files/stockfish_12_linux_x64_bmi2.zip
+	@unzip stockfish_12_linux_x64_bmi2.zip
+	@mkdir -p bin
+	@mv stockfish_20090216_x64_bmi2 bin/stockfish
+	@chmod +x bin/stockfish
+	@rm stockfish_12_linux_x64_bmi2.zip
+
+init-linux:
+	@make init-stockfish-linux
+	@make init
+
 tests:
 	@python -m pytest --cov=chess_blunders --cov-branch --verbose
 
