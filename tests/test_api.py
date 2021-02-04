@@ -37,10 +37,14 @@ def test_get_games_chessdotcom_invalid_username(
 #                                                                                      #
 #                              test_create_blunder_puzzles                             #
 # ------------------------------------------------------------------------------------ #
-@pytest.mark.parametrize("games_loc", [slice(None, 1), slice(1, 3)])
+@pytest.mark.parametrize(
+    "games_loc,colors", [(slice(None, 1), None), (slice(1, 3), ["white", "black"])]
+)
 @pytest.mark.asyncio
-async def test_create_blunder_puzzles(async_api_client, games, games_loc, snapshot):
-    payload = {"games": games[games_loc]}
+async def test_create_blunder_puzzles(
+    async_api_client, games, games_loc, colors, snapshot
+):
+    payload = {"games": games[games_loc], "colors": colors}
     response = await async_api_client.post("/puzzles/blunders", json=payload)
     assert response.status_code == 201
     snapshot.assert_match(response.json())

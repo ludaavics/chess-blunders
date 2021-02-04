@@ -47,7 +47,7 @@ async def analyse_position(
         a dictionary of information on the position returned by the engine, augmented
         with the ``win_probability`` and ``pov_score`` keys.
     """
-    if clear_hash:
+    if clear_hash:  # pragma: no branch
         engine._ucinewgame()
     board = chess.Board(fen)
     solution = await engine.analyse(

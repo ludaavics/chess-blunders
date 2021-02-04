@@ -10,3 +10,10 @@ async def test_known_blunders(games, games_loc, snapshot):
         games[games_loc], max_variation_plies=1, n_engines=10
     )
     snapshot.assert_match([blunder.dict() for blunder in blunders])
+
+
+@pytest.mark.asyncio
+async def test_blunders_validation(games, snapshot):
+
+    with pytest.raises(ValueError):
+        await chess_blunders.blunders(games, colors=["black"] * (len(games) - 1))
