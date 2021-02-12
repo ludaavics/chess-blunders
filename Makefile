@@ -30,9 +30,9 @@ setuppy:
 deploy-api: ;
 
 start-api-prod:
-	@uvicorn chess_blunders.api:app
+	@uvicorn chess_blunders.app.api:app
 
 start-api-dev:
-	@uvicorn chess_blunders.api:app --reload
+	@uvicorn chess_blunders.app.api:app --reload
 
 .PHONY: help Makefile docs tests

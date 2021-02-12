@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from fastapi import Body
 
-from ..models import Color
+from chess_blunders.models import Color
 
 
 class BlunderParameters:

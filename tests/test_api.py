@@ -3,7 +3,7 @@ import re
 import pytest
 import requests_mock
 
-from chess_blunders.api.routers.games import CHESSDOTCOM_API_HOST
+from chess_blunders.app.api.routers.games import CHESSDOTCOM_API_HOST
 
 
 @pytest.mark.asyncio

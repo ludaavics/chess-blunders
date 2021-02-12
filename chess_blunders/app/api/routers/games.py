@@ -6,7 +6,7 @@ from fastapi import APIRouter
 from requests.compat import urljoin  # type: ignore
 from requests_futures.sessions import FuturesSession
 
-from ...models import Game
+from chess_blunders.models import Game
 
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())

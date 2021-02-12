@@ -3,9 +3,9 @@ from typing import List
 
 from fastapi import APIRouter, Depends, status
 
-from ... import core
-from ...models import Blunder, Color, Game
-from ..dependencies import BlunderParameters
+from chess_blunders import core
+from chess_blunders.models import Blunder, Color, Game
+from chess_blunders.app.api.dependencies import BlunderParameters
 
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
