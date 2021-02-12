@@ -32,6 +32,7 @@ setup(
     ],
     extras_require={
         "dev": [
+            "awscli==1.*,>=1.19.6",
             "black==20.*,>=20.8.0.b1",
             "dephell==0.*,>=0.8.3",
             "mypy==0.*,>=0.800.0",
