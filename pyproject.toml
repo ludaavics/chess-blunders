@@ -10,6 +10,7 @@ python = "^3.7"
 chess = "^1.4.0"
 fastapi = {version = "^0.63.0"}
 httpx = "^0.16.1"
+mangum = "^0.10.0"
 requests = "^2.25.1"
 uvicorn = {extras = ["standard"], version = "^0.13.3"}
 
