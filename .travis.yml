@@ -15,15 +15,11 @@ cache:
     - .venv
     - node_modules
 before_install:
-  - node --version
-  - npm --version
   - make init-stockfish-linux
   - export PATH="`pwd`/bin:${PATH}"
   - export CHESS_BLUNDERS_ENGINE="stockfish"
   - which stockfish || (echo $PATH && false)
-  - nvm use 12
-  - node --version
-  - npm --version
+  - nvm install 15
 install:
   - make init
   - poetry env info
