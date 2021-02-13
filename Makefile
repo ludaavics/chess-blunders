@@ -16,6 +16,8 @@ init:
 	@pre-commit install
 	@pre-commit install -t pre-push
 	@pre-commit install -t pre-merge-commit
+	@npm install -g serverless
+	@npm install serverless-python-requirements
 
 init-stockfish-linux:
 	@wget https://stockfishchess.org/files/stockfish_12_linux_x64_bmi2.zip
@@ -27,19 +29,13 @@ init-stockfish-linux:
 
 init-stockfish-macosx: ;
 
-init-serverless:
-	@npm install -g serverless
-	@npm install serverless-python-requirements
-
 init-linux:
-	@make init
 	@make init-stockfish-linux
-	@make init-serverless
+	@make init
 
 init-macosx:
-	@make init
 	@make init-stockfish-macosx
-	@make init-serverless
+	@make init
 
 
 # ------------------------------------------------------------------------------------ #
