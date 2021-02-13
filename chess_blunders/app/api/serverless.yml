@@ -1,4 +1,5 @@
 app: chess-blunders
+org: ludaavics
 frameworkVersion: '2'
 
 service: chess-blunders-api

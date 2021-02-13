@@ -24,7 +24,8 @@ script:
   make ci-integration
 after_success:
   - bash <(curl -s https://codecov.io/bash) -y .ci/codecov.yml
-  - >
-    test $TRAVIS_BRANCH = "master" &&
-    test $TRAVIS_PULL_REQUEST = "false" &&
-    make ci-deployment
+  - make deploy-api-prod
+  # - >
+  #   test $TRAVIS_BRANCH = "master" &&
+  #   test $TRAVIS_PULL_REQUEST = "false" &&
+  #   make deploy-api-prod

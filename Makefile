@@ -72,7 +72,7 @@ ci-tests:
 
 ci-integration:
 	@pre-commit run --all-files
-	@make ci-tests
+	# @make ci-tests
 
 ci-deployment: ;
 
