@@ -48,7 +48,7 @@ init-macosx:
 #                                     deps api pip                                     #
 # ------------------------------------------------------------------------------------ #
 deps-api-pip:
-	@dephell deps convert --to-format=pip --to-path=chess_blunders/app/api/requirements.txt
+	@dephell deps convert --envs main --to-format=pip --to-path=chess_blunders/app/api/requirements.txt
 	@echo '../../../' >> chess_blunders/app/api/requirements.txt
 
 
