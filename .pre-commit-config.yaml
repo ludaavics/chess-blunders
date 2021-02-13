@@ -46,13 +46,6 @@ repos:
     exclude: (^tests/snapshots|^alembic/versions)
 - repo: local
   hooks:
-    - id: deps-setup-py
-      name: Check setup.py & pyproject.toml are synced
-      language: system
-      entry: make deps-setup-py
-      pass_filenames: false
-- repo: local
-  hooks:
     - id: deps-api-pip
       name: Check API's requirements.txt & pyproject.toml are synced
       language: system

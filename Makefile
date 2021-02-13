@@ -45,12 +45,8 @@ init-macosx:
 # ------------------------------------------------------------------------------------ #
 #                                     Dependencies                                     #
 #																																											 #
-#                                     deps setup-py                                    #
 #                                     deps api pip                                     #
 # ------------------------------------------------------------------------------------ #
-deps-setup-py:
-	@dephell deps convert && black setup.py
-
 deps-api-pip:
 	@dephell deps convert --to-format=pip --to-path=chess_blunders/app/api/requirements.txt
 	@echo '../../../' >> chess_blunders/app/api/requirements.txt
@@ -60,12 +56,20 @@ deps-api-pip:
 #                                         CI/CD                                        #
 #																																											 #
 #                                         tests                                        #
+#                                    deploy-api-prod                                   #
+#                                    deploy-api-dev                                    #
 #                                       ci-tests                                       #
 #                                    ci-integration                                    #
 #                                     ci-deployment                                    #
 # ------------------------------------------------------------------------------------ #
 tests:
 	@python -m pytest --cov=chess_blunders --cov-branch --verbose
+
+deploy-api-prod:
+	@cd chess_blunders/app/api && sls deploy --stage prod
+
+deploy-api-dev:
+	@cd chess_blunders/app/api && sls deploy --stage dev
 
 ci-tests:
 	@make tests
