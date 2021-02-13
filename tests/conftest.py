@@ -6,7 +6,7 @@ import pytest
 from fastapi.testclient import TestClient
 from httpx import AsyncClient
 
-from chess_blunders.app.api import app as api_app
+from chess_blunders.app.api.main import app as api_app
 
 
 @pytest.fixture(scope="session")
