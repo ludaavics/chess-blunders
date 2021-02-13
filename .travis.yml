@@ -26,6 +26,8 @@ before_install:
   - npm --version
 install:
   - make init
+  - poetry env info
+  - poetry config --list
 script:
   - make ci-integration
 after_success:
