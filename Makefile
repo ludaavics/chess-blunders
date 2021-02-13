@@ -76,7 +76,7 @@ ci-tests:
 
 ci-integration:
 	@pre-commit run --all-files
-	@make ci-cd-tests
+	@make ci-tests
 
 ci-deployment: ;
 
