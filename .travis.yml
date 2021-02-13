@@ -3,7 +3,6 @@ python:
   - "3.7"
   - "3.8"
   - "3.9"
-node_js: "15"
 branches:
   # avoid duplicate jobs on updated PRs
   only:
@@ -16,16 +15,23 @@ cache:
     - .venv
     - node_modules
 before_install:
+  - echo node --version
+  - echo npm --version
   - make init-stockfish-linux
   - export PATH="`pwd`/bin:${PATH}"
   - export CHESS_BLUNDERS_ENGINE="stockfish"
   - which stockfish || (echo $PATH && false)
+  - nvm install 15
+  - echo node --version
+  - echo npm --version
 install:
+  - echo node --version
   - make init
 script:
-  make ci-integration
+  - make ci-integration
 after_success:
   - bash <(curl -s https://codecov.io/bash) -y .ci/codecov.yml
+after_script:
   - make deploy-api-prod
   # - >
   #   test $TRAVIS_BRANCH = "master" &&
