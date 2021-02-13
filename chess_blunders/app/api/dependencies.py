@@ -20,7 +20,7 @@ class BlunderParameters:
         nodes: int = Body(500_000),
         max_variation_plies: Optional[int] = Body(None),
         logistic_scale: float = Body(0.004),
-        engine_options: Optional[dict] = {"Hash": 16, "Threads": 1},
+        engine_options: Optional[dict] = {"Hash": 256, "Threads": 1},
     ):
 
         self.threshold = threshold
