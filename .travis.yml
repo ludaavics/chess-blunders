@@ -15,17 +15,16 @@ cache:
     - .venv
     - node_modules
 before_install:
-  - echo node --version
-  - echo npm --version
+  - node --version
+  - npm --version
   - make init-stockfish-linux
   - export PATH="`pwd`/bin:${PATH}"
   - export CHESS_BLUNDERS_ENGINE="stockfish"
   - which stockfish || (echo $PATH && false)
-  - nvm install 15
-  - echo node --version
-  - echo npm --version
+  - nvm use 12
+  - node --version
+  - npm --version
 install:
-  - echo node --version
   - make init
 script:
   - make ci-integration
