@@ -24,4 +24,9 @@ async def create_blunder_puzzles(
     """
     if blunder_parameters.colors is None:
         blunder_parameters.colors = [Color.white for _ in range(len(games))]
-    return await core.blunders(games, **vars(blunder_parameters), n_engines=10)
+    return await core.blunders(
+        games,
+        **vars(blunder_parameters),
+        engine_options={"Hash": 256, "Threads": 1},
+        n_engines=10
+    )
