@@ -3,7 +3,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from mangum import Mangum
 
-from .routers import games, puzzles
+from chess_blunders.app.api.routers import games, puzzles  # TO FIX
 
 app = FastAPI()
 

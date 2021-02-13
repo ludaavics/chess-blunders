@@ -1,0 +1,33 @@
+app: chess-blunders
+frameworkVersion: '2'
+
+service: chess-blunders-api
+
+provider:
+  name: aws
+  runtime: python3.8
+  lambdaHashingVersion: 20201221
+
+functions:
+  api:
+    handler: main.handler
+    events:
+      - httpApi: "*"
+    environment:
+      CHESS_BLUNDERS_ENGINE: bin/stockfish
+
+package:
+  include:
+    - bin/*
+
+plugins:
+  - serverless-python-requirements
+
+custom:
+  stage: ${opt:stage, self.provider.stage, 'dev'}
+  pythonRequirements:
+    slim: true
+    pythonBin: python
+    invalidateCaches: true
+    useStaticCache: false
+    staticCacheMaxVersions: 10

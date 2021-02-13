@@ -38,11 +38,6 @@ repos:
   hooks:
   - id: blacken-docs
     name: Blacken Python code blocks in documentation files
-- repo: https://github.com/Lucas-C/pre-commit-hooks-bandit
-  rev: v1.0.4
-  hooks:
-  - id: python-bandit-vulnerability-check
-    name: Check security issues using bandit
 - repo: https://gitlab.com/pycqa/flake8
   rev: 3.8.4
   hooks:
@@ -51,10 +46,17 @@ repos:
     exclude: (^tests/snapshots|^alembic/versions)
 - repo: local
   hooks:
-    - id: dephell
+    - id: deps-setup-py
       name: Check setup.py & pyproject.toml are synced
       language: system
-      entry: make setuppy
+      entry: make deps-setup-py
+      pass_filenames: false
+- repo: local
+  hooks:
+    - id: deps-api-pip
+      name: Check API's requirements.txt & pyproject.toml are synced
+      language: system
+      entry: make deps-api-pip
       pass_filenames: false
 - repo: local
   hooks:

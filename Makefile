@@ -1,3 +1,15 @@
+.PHONY: help Makefile docs tests
+
+# ------------------------------------------------------------------------------------ #
+#                                    Initialization                                    #
+#																																										   #
+#                                         init                                         #
+#                                 init-stockfish-linux                                 #
+#                                 init-stockfish-macosx                                #
+#                                    init-serverless                                   #
+#                                      init-linux                                      #
+#                                      init-macosx                                     #
+# ------------------------------------------------------------------------------------ #
 init:
 	@pip install poetry
 	@poetry install
@@ -13,26 +25,65 @@ init-stockfish-linux:
 	@chmod +x bin/stockfish
 	@rm stockfish_12_linux_x64_bmi2.zip
 
-init-linux:
-	@make init-stockfish-linux
-	@make init
+init-stockfish-macosx: ;
 
+init-serverless:
+	@npm install -g serverless
+	@npm install serverless-python-requirements
+
+init-linux:
+	@make init
+	@make init-stockfish-linux
+	@make init-serverless
+
+init-macosx:
+	@make init
+	@make init-stockfish-macosx
+	@make init-serverless
+
+
+# ------------------------------------------------------------------------------------ #
+#                                     Dependencies                                     #
+#																																											 #
+#                                     deps setup-py                                    #
+#                                     deps api pip                                     #
+# ------------------------------------------------------------------------------------ #
+deps-setup-py:
+	@dephell deps convert && black setup.py
+
+deps-api-pip:
+	@dephell deps convert --to-format=pip --to-path=chess_blunders/app/api/requirements.txt
+	@echo '../../../' >> chess_blunders/app/api/requirements.txt
+
+
+# ------------------------------------------------------------------------------------ #
+#                                         CI/CD                                        #
+#																																											 #
+#                                         tests                                        #
+#                                       ci-tests                                       #
+#                                    ci-integration                                    #
+#                                     ci-deployment                                    #
+# ------------------------------------------------------------------------------------ #
 tests:
 	@python -m pytest --cov=chess_blunders --cov-branch --verbose
 
-integration:
-	@pre-commit run --all-files
+ci-tests:
 	@make tests
 
-setuppy:
-	@dephell deps convert && black setup.py
+ci-integration:
+	@pre-commit run --all-files
+	@make ci-cd-tests
 
-deploy-api: ;
+ci-deployment: ;
 
+# ------------------------------------------------------------------------------------ #
+#                                      API Server                                      #
+#																																											 #
+#                                    start-api-prod                                    #
+#                                     start-api-dev                                    #
+# ------------------------------------------------------------------------------------ #
 start-api-prod:
-	@uvicorn chess_blunders.app.api:app
+	@uvicorn chess_blunders.app.api.main:app
 
 start-api-dev:
-	@uvicorn chess_blunders.app.api:app --reload
-
-.PHONY: help Makefile docs tests
+	@uvicorn chess_blunders.app.api.main:app --reload

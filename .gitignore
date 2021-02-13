@@ -10,6 +10,7 @@ doctrees/
 .env*
 venv/
 .python-version
+*node_modules/
 
 # data files
 *.xls*
@@ -26,7 +27,8 @@ build/
 *.mypy_cache/
 pip-wheel-metadata
 dist/
-bin/
+*bin/
+*.serverless/
 
 # testing
 .coverage
