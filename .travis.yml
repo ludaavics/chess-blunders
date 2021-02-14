@@ -1,6 +1,8 @@
 language: python
 python:
   - "3.7"
+  - "3.8"
+  - "3.9"
 branches:
   # avoid duplicate jobs on updated PRs
   only:
@@ -20,9 +22,6 @@ before_install:
   - npm config set cache "$HOME/.cache/npm"
 install:
   - make init
-  - poetry env info
-  - poetry env list
-  - poetry config --list
 script:
   - make ci-integration
 after_success:
