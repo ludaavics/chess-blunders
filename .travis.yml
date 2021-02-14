@@ -15,7 +15,9 @@ cache:
     - node_modules
 before_install:
   - make init-stockfish-linux
-  - export PATH="`pwd`/bin:${PATH}"
+  - mkdir chess_blunders/app/api/bin
+  - cp bin/stockfish chess_blunders/app/api/bin
+  - export PATH="`pwd`/chess_blunders/app/api/bin:${PATH}"
   - export CHESS_BLUNDERS_ENGINE="stockfish"
   - which stockfish || (echo $PATH && false)
   - nvm install 15
