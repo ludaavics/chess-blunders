@@ -12,7 +12,7 @@ cache:
   directories:
     - "$HOME/.cache/pre-commit"
     - "$HOME/.cache/pypoetry"
-    - "$HOME/.cache/pypoetry/virtualenvs"
+    - .venv
     - node_modules
 before_install:
   - make init-stockfish-linux
@@ -20,6 +20,7 @@ before_install:
   - export CHESS_BLUNDERS_ENGINE="stockfish"
   - which stockfish || (echo $PATH && false)
   - nvm install 15
+  - export POETRY_VIRTUALENVS_IN_PROJECT=true
 install:
   - make init
   - poetry env info
