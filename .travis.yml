@@ -29,6 +29,8 @@ after_success:
 deploy:
   provider: script
   script: make deploy-api-prod
+  skip_cleanup: true
   on:
     branch: master
+    python: "3.8"
     condition: $TRAVIS_PULL_REQUEST = "false"

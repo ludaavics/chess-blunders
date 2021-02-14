@@ -1,5 +1,5 @@
 app: chess-blunders
-frameworkVersion: '2'
+frameworkVersion: "2"
 
 service: chess-blunders-api
 
@@ -11,7 +11,7 @@ provider:
 functions:
   api:
     handler: main.handler
-    timeout: 29
+    timeout: 30
     memorySize: 3072
     events:
       - httpApi: "*"
@@ -26,7 +26,7 @@ plugins:
   - serverless-python-requirements
 
 custom:
-  stage: ${opt:stage, self.provider.stage, 'dev'}
+  stage: ${opt:stage, self.provider.stage, "dev"}
   pythonRequirements:
     slim: true
     pythonBin: python
