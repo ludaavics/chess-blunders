@@ -25,10 +25,12 @@ install:
   - make init
   - poetry env info
   - poetry config --list
+  - ls .venv/
 script:
   - make ci-integration
 after_success:
   - bash <(curl -s https://codecov.io/bash) -y .ci/codecov.yml
+  - make deploy-api-prod
 deploy:
   provider: script
   script: make deploy-api-prod
