@@ -30,7 +30,6 @@ after_success:
 deploy:
   provider: script
   script: make deploy-api-prod
-  # - >
-  #   test $TRAVIS_BRANCH = "master" &&
-  #   test $TRAVIS_PULL_REQUEST = "false" &&
-  #   make deploy-api-prod
+  on:
+    branch: master
+    condition: $TRAVIS_PULL_REQUEST = "false"
