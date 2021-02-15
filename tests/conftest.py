@@ -26,7 +26,7 @@ def event(name: str):
 
 @pytest.fixture
 def get_games_chessdotcom_event():
-    return event("get_games_chessdotcom")
+    return event("get_games_chessdotcom_event")
 
 
 @pytest.fixture
@@ -39,9 +39,16 @@ def get_games_chessdotcom_invalid_username_event(get_games_chessdotcom_event):
     )
 
 
+@pytest.fixture
+def get_games_chessdotcom_invalid_query_params_event(get_games_chessdotcom_event):
+    event = get_games_chessdotcom_event
+    event["queryStringParameters"] = {"limit": -1}
+    return event
+
+
 @pytest.fixture()
-def post_blunders_event():
-    return event("post_blunders")
+def post_blunders_events():
+    return event("post_blunders_events")
 
 
 # ------------------------------------------------------------------------------------ #

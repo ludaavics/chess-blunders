@@ -27,14 +27,24 @@ def test_get_games_chessdotcom_invalid_username(
     assert response["statusCode"] == 404
 
 
+def test_get_games_chessdotcom_invalid_query_params(
+    get_games_chessdotcom_invalid_query_params_event, null_context, snapshot
+):
+    response = handlers.get_games_chessdotcom(
+        get_games_chessdotcom_invalid_query_params_event, null_context
+    )
+    snapshot.assert_match(response)
+
+
 # ------------------------------------------------------------------------------------ #
 #                                       Blunders                                       #
 #                                                                                      #
 #                                  test_post_blunders                                  #
 # ------------------------------------------------------------------------------------ #
-def test_post_blunders(post_blunders_event, null_context, snapshot):
-    response = handlers.post_blunders(post_blunders_event, null_context)
-    snapshot.assert_match(response)
+def test_post_blunders(post_blunders_events, null_context, snapshot):
+    for post_blunders_event in post_blunders_events:
+        response = handlers.post_blunders(post_blunders_event, null_context)
+        snapshot.assert_match(response)
 
 
 # ------------------------------------------------------------------------------------ #

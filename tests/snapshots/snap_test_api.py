@@ -6,6 +6,22 @@ from snapshottest import Snapshot
 
 snapshots = Snapshot()
 
+snapshots["test_get_games_chessdotcom_invalid_query_params 1"] = {
+    "body": """[
+  {
+    "loc": [
+      "limit"
+    ],
+    "msg": "ensure this value is greater than 0",
+    "type": "value_error.number.not_gt",
+    "ctx": {
+      "limit_value": 0
+    }
+  }
+]""",
+    "statusCode": 400,
+}
+
 snapshots["test_post_blunders 1"] = {
     "body": """[
   {
@@ -18,7 +34,7 @@ snapshots["test_post_blunders 1"] = {
     "statusCode": 200,
 }
 
-snapshots["test_post_blunders[post_blunders_event0] 1"] = {
+snapshots["test_post_blunders 2"] = {
     "body": """[
   {
     "starting_fen": "r5k1/6p1/2p3Q1/1pqnp2p/8/1BPR4/1PP2PPP/6K1 b - - 5 31",
