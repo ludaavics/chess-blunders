@@ -3,7 +3,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from mangum import Mangum
 
-from chess_blunders.app.api.routers import games, puzzles
+from chess_blunders.app.api.routers import puzzles
 
 app = FastAPI()
 
@@ -16,7 +16,6 @@ async def root():
     ]
 
 
-app.include_router(games.router)
 app.include_router(puzzles.router)
 handler = Mangum(app)
 
