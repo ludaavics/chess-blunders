@@ -18,12 +18,14 @@ functions:
           method: GET
           path: /games/chessdotcom/{username}
 
-  blunders:
-    handler: handlers.blunders
+  post_blunders:
+    handler: handlers.post_blunders
+    timeout: 29
+    memorySize: 3072
     events:
       - httpApi:
           method: POST
-          path: /puzzles/blunders
+          path: /blunders
 
 plugins:
   - serverless-python-requirements

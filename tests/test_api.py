@@ -1,4 +1,7 @@
+import re
+
 import pytest
+import requests_mock
 
 from chess_blunders.app.api import handlers
 
@@ -27,19 +30,11 @@ def test_get_games_chessdotcom_invalid_username(
 # ------------------------------------------------------------------------------------ #
 #                                        Puzzles                                       #
 #                                                                                      #
-#                              test_create_blunder_puzzles                             #
+#                                  test_post_blunders                                  #
 # ------------------------------------------------------------------------------------ #
-# @pytest.mark.parametrize(
-#     "games_loc,colors", [(slice(None, 1), None), (slice(1, 3), ["white", "black"])]
-# )
-# @pytest.mark.asyncio
-# async def test_create_blunder_puzzles(
-#     async_api_client, games, games_loc, colors, snapshot
-# ):
-#     payload = {"games": games[games_loc], "colors": colors}
-#     response = await async_api_client.post("/puzzles/blunders", json=payload)
-#     assert response.status_code == 201
-#     snapshot.assert_match(response.json())
+def test_post_blunders(post_blunders_event, null_context, snapshot):
+    response = handlers.post_blunders(post_blunders_event, null_context)
+    snapshot.assert_match(response)
 
 
 # ------------------------------------------------------------------------------------ #
@@ -47,9 +42,11 @@ def test_get_games_chessdotcom_invalid_username(
 #                                                                                      #
 #                                test_exception_handling                               #
 # ------------------------------------------------------------------------------------ #
-# def test_exception_handling(api_client, chessdotcom_username):
-#     with requests_mock.Mocker(real_http=True) as m:
-#         m.get(re.compile(CHESSDOTCOM_API_HOST), status_code=500)
-#         response = api_client.get(f"/games/chessdotcom/{chessdotcom_username}")
-#         assert response.status_code == 503
-#         assert response.json()["error"]["type"] == "ThirdPartyRequestError"
+def test_exception_handling(get_games_chessdotcom_event, null_context):
+    with requests_mock.Mocker(real_http=True) as m:
+        m.get(re.compile(handlers.CHESSDOTCOM_API_HOST), status_code=500)
+        response = handlers.get_games_chessdotcom(
+            get_games_chessdotcom_event, null_context
+        )
+        assert response["statusCode"] == 503
+        assert response["body"]["error"]["type"] == "ThirdPartyRequestError"

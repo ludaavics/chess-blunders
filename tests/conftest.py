@@ -62,6 +62,11 @@ def get_games_chessdotcom_invalid_username_event(get_games_chessdotcom_event):
     )
 
 
+@pytest.fixture(params=[(slice(1, 3), ["white", "black"])])
+def post_blunders_event(request):
+    return event("post_blunders")
+
+
 # ------------------------------------------------------------------------------------ #
 #                                     AWS contexts                                     #
 # ------------------------------------------------------------------------------------ #
