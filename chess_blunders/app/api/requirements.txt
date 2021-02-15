@@ -1,8 +1,6 @@
 chess==1.*,>=1.4.0
-fastapi==0.*,>=0.63.0
-mangum==0.*,>=0.10.0
+pydantic==1.*,>=1.7.3
 requests==2.*,>=2.25.1
 requests-futures==1.*,>=1.0.0
-uvicorn[standard]==0.*,>=0.13.3
 wrapt==1.*,>=1.12.1
 ../../../
