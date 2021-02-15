@@ -6,9 +6,11 @@ from typing import List
 
 import wrapt
 from pydantic import PositiveInt, ValidationError, validate_arguments
+from requests import HTTPError
 from requests.compat import urljoin  # type: ignore
 from requests_futures.sessions import FuturesSession
 
+from chess_blunders.app.api.exc import requests_http_error_handler
 from chess_blunders.models import Game
 
 logger = logging.getLogger(__name__)
@@ -35,8 +37,10 @@ def async_handler(handler, instance, args, kwargs):
     async def handle():
         try:
             return handler(**handler_kwargs)
-        except ValidationError as e:
-            return jsonify(400, e.errors())
+        except ValidationError as exc:
+            return jsonify(400, exc.errors())
+        except HTTPError as exc:
+            return requests_http_error_handler(exc)
 
     return asyncio.run(handle())
 
