@@ -1,29 +1,39 @@
-app: chess-blunders
 frameworkVersion: "2"
 
+app: chess-blunders
 service: chess-blunders-api
 
 provider:
   name: aws
   runtime: python3.8
   lambdaHashingVersion: 20201221
+  environment:
+    CHESS_BLUNDERS_ENGINE: bin/stockfish
 
 functions:
-  api:
-    handler: main.handler
-    timeout: 30
-    memorySize: 3072
+  get_games_chessdotcom:
+    handler: handlers.get_games_chessdotcom
     events:
-      - httpApi: "*"
-    environment:
-      CHESS_BLUNDERS_ENGINE: bin/stockfish
+      - httpApi:
+          method: GET
+          path: /games/chessdotcom/{username}
 
-package:
-  include:
-    - bin/*
+  blunders:
+    handler: handlers.blunders
+    events:
+      - httpApi:
+          method: POST
+          path: /puzzles/blunders
 
 plugins:
   - serverless-python-requirements
+
+package:
+  individually: true
+  include:
+    - bin/*
+  exclude:
+    - node_modules/**
 
 custom:
   stage: ${opt:stage, self.provider.stage, "dev"}
