@@ -13,6 +13,7 @@ mangum = "^0.10.0"
 requests = "^2.25.1"
 requests-futures = "^1.0.0"
 uvicorn = {extras = ["standard"], version = "^0.13.3"}
+wrapt = "^1.12.1"
 
 [tool.poetry.dev-dependencies]
 awscli = "^1.19.6"
@@ -40,7 +41,7 @@ use_parentheses = true
 ensure_newline_before_comments = true
 line_length = 88
 skip = ["alembic"]
-known_third_party = ["chess", "fastapi", "mangum", "pydantic", "requests", "requests_futures"]
+known_third_party = ["chess", "fastapi", "mangum", "pydantic", "requests", "requests_futures", "wrapt"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

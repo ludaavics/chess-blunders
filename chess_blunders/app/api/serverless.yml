@@ -29,7 +29,6 @@ plugins:
   - serverless-python-requirements
 
 package:
-  individually: true
   include:
     - bin/*
   exclude:
