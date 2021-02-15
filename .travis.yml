@@ -10,21 +10,29 @@ branches:
 cache:
   pip: true
   directories:
-    - "$HOME/.cache/pre-commit"
-    - "$HOME/.cache/pypoetry"
-    - .venv
+    - "$HOME/.cache/"
+    - "$HOME/virtualenv/"
+    - node_modules
 before_install:
   - make init-stockfish-linux
-  - export PATH="`pwd`/bin:${PATH}"
+  - mkdir chess_blunders/app/api/bin
+  - cp bin/stockfish chess_blunders/app/api/bin
+  - export PATH="`pwd`/chess_blunders/app/api/bin:${PATH}"
   - export CHESS_BLUNDERS_ENGINE="stockfish"
   - which stockfish || (echo $PATH && false)
+  - nvm install 15
+  - npm config set cache "$HOME/.cache/npm"
 install:
   - make init
 script:
-  make integration
+  - make ci-integration
 after_success:
   - bash <(curl -s https://codecov.io/bash) -y .ci/codecov.yml
-  - >
-    test $TRAVIS_BRANCH = "master" &&
-    test $TRAVIS_PULL_REQUEST = "false" &&
-    make deploy-app
+deploy:
+  provider: script
+  script: make deploy-api-prod
+  skip_cleanup: true
+  on:
+    branch: master
+    python: "3.8"
+    condition: $TRAVIS_PULL_REQUEST = "false"

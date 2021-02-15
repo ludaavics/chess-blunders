@@ -69,7 +69,7 @@ async def blunders(
     *,
     threshold: float = 0.25,
     colors: Union[Color, List[Color]] = Color.white,
-    nodes: int = 1_000_000,
+    nodes: int = 500_000,
     max_variation_plies: Optional[int] = None,
     logistic_scale: float = 0.004,
     engine_options: Optional[dict] = {"Hash": 256, "Threads": 1},

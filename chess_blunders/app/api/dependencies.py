@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from fastapi import Body
 
-from ..models import Color
+from chess_blunders.models import Color
 
 
 class BlunderParameters:
@@ -17,10 +17,9 @@ class BlunderParameters:
                 "The threshold for a blunder must be a probability between 0 and 1."
             ),
         ),
-        nodes: int = Body(1_000_000),
+        nodes: int = Body(500_000),
         max_variation_plies: Optional[int] = Body(None),
         logistic_scale: float = Body(0.004),
-        engine_options: Optional[dict] = {"Hash": 256, "Threads": 1},
     ):
 
         self.threshold = threshold
@@ -28,4 +27,3 @@ class BlunderParameters:
         self.nodes = nodes
         self.max_variation_plies = max_variation_plies
         self.logistic_scale = logistic_scale
-        self.engine_options = engine_options
