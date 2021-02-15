@@ -41,6 +41,7 @@ def http_handler(handler, instance, args, kwargs):
     event, context = args
     handler_kwargs = {}
     handler_kwargs.update(event.get("pathParameters", {}))
+    handler_kwargs.update(event.get("queryStringParameters", {}))
     handler_kwargs.update(json.loads(event.get("body", "{}")))
 
     async def handle():
