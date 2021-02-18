@@ -1,6 +1,7 @@
 import asyncio
 import io
 import logging
+import multiprocessing
 import os
 from math import exp
 from typing import List, Optional, Union
@@ -8,7 +9,8 @@ from typing import List, Optional, Union
 import chess
 import chess.engine
 import chess.pgn
-from pydantic import validate_arguments
+from pydantic import confloat, validate_arguments
+from pydantic.types import PositiveFloat, PositiveInt
 
 from .models import Blunder, Color, Game
 
@@ -67,11 +69,11 @@ async def analyse_position(
 async def blunders(
     games: Union[Game, List[Game]],
     *,
-    threshold: float = 0.25,
+    threshold: confloat(gt=0, lt=1) = 0.25,  # type: ignore
     colors: Union[Color, List[Color]] = Color.white,
-    nodes: int = 500_000,
-    max_variation_plies: Optional[int] = None,
-    logistic_scale: float = 0.004,
+    nodes: PositiveInt = 500_000,
+    max_variation_plies: Optional[PositiveInt] = None,
+    logistic_scale: PositiveFloat = 0.004,
     engine_options: Optional[dict] = {"Hash": 256, "Threads": 1},
     engine_path: Optional[str] = None,
     n_engines: int = 1,
@@ -90,6 +92,8 @@ async def blunders(
         engine_options: options passed to the UCI or XBoard engine.
         engine_path: path to the UCI or XBoard engine.
         n_engines: number of concurrent engines to use to analyze the position.
+            Use -1 to use create as many engines are there as CPUs, -2 to use all but
+            one CPUs, ...
 
     Returns:
         list of blunders data models.
@@ -101,6 +105,9 @@ async def blunders(
     if len(colors) != len(games):
         msg = "`games` and `colors` must have the same length."
         raise ValueError(msg)
+    n_engines = (
+        multiprocessing.cpu_count() + (n_engines + 1) if n_engines < 0 else n_engines
+    )
     engine_path = engine_path or DEFAULT_ENGINE
 
     scores: dict = {i: {} for i in range(len(games))}

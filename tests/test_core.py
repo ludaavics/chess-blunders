@@ -7,7 +7,7 @@ import chess_blunders
 @pytest.mark.asyncio
 async def test_known_blunders(games, games_loc, snapshot):
     blunders = await chess_blunders.blunders(
-        games[games_loc], max_variation_plies=1, n_engines=10
+        games[games_loc], max_variation_plies=1, n_engines=-2
     )
     snapshot.assert_match([blunder.dict() for blunder in blunders])
 
