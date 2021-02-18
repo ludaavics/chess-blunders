@@ -57,14 +57,14 @@ tests_no_zope = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>
 
 [[package]]
 name = "awscli"
-version = "1.19.7"
+version = "1.19.10"
 description = "Universal Command Line Environment for AWS."
 category = "dev"
 optional = false
 python-versions = ">= 2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*"
 
 [package.dependencies]
-botocore = "1.20.7"
+botocore = "1.20.10"
 colorama = ">=0.2.5,<0.4.4"
 docutils = ">=0.10,<0.16"
 PyYAML = ">=3.10,<5.4"
@@ -94,10 +94,23 @@ colorama = ["colorama (>=0.4.3)"]
 d = ["aiohttp (>=3.3.2)", "aiohttp-cors"]
 
 [[package]]
+name = "boto3"
+version = "1.17.10"
+description = "The AWS SDK for Python"
+category = "main"
+optional = false
+python-versions = ">= 2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*"
+
+[package.dependencies]
+botocore = ">=1.20.10,<1.21.0"
+jmespath = ">=0.7.1,<1.0.0"
+s3transfer = ">=0.3.0,<0.4.0"
+
+[[package]]
 name = "botocore"
-version = "1.20.7"
+version = "1.20.10"
 description = "Low-level, data-driven core of boto 3."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">= 2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*"
 
@@ -475,7 +488,7 @@ i18n = ["Babel (>=0.8)"]
 name = "jmespath"
 version = "0.10.0"
 description = "JSON Matching Expressions"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
 
@@ -743,7 +756,7 @@ pytest = ">=5.0"
 name = "python-dateutil"
 version = "2.8.1"
 description = "Extensions to the standard Python datetime module"
-category = "dev"
+category = "main"
 optional = false
 python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7"
 
@@ -849,7 +862,7 @@ python-versions = "*"
 name = "s3transfer"
 version = "0.3.4"
 description = "An Amazon S3 Transfer Manager"
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 
@@ -868,7 +881,7 @@ python-versions = "!=3.0,!=3.1,!=3.2,!=3.3,>=2.6"
 name = "six"
 version = "1.15.0"
 description = "Python 2 and 3 compatibility utilities"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
 
@@ -1014,7 +1027,7 @@ testing = ["pytest (>=3.5,!=3.7.3)", "pytest-checkdocs (>=1.2.3)", "pytest-flake
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "6e637eb6faae191445b934301a721eb2164357ad6a3f3370d146a13d88d8f629"
+content-hash = "46de614e27512097b1bdf7628178d3de0038db220693b0c8414ddefdb96f1c90"
 
 [metadata.files]
 aiohttp = [
@@ -1073,15 +1086,19 @@ attrs = [
     {file = "attrs-20.3.0.tar.gz", hash = "sha256:832aa3cde19744e49938b91fea06d69ecb9e649c93ba974535d08ad92164f700"},
 ]
 awscli = [
-    {file = "awscli-1.19.7-py2.py3-none-any.whl", hash = "sha256:1a47a0620b2c8c56e27cf974a9db018f7b2c60994c0c05ea2fc0b8d06de8b97c"},
-    {file = "awscli-1.19.7.tar.gz", hash = "sha256:cc70855a4c72c7e3528f9fcdb02e1b8db101987294423d4e557044480b533511"},
+    {file = "awscli-1.19.10-py2.py3-none-any.whl", hash = "sha256:299161d80c226fea405a69fda44fa90cec3d5cf2e484021e9c323d6454246d20"},
+    {file = "awscli-1.19.10.tar.gz", hash = "sha256:f04edb9f34308a84541ba125387bb9d7f4ae03c066b03d46af306e995c4c5e42"},
 ]
 black = [
     {file = "black-20.8b1.tar.gz", hash = "sha256:1c02557aa099101b9d21496f8a914e9ed2222ef70336404eeeac8edba836fbea"},
 ]
+boto3 = [
+    {file = "boto3-1.17.10-py2.py3-none-any.whl", hash = "sha256:1709ff5feb363fee7fcaa2330e659fcbc2b4c03a14f75a884ed682ee66011fc4"},
+    {file = "boto3-1.17.10.tar.gz", hash = "sha256:80a761eff3b1cb0798d7e1a41b7c8e6d85c9647a8f7b6105335201a69404caa2"},
+]
 botocore = [
-    {file = "botocore-1.20.7-py2.py3-none-any.whl", hash = "sha256:77e34194eb4f916d9caaf4b518a8b5d73ddbba87bf951cdb20141a6fafc9ccbe"},
-    {file = "botocore-1.20.7.tar.gz", hash = "sha256:27ea4a11f5cca9d655cb9ba462ad4a2bb28eb44d061b49e15a3239c040298ed2"},
+    {file = "botocore-1.20.10-py2.py3-none-any.whl", hash = "sha256:a601ee5a4ae66832f328ca362b5404d22b75f1c181f6cc0934f3cfca749eb27d"},
+    {file = "botocore-1.20.10.tar.gz", hash = "sha256:8c84eac6daf38890714e005623083106d68e9b2088e62132fdbf7d2b1228ecbd"},
 ]
 cerberus = [
     {file = "Cerberus-1.3.2.tar.gz", hash = "sha256:302e6694f206dd85cb63f13fd5025b31ab6d38c99c50c6d769f8fa0b0f299589"},

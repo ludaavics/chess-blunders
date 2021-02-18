@@ -2,9 +2,11 @@ import asyncio
 import inspect
 import json
 import logging
+import os
 import time
 from typing import List, Optional
 
+import boto3
 import wrapt
 from pydantic import (
     PositiveFloat,
@@ -56,6 +58,24 @@ def http_handler(handler, instance, args, kwargs):
             return requests_http_error_handler(exc)
 
     return asyncio.run(handle())
+
+
+# ------------------------------------------------------------------------------------ #
+#                                        Workers                                       #
+# ------------------------------------------------------------------------------------ #
+# async def blunders_worker(
+#     games: List[Game],
+#     colors: Optional[List[Color]] = None,
+#     threshold: confloat(gt=0.0, lt=1.0) = 0.25,  # type: ignore
+#     nodes: PositiveInt = 500_000,
+#     max_variation_plies: Optional[PositiveInt] = None,
+#     logistic_scale: PositiveFloat = 0.004,
+# ):
+#     pass
+
+
+def blunders_worker(event, context):
+    print(event)
 
 
 # ------------------------------------------------------------------------------------ #
@@ -124,6 +144,25 @@ async def post_blunders(
     """
     if colors is None:
         colors = [Color.white for _ in range(len(games))]
+
+    # publish the job
+    sns = boto3.client("sns")
+    jobs_topic_arn = os.getenv("JOBS_TOPIC_ARN")
+    job = {
+        "games": [game.dict() for game in games],
+        "colors": colors,
+        "threshold": threshold,
+        "nodes": nodes,
+        "max_variation_plies": max_variation_plies,
+        "logistic_scale": logistic_scale,
+    }
+    pub = sns.publish(TopicArn=jobs_topic_arn, Message=json.dumps(job))
+    logger.debug(f"Scrape job published: {str(pub)}")
+
+    # send response
+    response = {"sns_response": pub}
+    return make_response(202, response)
+
     blunders = await core.blunders.raw_function(
         games,
         colors=colors,

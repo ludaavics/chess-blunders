@@ -9,8 +9,25 @@ provider:
   lambdaHashingVersion: 20201221
   environment:
     CHESS_BLUNDERS_ENGINE: bin/stockfish
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action: "sns:Publish"
+          Resource:
+            Ref: BlundersJobsTopic
 
 functions:
+  blunders_worker:
+    handler: handlers.blunders_worker
+    timeout: 900
+    # memorySize: 3072
+    events:
+      - sns:
+          arn:
+            Ref: BlundersJobsTopic
+          topicName: blunders-jobs-topic
+
   get_games_chessdotcom:
     handler: handlers.get_games_chessdotcom
     events:
@@ -20,15 +37,13 @@ functions:
 
   post_blunders:
     handler: handlers.post_blunders
-    timeout: 29
-    memorySize: 3072
+    environment:
+      JOBS_TOPIC_ARN:
+        Ref: BlundersJobsTopic
     events:
       - httpApi:
           method: POST
           path: /blunders
-
-plugins:
-  - serverless-python-requirements
 
 package:
   include:
@@ -44,3 +59,16 @@ custom:
     invalidateCaches: true
     useStaticCache: false
     staticCacheMaxVersions: 10
+
+resources:
+  Description: "CloudFormation template for Chess-Blunders' API service."
+
+  Resources:
+    BlundersJobsTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        TopicName: "${self:custom.stage}-blunders-jobs-topic"
+        DisplayName: "Blunders jobs to be processed."
+
+plugins:
+  - serverless-python-requirements

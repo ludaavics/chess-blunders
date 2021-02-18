@@ -7,6 +7,7 @@ license = "MIT"
 
 [tool.poetry.dependencies]
 python = "^3.7"
+boto3 = "^1.17.10"
 chess = "^1.4.0"
 pydantic = "^1.7.3"
 requests = "^2.25.1"
@@ -39,7 +40,7 @@ use_parentheses = true
 ensure_newline_before_comments = true
 line_length = 88
 skip = ["alembic"]
-known_third_party = ["chess", "pydantic", "requests", "requests_futures", "wrapt"]
+known_third_party = ["boto3", "chess", "pydantic", "requests", "requests_futures", "wrapt"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
