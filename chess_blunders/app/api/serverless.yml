@@ -15,13 +15,17 @@ provider:
         - Effect: Allow
           Action: "sns:Publish"
           Resource:
-            Ref: BlundersJobsTopic
+            - Ref: BlundersJobsTopic
+            - Ref: BlundersResultsTopic
 
 functions:
   blunders_worker:
     handler: handlers.blunders_worker
     timeout: 900
-    # memorySize: 3072
+    memorySize: 5120
+    environment:
+      RESULTS_TOPIC_ARN:
+        Ref: BlundersResultsTopic
     events:
       - sns:
           arn:
@@ -69,6 +73,12 @@ resources:
       Properties:
         TopicName: "${self:custom.stage}-blunders-jobs-topic"
         DisplayName: "Blunders jobs to be processed."
+
+    BlundersResultsTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        TopicName: "${self:custom.stage}-blunders-results-topic"
+        DisplayName: "Blunders found from games."
 
 plugins:
   - serverless-python-requirements

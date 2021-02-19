@@ -105,8 +105,8 @@ async def blunders(
     if len(colors) != len(games):
         msg = "`games` and `colors` must have the same length."
         raise ValueError(msg)
-    n_engines = (
-        multiprocessing.cpu_count() + (n_engines + 1) if n_engines < 0 else n_engines
+    n_engines = max(
+        multiprocessing.cpu_count() + (n_engines + 1) if n_engines < 0 else n_engines, 1
     )
     engine_path = engine_path or DEFAULT_ENGINE
 

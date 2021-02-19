@@ -1,5 +1,6 @@
 boto3==1.*,>=1.17.10
 chess==1.*,>=1.4.0
+haikunator==2.*,>=2.1.0
 pydantic==1.*,>=1.7.3
 requests==2.*,>=2.25.1
 requests-futures==1.*,>=1.0.0

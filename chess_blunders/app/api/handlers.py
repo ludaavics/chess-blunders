@@ -8,6 +8,7 @@ from typing import List, Optional
 
 import boto3
 import wrapt
+from haikunator import Haikunator
 from pydantic import (
     PositiveFloat,
     PositiveInt,
@@ -24,7 +25,7 @@ from chess_blunders.app.api.exc import requests_http_error_handler
 from chess_blunders.models import Color, Game
 
 logger = logging.getLogger(__name__)
-logger.addHandler(logging.NullHandler())
+logger.setLevel(logging.DEBUG)
 
 CHESSDOTCOM_API_HOST = "https://api.chess.com/"
 
@@ -60,22 +61,55 @@ def http_handler(handler, instance, args, kwargs):
     return asyncio.run(handle())
 
 
+@wrapt.decorator
+def sns_handler(handler, instance, args, kwargs):
+    assert len(args) == 2
+    assert not kwargs
+    event, context = args
+    assert len(event["Records"]) == 1
+
+    message = json.loads(event["Records"][0]["Sns"]["Message"])
+
+    async def handle():
+        true_handler = getattr(handler, "raw_function", handler)
+        if inspect.iscoroutinefunction(true_handler):
+            return await handler(**message)
+        return handler(**message)
+
+    return asyncio.run(handle())
+
+
 # ------------------------------------------------------------------------------------ #
 #                                        Workers                                       #
 # ------------------------------------------------------------------------------------ #
-# async def blunders_worker(
-#     games: List[Game],
-#     colors: Optional[List[Color]] = None,
-#     threshold: confloat(gt=0.0, lt=1.0) = 0.25,  # type: ignore
-#     nodes: PositiveInt = 500_000,
-#     max_variation_plies: Optional[PositiveInt] = None,
-#     logistic_scale: PositiveFloat = 0.004,
-# ):
-#     pass
+@sns_handler
+@validate_arguments
+async def blunders_worker(
+    name: str,
+    games: List[Game],
+    colors: Optional[List[Color]] = None,
+    threshold: confloat(gt=0.0, lt=1.0) = 0.25,  # type: ignore
+    nodes: PositiveInt = 500_000,
+    max_variation_plies: Optional[PositiveInt] = None,
+    logistic_scale: PositiveFloat = 0.004,
+):
+    blunders = await core.blunders.raw_function(
+        games,
+        colors=colors,
+        threshold=threshold,
+        nodes=nodes,
+        max_variation_plies=max_variation_plies,
+        logistic_scale=logistic_scale,
+        engine_options={"Hash": 256, "Threads": 1},
+        n_engines=-1,
+    )
 
-
-def blunders_worker(event, context):
-    print(event)
+    # publish the results
+    sns = boto3.client("sns")
+    results_topic_arn = os.getenv("RESULTS_TOPIC_ARN")
+    result = {"name": name, "blunders": [blunder.dict() for blunder in blunders]}
+    pub = sns.publish(TopicArn=results_topic_arn, Message=json.dumps(result))
+    logger.debug(f"Blunders result published: {str(pub)}")
 
 
 # ------------------------------------------------------------------------------------ #
@@ -146,9 +180,11 @@ async def post_blunders(
         colors = [Color.white for _ in range(len(games))]
 
     # publish the job
+    name = Haikunator().haikunate()
     sns = boto3.client("sns")
     jobs_topic_arn = os.getenv("JOBS_TOPIC_ARN")
     job = {
+        "name": name,
         "games": [game.dict() for game in games],
         "colors": colors,
         "threshold": threshold,
@@ -157,22 +193,8 @@ async def post_blunders(
         "logistic_scale": logistic_scale,
     }
     pub = sns.publish(TopicArn=jobs_topic_arn, Message=json.dumps(job))
-    logger.debug(f"Scrape job published: {str(pub)}")
+    logger.debug(f"Blunders job published: {str(pub)}")
 
     # send response
-    response = {"sns_response": pub}
+    response = {"blunders": f"/blunders/{name}"}
     return make_response(202, response)
-
-    blunders = await core.blunders.raw_function(
-        games,
-        colors=colors,
-        threshold=threshold,
-        nodes=nodes,
-        max_variation_plies=max_variation_plies,
-        logistic_scale=logistic_scale,
-        engine_options={"Hash": 256, "Threads": 1},
-        n_engines=-2,
-    )
-
-    blunders_dict = [blunder.dict() for blunder in blunders]
-    return make_response(200, blunders_dict)
