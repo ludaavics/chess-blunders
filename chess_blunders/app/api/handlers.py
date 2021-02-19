@@ -93,27 +93,42 @@ async def blunders_worker(
     max_variation_plies: Optional[PositiveInt] = None,
     logistic_scale: PositiveFloat = 0.004,
 ):
-    blunders = await core.blunders.raw_function(
-        games,
-        colors=colors,
-        threshold=threshold,
-        nodes=nodes,
-        max_variation_plies=max_variation_plies,
-        logistic_scale=logistic_scale,
-        engine_options={"Hash": 256, "Threads": 1},
-        n_engines=-1,
-    )
 
-    # publish the results
+    # design pattern credit: https://realpython.com/async-io-python/#using-a-queue
+
     sns = boto3.client("sns")
     results_topic_arn = os.getenv("RESULTS_TOPIC_ARN")
-    result = {"name": name, "blunders": [blunder.dict() for blunder in blunders]}
-    pub = sns.publish(TopicArn=results_topic_arn, Message=json.dumps(result))
-    logger.debug(f"Blunders result published: {str(pub)}")
+    results: asyncio.Queue = asyncio.Queue()
+
+    async def publish_blunder(queue: asyncio.Queue):
+        while True:
+            blunder = await queue.get()
+            message = {"name": name, "blunder": blunder.dict()}
+            pub = sns.publish(TopicArn=results_topic_arn, Message=json.dumps(message))
+            logger.debug(f"Blunders result published: {str(pub)}")
+            queue.task_done()
+
+    blunders = asyncio.create_task(
+        core.blunders.raw_function(
+            games,
+            colors=colors,
+            threshold=threshold,
+            nodes=nodes,
+            max_variation_plies=max_variation_plies,
+            logistic_scale=logistic_scale,
+            engine_options={"Hash": 256, "Threads": 1},
+            n_engines=-1,
+            results=results,
+        )
+    )
+    publisher = asyncio.create_task(publish_blunder(results))
+    await blunders
+    await results.join()
+    publisher.cancel()
 
 
 # ------------------------------------------------------------------------------------ #
-#                                       Handlers                                       #
+#                                    HTTP Endpoints                                    #
 # ------------------------------------------------------------------------------------ #
 @http_handler
 @validate_arguments

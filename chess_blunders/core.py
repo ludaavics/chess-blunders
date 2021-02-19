@@ -65,7 +65,7 @@ async def analyse_position(
     return solution
 
 
-@validate_arguments
+@validate_arguments(config={"arbitrary_types_allowed": True})
 async def blunders(
     games: Union[Game, List[Game]],
     *,
@@ -77,6 +77,7 @@ async def blunders(
     engine_options: Optional[dict] = {"Hash": 256, "Threads": 1},
     engine_path: Optional[str] = None,
     n_engines: int = 1,
+    results: Optional[asyncio.Queue] = None,
 ) -> List[Blunder]:
     """
     Return all the blunders in a list of games.
@@ -94,6 +95,7 @@ async def blunders(
         n_engines: number of concurrent engines to use to analyze the position.
             Use -1 to use create as many engines are there as CPUs, -2 to use all but
             one CPUs, ...
+        results: queue to asynchronously collect the blunders found.
 
     Returns:
         list of blunders data models.
@@ -156,7 +158,9 @@ async def blunders(
 
     blunders = []
 
-    async def annotate_blunders(queue: asyncio.Queue) -> None:
+    async def annotate_blunders(
+        jobs_queue: asyncio.Queue, results_queue: Optional[asyncio.Queue]
+    ) -> None:
         """
         Worker that creates blunder objects with solution and refutation lines.
         """
@@ -164,7 +168,7 @@ async def blunders(
             _, engine = await chess.engine.popen_uci(engine_path)
             await engine.configure(engine_options)
             while True:
-                game_iloc, node = await queue.get()
+                game_iloc, node = await jobs_queue.get()
 
                 ply = node.ply()
                 refutation = scores[game_iloc][ply]
@@ -193,8 +197,12 @@ async def blunders(
                         "pgn": str(node.parent),
                     }
                 )
+
+                if results_queue is not None:
+                    results_queue.put_nowait(blunder)
                 blunders.append(blunder)
-                queue.task_done()
+
+                jobs_queue.task_done()
         finally:
             await engine.quit()
 
@@ -222,7 +230,7 @@ async def blunders(
                 blunder_nodes.put_nowait((game_iloc, node))
 
     workers = [
-        asyncio.create_task(annotate_blunders(blunder_nodes))
+        asyncio.create_task(annotate_blunders(blunder_nodes, results))
         for _ in range(min(n_engines, blunder_nodes.qsize()))
     ]
     await blunder_nodes.join()
