@@ -120,7 +120,7 @@ async def blunders_worker(
                 finally:
                     queue.task_done()
 
-    blunders = asyncio.create_task(
+    producers = asyncio.create_task(
         core.blunders.raw_function(
             games,
             colors=colors,
@@ -133,10 +133,12 @@ async def blunders_worker(
             results=results,
         )
     )
-    publisher = asyncio.create_task(publish_blunder(results))
-    await blunders
+    consumers = asyncio.create_task(publish_blunder(results))
+    blunders = await producers
     await results.join()
-    publisher.cancel()
+    consumers.cancel()
+
+    return [blunder.dict() for blunder in blunders]
 
 
 # ------------------------------------------------------------------------------------ #
