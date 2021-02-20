@@ -57,7 +57,7 @@ def jobs_topic(sns):
 def blunders_table(dynamodb):
 
     table_name = "test-blunders-table"
-    dynamodb.create_table(
+    table = dynamodb.create_table(
         TableName=table_name,
         AttributeDefinitions=[
             {"AttributeName": "job_name", "AttributeType": "S"},
@@ -72,6 +72,16 @@ def blunders_table(dynamodb):
             "WriteCapacityUnits": 1,
         },
     )
+
+    with open(
+        pathlib.Path(__file__)
+        .parent.absolute()
+        .joinpath("fixtures", "api", "blunders_table.json")
+    ) as f:
+        data = json.load(f)
+
+    for item in data:
+        table.put_item(Item=item)
 
     original = os.getenv("BLUNDERS_TABLE_NAME")
     os.environ["BLUNDERS_TABLE_NAME"] = table_name
@@ -123,6 +133,11 @@ def post_blunders_events():
 @pytest.fixture
 def blunders_worker_sns_events():
     return event("blunders_worker_sns_events")
+
+
+@pytest.fixture
+def get_blunders_events():
+    return event("get_blunders_events")
 
 
 # ------------------------------------------------------------------------------------ #

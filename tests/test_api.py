@@ -44,6 +44,8 @@ def test_get_games_chessdotcom_invalid_query_params(
 #                                       Blunders                                       #
 #                                                                                      #
 #                                  test_post_blunders                                  #
+#                                 test_blunders_worker                                 #
+#                                   test_get_blunders                                  #
 # ------------------------------------------------------------------------------------ #
 def test_post_blunders(post_blunders_events, null_context, jobs_topic):
     from chess_blunders.app.api import handlers
@@ -61,6 +63,14 @@ def test_blunders_worker(
 
     for sns_event in blunders_worker_sns_events:
         response = handlers.blunders_worker(sns_event, null_context)
+        snapshot.assert_match(response)
+
+
+def test_get_blunders(get_blunders_events, null_context, blunders_table, snapshot):
+    from chess_blunders.app.api import handlers
+
+    for event in get_blunders_events:
+        response = handlers.get_blunders(event, null_context)
         snapshot.assert_match(response)
 
 

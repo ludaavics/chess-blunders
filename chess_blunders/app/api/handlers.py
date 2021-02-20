@@ -214,15 +214,14 @@ def post_blunders(
     jobs_topic = sns.Topic(os.getenv("JOBS_TOPIC_ARN"))
     job = {
         "job_name": job_name,
-        "games": [game.dict() for game in games],
-        "colors": colors,
         "threshold": threshold,
         "nodes": nodes,
         "max_variation_plies": max_variation_plies,
         "logistic_scale": logistic_scale,
     }
-    pub = jobs_topic.publish(Message=json.dumps(job))
-    logger.debug(f"Blunders job published: {str(pub)}")
+    for game, color in zip(games, colors):
+        job.update({"games": [game.dict()], "colors": [color]})
+        jobs_topic.publish(Message=json.dumps(job))
 
     # send response
     response = {"blunders": f"/blunders/{job_name}"}
