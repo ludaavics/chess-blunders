@@ -75,15 +75,3 @@ ci-integration:
 	@make ci-tests
 
 ci-deployment: ;
-
-# ------------------------------------------------------------------------------------ #
-#                                      API Server                                      #
-#																																											 #
-#                                    start-api-prod                                    #
-#                                     start-api-dev                                    #
-# ------------------------------------------------------------------------------------ #
-start-api-prod:
-	@uvicorn chess_blunders.app.api.main:app
-
-start-api-dev:
-	@uvicorn chess_blunders.app.api.main:app --reload

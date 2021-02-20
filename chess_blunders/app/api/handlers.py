@@ -4,10 +4,13 @@ import json
 import logging
 import os
 import time
+from datetime import datetime
 from typing import List, Optional
 
+import aioboto3
 import boto3
 import wrapt
+from boto3.dynamodb.conditions import Key
 from haikunator import Haikunator
 from pydantic import (
     PositiveFloat,
@@ -22,7 +25,7 @@ from requests_futures.sessions import FuturesSession
 
 from chess_blunders import core
 from chess_blunders.app.api.exc import requests_http_error_handler
-from chess_blunders.models import Color, Game
+from chess_blunders.models import Blunder, Color, Game
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -85,7 +88,7 @@ def sns_handler(handler, instance, args, kwargs):
 @sns_handler
 @validate_arguments
 async def blunders_worker(
-    name: str,
+    job_name: str,
     games: List[Game],
     colors: Optional[List[Color]] = None,
     threshold: confloat(gt=0.0, lt=1.0) = 0.25,  # type: ignore
@@ -93,20 +96,29 @@ async def blunders_worker(
     max_variation_plies: Optional[PositiveInt] = None,
     logistic_scale: PositiveFloat = 0.004,
 ):
-
-    # design pattern credit: https://realpython.com/async-io-python/#using-a-queue
-
-    sns = boto3.client("sns")
-    results_topic_arn = os.getenv("RESULTS_TOPIC_ARN")
     results: asyncio.Queue = asyncio.Queue()
 
     async def publish_blunder(queue: asyncio.Queue):
-        while True:
-            blunder = await queue.get()
-            message = {"name": name, "blunder": blunder.dict()}
-            pub = sns.publish(TopicArn=results_topic_arn, Message=json.dumps(message))
-            logger.debug(f"Blunders result published: {str(pub)}")
-            queue.task_done()
+        async with aioboto3.resource("dynamodb") as dynamodb:
+            blunders_table = await dynamodb.Table(os.getenv("BLUNDERS_TABLE_NAME"))
+            while True:
+                blunder = await queue.get()
+
+                now = datetime.utcnow().isoformat()
+                item = blunder.dict()
+                item.update({"job_name": job_name, "created_at": now})
+
+                # dynamo db refuses python floats
+                # https://github.com/boto/boto3/pull/2699
+                item["cp_loss"] = str(round(item["cp_loss"], 0))
+                item["probability_loss"] = str(round(item["probability_loss"], 4))
+
+                try:
+                    await blunders_table.put_item(Item=item)
+                except Exception as e:
+                    logger.exception(e)
+                finally:
+                    queue.task_done()
 
     blunders = asyncio.create_task(
         core.blunders.raw_function(
@@ -180,7 +192,7 @@ def get_games_chessdotcom(username: str, limit: PositiveInt = 10) -> dict:
 
 @http_handler
 @validate_arguments
-async def post_blunders(
+def post_blunders(
     games: List[Game],
     colors: Optional[List[Color]] = None,
     threshold: confloat(gt=0.0, lt=1.0) = 0.25,  # type: ignore
@@ -195,11 +207,11 @@ async def post_blunders(
         colors = [Color.white for _ in range(len(games))]
 
     # publish the job
-    name = Haikunator().haikunate()
-    sns = boto3.client("sns")
-    jobs_topic_arn = os.getenv("JOBS_TOPIC_ARN")
+    job_name = Haikunator().haikunate()
+    sns = boto3.resource("sns")
+    jobs_topic = sns.Topic(os.getenv("JOBS_TOPIC_ARN"))
     job = {
-        "name": name,
+        "job_name": job_name,
         "games": [game.dict() for game in games],
         "colors": colors,
         "threshold": threshold,
@@ -207,9 +219,25 @@ async def post_blunders(
         "max_variation_plies": max_variation_plies,
         "logistic_scale": logistic_scale,
     }
-    pub = sns.publish(TopicArn=jobs_topic_arn, Message=json.dumps(job))
+    pub = jobs_topic.publish(Message=json.dumps(job))
     logger.debug(f"Blunders job published: {str(pub)}")
 
     # send response
-    response = {"blunders": f"/blunders/{name}"}
+    response = {"blunders": f"/blunders/{job_name}"}
     return make_response(202, response)
+
+
+@http_handler
+@validate_arguments
+def get_blunders(job_name: str) -> List[Blunder]:
+
+    dynamodb = boto3.resource("dynamodb")
+    blunders_table = dynamodb.Table(os.getenv("BLUNDERS_TABLE_NAME"))
+    blunders = [
+        Blunder(**blunder).dict()
+        for blunder in blunders_table.query(
+            KeyConditionExpression=Key("job_name").eq(job_name)
+        )["Items"]
+    ]
+
+    return make_response(200, blunders)

@@ -1,5 +1,8 @@
 frameworkVersion: "2"
 
+plugins:
+  - serverless-python-requirements
+
 app: chess-blunders
 service: chess-blunders-api
 
@@ -13,19 +16,25 @@ provider:
     role:
       statements:
         - Effect: Allow
-          Action: "sns:Publish"
+          Action: sns:Publish
           Resource:
             - Ref: BlundersJobsTopic
-            - Ref: BlundersResultsTopic
+        - Effect: Allow
+          Action:
+            - dynamodb:*
+          Resource:
+            Fn::GetAtt:
+              - BlundersTable
+              - Arn
 
 functions:
   blunders_worker:
     handler: handlers.blunders_worker
-    timeout: 900
+    timeout: 300
     memorySize: 5120
     environment:
-      RESULTS_TOPIC_ARN:
-        Ref: BlundersResultsTopic
+      BLUNDERS_TABLE_NAME:
+        Ref: BlundersTable
     events:
       - sns:
           arn:
@@ -48,6 +57,17 @@ functions:
       - httpApi:
           method: POST
           path: /blunders
+
+  get_blunders:
+    handler: handlers.get_blunders
+    timeout: 28
+    environment:
+      BLUNDERS_TABLE_NAME:
+        Ref: BlundersTable
+    events:
+      - httpApi:
+          method: GET
+          path: /blunders/{job_name}
 
 package:
   include:
@@ -74,11 +94,18 @@ resources:
         TopicName: "${self:custom.stage}-blunders-jobs-topic"
         DisplayName: "Blunders jobs to be processed."
 
-    BlundersResultsTopic:
-      Type: AWS::SNS::Topic
+    BlundersTable:
+      Type: AWS::DynamoDB::Table
       Properties:
-        TopicName: "${self:custom.stage}-blunders-results-topic"
-        DisplayName: "Blunders found from games."
-
-plugins:
-  - serverless-python-requirements
+        TableName: "${self:custom.stage}-blunders-table"
+        AttributeDefinitions:
+          - AttributeName: job_name
+            AttributeType: S
+          - AttributeName: created_at
+            AttributeType: S
+        KeySchema:
+          - AttributeName: job_name
+            KeyType: HASH
+          - AttributeName: created_at
+            KeyType: RANGE
+        BillingMode: PAY_PER_REQUEST

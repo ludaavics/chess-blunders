@@ -7,7 +7,7 @@ license = "MIT"
 
 [tool.poetry.dependencies]
 python = "^3.7"
-boto3 = "^1.17.10"
+aioboto3 = "^8.2.0"
 chess = "^1.4.0"
 pydantic = "^1.7.3"
 requests = "^2.25.1"
@@ -16,7 +16,6 @@ wrapt = "^1.12.1"
 haikunator = "^2.1.0"
 
 [tool.poetry.dev-dependencies]
-awscli = "^1.19.6"
 flake8 = "^3.8.4"
 pre-commit = "^2.9.3"
 dephell = "^0.8.3"
@@ -41,7 +40,7 @@ use_parentheses = true
 ensure_newline_before_comments = true
 line_length = 88
 skip = ["alembic"]
-known_third_party = ["boto3", "chess", "haikunator", "pydantic", "requests", "requests_futures", "wrapt"]
+known_third_party = ["aioboto3", "boto3", "chess", "haikunator", "pydantic", "requests", "requests_futures", "wrapt"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
