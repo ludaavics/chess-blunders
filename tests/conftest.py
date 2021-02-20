@@ -1,7 +1,10 @@
 import json
+import os
 import pathlib
 import random
 
+import boto3
+import moto
 import pytest
 
 
@@ -11,6 +14,38 @@ def games():
         pathlib.Path(__file__).parent.absolute() / "fixtures/core/games.json"
     ) as f:
         return json.load(f)
+
+
+# ------------------------------------------------------------------------------------ #
+#                                  Mock AWS Resources                                  #
+# ------------------------------------------------------------------------------------ #
+@pytest.fixture
+def aws_credentials():
+    """Mocked AWS Credentials for moto."""
+    os.environ["AWS_ACCESS_KEY_ID"] = "testing"
+    os.environ["AWS_SECRET_ACCESS_KEY"] = "testing"
+    os.environ["AWS_SECURITY_TOKEN"] = "testing"
+    os.environ["AWS_SESSION_TOKEN"] = "testing"
+
+
+@pytest.fixture
+def sns(aws_credentials):
+    with moto.mock_sns():
+        yield boto3.resource("sns")
+
+
+@pytest.fixture
+def jobs_topic(sns):
+    original = os.getenv("JOBS_TOPIC_ARN")
+
+    topic = sns.create_topic(Name="test-jobs-topic")
+    os.environ["JOBS_TOPIC_ARN"] = topic.attributes["TopicArn"]
+    yield
+
+    if original is None:
+        os.environ.pop("JOBS_TOPIC_ARN")
+    else:
+        os.environ["JOBS_TOPIC_ARN"] = original
 
 
 # ------------------------------------------------------------------------------------ #
