@@ -1,5 +1,8 @@
 frameworkVersion: "2"
 
+plugins:
+  - serverless-python-requirements
+
 app: chess-blunders
 service: chess-blunders-api
 
@@ -9,8 +12,35 @@ provider:
   lambdaHashingVersion: 20201221
   environment:
     CHESS_BLUNDERS_ENGINE: bin/stockfish
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action: sns:Publish
+          Resource:
+            - Ref: BlundersJobsTopic
+        - Effect: Allow
+          Action:
+            - dynamodb:*
+          Resource:
+            Fn::GetAtt:
+              - BlundersTable
+              - Arn
 
 functions:
+  blunders_worker:
+    handler: handlers.blunders_worker
+    timeout: 300
+    memorySize: 5120
+    environment:
+      BLUNDERS_TABLE_NAME:
+        Ref: BlundersTable
+    events:
+      - sns:
+          arn:
+            Ref: BlundersJobsTopic
+          topicName: blunders-jobs-topic
+
   get_games_chessdotcom:
     handler: handlers.get_games_chessdotcom
     events:
@@ -20,15 +50,24 @@ functions:
 
   post_blunders:
     handler: handlers.post_blunders
-    timeout: 29
-    memorySize: 3072
+    environment:
+      JOBS_TOPIC_ARN:
+        Ref: BlundersJobsTopic
     events:
       - httpApi:
           method: POST
           path: /blunders
 
-plugins:
-  - serverless-python-requirements
+  get_blunders:
+    handler: handlers.get_blunders
+    timeout: 28
+    environment:
+      BLUNDERS_TABLE_NAME:
+        Ref: BlundersTable
+    events:
+      - httpApi:
+          method: GET
+          path: /blunders/{job_name}
 
 package:
   include:
@@ -44,3 +83,29 @@ custom:
     invalidateCaches: true
     useStaticCache: false
     staticCacheMaxVersions: 10
+
+resources:
+  Description: "CloudFormation template for Chess-Blunders' API service."
+
+  Resources:
+    BlundersJobsTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        TopicName: "${self:custom.stage}-blunders-jobs-topic"
+        DisplayName: "Blunders jobs to be processed."
+
+    BlundersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: "${self:custom.stage}-blunders-table"
+        AttributeDefinitions:
+          - AttributeName: job_name
+            AttributeType: S
+          - AttributeName: created_at
+            AttributeType: S
+        KeySchema:
+          - AttributeName: job_name
+            KeyType: HASH
+          - AttributeName: created_at
+            KeyType: RANGE
+        BillingMode: PAY_PER_REQUEST
