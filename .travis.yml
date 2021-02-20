@@ -22,6 +22,7 @@ before_install:
   - which stockfish || (echo $PATH && false)
   - nvm install 15
   - npm config set cache "$HOME/.cache/npm"
+  - mkdir $HOME/.aws
   - touch ~/.aws/credentials
 install:
   - make init
