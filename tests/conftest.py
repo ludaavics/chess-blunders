@@ -105,6 +105,11 @@ def event(name: str):
 
 
 @pytest.fixture
+def request_blunders_events():
+    return event("request_blunders_events")
+
+
+@pytest.fixture
 def get_games_chessdotcom_event():
     return event("get_games_chessdotcom_event")
 

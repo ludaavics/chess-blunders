@@ -43,10 +43,19 @@ def test_get_games_chessdotcom_invalid_query_params(
 # ------------------------------------------------------------------------------------ #
 #                                       Blunders                                       #
 #                                                                                      #
+#                                 test_request_blunders                                #
 #                                  test_post_blunders                                  #
 #                                 test_blunders_worker                                 #
 #                                   test_get_blunders                                  #
 # ------------------------------------------------------------------------------------ #
+def test_request_blunders(request_blunders_events, null_context, jobs_topic):
+    from chess_blunders.app.api import handlers
+
+    for request_blunder_event in request_blunders_events:
+        response = handlers.request_blunders(request_blunder_event, null_context)
+        assert response["statusCode"] == 200
+
+
 def test_post_blunders(post_blunders_events, null_context, jobs_topic):
     from chess_blunders.app.api import handlers
 

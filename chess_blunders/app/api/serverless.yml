@@ -56,6 +56,9 @@ functions:
 
   request-blunders:
     handler: handlers.request_blunders
+    environment:
+      JOBS_TOPIC_ARN:
+        Ref: BlundersJobsTopic
     events:
       - websocket:
           route: request-blunders

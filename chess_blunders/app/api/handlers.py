@@ -3,12 +3,14 @@ import inspect
 import json
 import logging
 import os
+import random
 import time
 from datetime import datetime
 from typing import Any, List, Optional
 
 import aioboto3
 import boto3
+import httpx
 import wrapt
 from boto3.dynamodb.conditions import Key
 from haikunator import Haikunator
@@ -23,7 +25,7 @@ from requests import HTTPError
 from requests.compat import urljoin  # type: ignore
 from requests_futures.sessions import FuturesSession
 
-from chess_blunders import core
+from chess_blunders import __version__, core
 from chess_blunders.app.api.exc import requests_http_error_handler
 from chess_blunders.models import Blunder, Color, Game
 
@@ -31,6 +33,9 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 CHESSDOTCOM_API_HOST = "https://api.chess.com/"
+USER_AGENT = (
+    f"chess-blunders/{__version__} (https://github.com/ludaavics/chess-blunders)"
+)
 
 
 # ------------------------------------------------------------------------------------ #
@@ -308,11 +313,92 @@ async def request_blunders(
     username: str,
     source: str,
     *,
+    threshold: confloat(gt=0.0, lt=1.0) = 0.25,  # type: ignore
+    nodes: PositiveInt = 500_000,
+    max_variation_plies: Optional[PositiveInt] = None,
+    logistic_scale: PositiveFloat = 0.004,
     n_games: int = 5,
-    n_blunders: int = 20,
 ):
-    gatewayapi = boto3.client("apigatewaymanagementapi", endpoint_url=api_endpoint)
-    msg = f"Requesting blunders for {username} on {source} for {connection_id}."
-    return gatewayapi.post_to_connection(
-        ConnectionId=connection_id, Data=msg.encode("utf-8")
-    )
+    jobs_topic_arn = os.environ["JOBS_TOPIC_ARN"]
+    if source == "chess.com":
+        return await request_blunders_chessdotcom(
+            connection_id,
+            username,
+            threshold=threshold,
+            nodes=nodes,
+            max_variation_plies=max_variation_plies,
+            logistic_scale=logistic_scale,
+            jobs_topic_arn=jobs_topic_arn,
+            n_games=n_games,
+        )
+    else:
+        # send an error message and kill the connection
+        pass
+
+
+async def request_blunders_chessdotcom(
+    connection_id: str,
+    username: str,
+    *,
+    threshold: confloat(gt=0.0, lt=1.0),  # type: ignore
+    nodes: PositiveInt,
+    max_variation_plies: Optional[PositiveInt],
+    logistic_scale: PositiveFloat,
+    n_games: int,
+    jobs_topic_arn: str,
+):
+    """
+    Request blunders from randomly chosen games of a given chess.com user.
+    """
+    headers = {"user-agent": USER_AGENT}
+    async with httpx.AsyncClient(
+        base_url=CHESSDOTCOM_API_HOST, headers=headers
+    ) as client:
+        all_months = await client.get(f"pub/player/{username}/games/archives")
+        all_months.raise_for_status()
+        selected_months = random.choices(all_months.json()["archives"], k=n_games)
+
+        requests = [asyncio.create_task(client.get(month)) for month in selected_months]
+        for request in asyncio.as_completed(requests):
+            games_in_month = await request
+            sleep = 1
+            while games_in_month.status_code == 429:
+                msg = (
+                    f"Sleeping for {sleep}s while "
+                    f"getting chess.com games for {username}."
+                )
+                logger.debug(msg)
+                await asyncio.sleep(sleep)
+                games_in_month = await client.get(games_in_month.url)
+
+            games_in_month.raise_for_status()
+            game = random.choice(games_in_month.json()["games"])
+            game["white"]["name"] = game["white"].pop("username")
+            game["white"]["url"] = game["white"].pop("@id")
+            game["black"]["name"] = game["black"].pop("username")
+            game["black"]["url"] = game["black"].pop("@id")
+            game["eco_url"] = game.pop("eco", None)
+            game["tournament_url"] = game.pop("tournament", None)
+            game["match_url"] = game.pop("match", None)
+            color = (
+                "white"
+                if game["white"]["name"].lower() == username.lower()
+                else "black"
+            )
+            assert game[color]["name"].lower() == username.lower()
+
+            # publish the job
+            sns = boto3.resource("sns")
+            jobs_topic = sns.Topic(jobs_topic_arn)
+            job = {
+                "job_name": connection_id,
+                "games": [Game(**game).dict()],
+                "colors": [color],
+                "threshold": threshold,
+                "nodes": nodes,
+                "max_variation_plies": max_variation_plies,
+                "logistic_scale": logistic_scale,
+            }
+            jobs_topic.publish(Message=json.dumps(job))
+
+    return make_response(200, "")
