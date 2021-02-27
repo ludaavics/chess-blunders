@@ -52,13 +52,15 @@ def http_handler(handler, instance, args, kwargs):
 
     async def handle():
         try:
-            true_handler = getattr(handler, "raw_function", handler)
-            if inspect.iscoroutinefunction(true_handler):
-                return await handler(**handler_kwargs)
-            return handler(**handler_kwargs)
+            _handler = validate_arguments(handler)
+            if inspect.iscoroutinefunction(handler):
+                return await _handler(**handler_kwargs)
+            return _handler(**handler_kwargs)
         except ValidationError as exc:
+            logger.exception(exc.errors())
             return make_response(400, exc.errors())
         except HTTPError as exc:
+            logger.exception(exc)
             return requests_http_error_handler(exc)
 
     return asyncio.run(handle())
@@ -74,10 +76,10 @@ def sns_handler(handler, instance, args, kwargs):
     message = json.loads(event["Records"][0]["Sns"]["Message"])
 
     async def handle():
-        true_handler = getattr(handler, "raw_function", handler)
-        if inspect.iscoroutinefunction(true_handler):
-            return await handler(**message)
-        return handler(**message)
+        _handler = validate_arguments(handler)
+        if inspect.iscoroutinefunction(handler):
+            return await _handler(**message)
+        return _handler(**message)
 
     return asyncio.run(handle())
 
@@ -86,7 +88,6 @@ def sns_handler(handler, instance, args, kwargs):
 #                                        Workers                                       #
 # ------------------------------------------------------------------------------------ #
 @sns_handler
-@validate_arguments
 async def blunders_worker(
     job_name: str,
     games: List[Game],
@@ -145,7 +146,6 @@ async def blunders_worker(
 #                                    HTTP Endpoints                                    #
 # ------------------------------------------------------------------------------------ #
 @http_handler
-@validate_arguments
 def get_games_chessdotcom(username: str, limit: PositiveInt = 10) -> dict:
     """
     Get all the games from a chess.com user.
@@ -193,7 +193,6 @@ def get_games_chessdotcom(username: str, limit: PositiveInt = 10) -> dict:
 
 
 @http_handler
-@validate_arguments
 def post_blunders(
     games: List[Game],
     colors: Optional[List[Color]] = None,
@@ -229,7 +228,6 @@ def post_blunders(
 
 
 @http_handler
-@validate_arguments
 def get_blunders(job_name: str) -> List[Blunder]:
 
     dynamodb = boto3.resource("dynamodb")
