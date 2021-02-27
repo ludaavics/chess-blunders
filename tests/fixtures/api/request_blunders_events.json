@@ -1,0 +1,37 @@
+[
+  {
+    "requestContext": {
+      "routeKey": "request-blunders",
+      "disconnectStatusCode": null,
+      "messageId": "bYWJScpjIAMCJVA=",
+      "eventType": "MESSAGE",
+      "extendedRequestId": "bYWJSHH9oAMFl3Q=",
+      "requestTime": "27/Feb/2021:01:16:30 +0000",
+      "messageDirection": "IN",
+      "disconnectReason": null,
+      "stage": "dev",
+      "connectedAt": 1614388588726,
+      "requestTimeEpoch": 1614388590563,
+      "identity": {
+        "cognitoIdentityPoolId": null,
+        "cognitoIdentityId": null,
+        "principalOrgId": null,
+        "cognitoAuthenticationType": null,
+        "userArn": null,
+        "userAgent": "Python/3.9 websockets/8.1",
+        "accountId": null,
+        "caller": null,
+        "sourceIp": "173.77.239.136",
+        "accessKey": null,
+        "cognitoAuthenticationProvider": null,
+        "user": null
+      },
+      "requestId": "bYWJSHH9oAMFl3Q=",
+      "domainName": "2kowq0tfyg.execute-api.us-east-1.amazonaws.com",
+      "connectionId": "bYWJAcn1oAMCJVA=",
+      "apiId": "2kowq0tfyg"
+    },
+    "body": "{\"action\": \"request-blunders\", \"username\": \"ludavics\", \"source\": \"chess.com\"}",
+    "isBase64Encoded": false
+  }
+]

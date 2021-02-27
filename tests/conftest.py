@@ -36,18 +36,24 @@ def sns(aws_credentials):
 
 
 @pytest.fixture
+def sqs(aws_credentials):
+    with moto.mock_sqs():
+        yield boto3.resource("sqs")
+
+
+@pytest.fixture
 def dynamodb(aws_credentials):
     with moto.mock_dynamodb2():
         yield boto3.resource("dynamodb")
 
 
 @pytest.fixture
-def jobs_topic(sns):
+def jobs_topic_arn(sns):
     original = os.getenv("JOBS_TOPIC_ARN")
 
     topic = sns.create_topic(Name="test-jobs-topic")
     os.environ["JOBS_TOPIC_ARN"] = topic.attributes["TopicArn"]
-    yield
+    yield topic.attributes["TopicArn"]
     if original is None:
         os.environ.pop("JOBS_TOPIC_ARN")
     else:
