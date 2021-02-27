@@ -5,16 +5,24 @@ plugins:
 
 app: chess-blunders
 service: chess-blunders-api
+variablesResolutionMode: 20210219
 
 provider:
   name: aws
+  stage: ${opt:stage, "dev"}
   runtime: python3.8
   lambdaHashingVersion: 20201221
+  websocketsApiRouteSelectionExpression: $request.body.action
   environment:
     CHESS_BLUNDERS_ENGINE: bin/stockfish
   iam:
     role:
       statements:
+        - Effect: Allow
+          Action:
+            - execute-api:ManageConnections
+          Resource:
+            - arn:aws:execute-api:*:*:**/@connections/*
         - Effect: Allow
           Action: sns:Publish
           Resource:
@@ -23,11 +31,35 @@ provider:
           Action:
             - dynamodb:*
           Resource:
-            Fn::GetAtt:
+            - Fn::GetAtt:
               - BlundersTable
               - Arn
 
 functions:
+  connect:
+    handler: handlers.connect
+    events:
+      - websocket:
+          route: $connect
+
+  disconnect:
+    handler: handlers.disconnect
+    events:
+      - websocket:
+          route: $disconnect
+
+  default:
+    handler: handlers.default
+    events:
+      - websocket:
+          route: $default
+
+  request-blunders:
+    handler: handlers.request_blunders
+    events:
+      - websocket:
+          route: request-blunders
+
   blunders_worker:
     handler: handlers.blunders_worker
     timeout: 300
@@ -69,21 +101,6 @@ functions:
           method: GET
           path: /blunders/{job_name}
 
-package:
-  include:
-    - bin/*
-  exclude:
-    - node_modules/**
-
-custom:
-  stage: ${opt:stage, self.provider.stage, "dev"}
-  pythonRequirements:
-    slim: true
-    pythonBin: python
-    invalidateCaches: true
-    useStaticCache: false
-    staticCacheMaxVersions: 10
-
 resources:
   Description: "CloudFormation template for Chess-Blunders' API service."
 
@@ -91,13 +108,13 @@ resources:
     BlundersJobsTopic:
       Type: AWS::SNS::Topic
       Properties:
-        TopicName: "${self:custom.stage}-blunders-jobs-topic"
+        TopicName: "${self:provider.stage}-blunders-jobs-topic"
         DisplayName: "Blunders jobs to be processed."
 
     BlundersTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: "${self:custom.stage}-blunders-table"
+        TableName: "${self:provider.stage}-blunders-table"
         AttributeDefinitions:
           - AttributeName: job_name
             AttributeType: S
@@ -109,3 +126,17 @@ resources:
           - AttributeName: created_at
             KeyType: RANGE
         BillingMode: PAY_PER_REQUEST
+
+package:
+  include:
+    - bin/*
+  exclude:
+    - node_modules/**
+
+custom:
+  pythonRequirements:
+    slim: true
+    pythonBin: python
+    invalidateCaches: true
+    useStaticCache: false
+    staticCacheMaxVersions: 10

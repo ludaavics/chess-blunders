@@ -5,7 +5,7 @@ import logging
 import os
 import time
 from datetime import datetime
-from typing import List, Optional
+from typing import Any, List, Optional
 
 import aioboto3
 import boto3
@@ -80,6 +80,41 @@ def sns_handler(handler, instance, args, kwargs):
         if inspect.iscoroutinefunction(handler):
             return await _handler(**message)
         return _handler(**message)
+
+    return asyncio.run(handle())
+
+
+@wrapt.decorator
+def ws_handler(handler, instance, args, kwargs):
+    assert len(args) == 2
+    assert not kwargs
+    event, context = args
+
+    connection_id = event["requestContext"]["connectionId"]
+    domain_name = event["requestContext"]["domainName"]
+    stage = event["requestContext"]["stage"]
+    api_endpoint = f"https://{domain_name}/{stage}"
+    handler_kwargs = {"connection_id": connection_id, "api_endpoint": api_endpoint}
+    body = event.get("body", "{}")
+    try:
+        body = json.loads(body)
+    except ValueError:
+        body = {"body": body}
+    body.pop("action", None)
+    handler_kwargs.update(body)
+
+    async def handle():
+        try:
+            _handler = validate_arguments(handler)
+            if inspect.iscoroutinefunction(handler):
+                return await _handler(**handler_kwargs)
+            return _handler(**handler_kwargs)
+        except ValidationError as exc:
+            logger.exception(exc.errors())
+            return make_response(400, exc.errors())
+        except HTTPError as exc:
+            logger.exception(exc)
+            return requests_http_error_handler(exc)
 
     return asyncio.run(handle())
 
@@ -240,3 +275,44 @@ def get_blunders(job_name: str) -> List[Blunder]:
     ]
 
     return make_response(200, blunders)
+
+
+# ------------------------------------------------------------------------------------ #
+#                                  WebSocket Endpoints                                 #
+#                                                                                      #
+#                                        connect                                       #
+#                                      disconnect                                      #
+#                                        default                                       #
+#                                   request_blunders                                   #
+# ------------------------------------------------------------------------------------ #
+@ws_handler
+async def connect(connection_id: str, api_endpoint: str):
+    return make_response(200, "")
+
+
+@ws_handler
+async def disconnect(connection_id: str, api_endpoint: str):
+    return make_response(200, "")
+
+
+@ws_handler
+def default(connection_id: str, api_endpoint: str, **kwargs: Any):
+    msg = {"error": "Action not found.", "body": kwargs}
+    return make_response(404, msg)
+
+
+@ws_handler
+async def request_blunders(
+    connection_id: str,
+    api_endpoint: str,
+    username: str,
+    source: str,
+    *,
+    n_games: int = 5,
+    n_blunders: int = 20,
+):
+    gatewayapi = boto3.client("apigatewaymanagementapi", endpoint_url=api_endpoint)
+    msg = f"Requesting blunders for {username} on {source} for {connection_id}."
+    return gatewayapi.post_to_connection(
+        ConnectionId=connection_id, Data=msg.encode("utf-8")
+    )
