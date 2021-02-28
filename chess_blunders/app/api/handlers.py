@@ -213,6 +213,8 @@ def blunders_to_ws(connection_id: str, blunder: Blunder, **kwargs: Any):
         Data=json.dumps(blunder.dict(), indent=2).encode("utf-8"),
     )
 
+    return blunder
+
 
 # ------------------------------------------------------------------------------------ #
 #                                    HTTP Endpoints                                    #

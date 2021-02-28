@@ -103,8 +103,6 @@ def blunders_table_name():
     else:
         os.environ["BLUNDERS_TABLE_NAME"] = original
 
-    return
-
 
 @pytest.fixture
 def empty_blunders_table(dynamodb, blunders_table_name):
@@ -139,6 +137,19 @@ def blunders_table(empty_blunders_table):
 
     for item in data:
         table.put_item(Item=item)
+
+
+# --------------------------------------- Other -------------------------------------- #
+@pytest.fixture
+def websocket_api_url():
+    api_url = "https://test-api-url.com/"
+    original = os.getenv("WEBSOCKET_API_URL")
+    os.environ["WEBSOCKET_API_URL"] = api_url
+    yield api_url
+    if original is None:
+        os.environ.pop("WEBSOCKET_API_URL")
+    else:
+        os.environ["WEBSOCKET_API_URL"] = original
 
 
 # ------------------------------------------------------------------------------------ #

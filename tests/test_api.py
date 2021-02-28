@@ -117,6 +117,9 @@ def test_get_blunders(get_blunders_events, null_context, blunders_table, snapsho
 
 # ------------------------------------------------------------------------------------ #
 #                                   Publish Blunders                                   #
+#                                                                                      #
+#                                  test_blunders_to_db                                 #
+#                                  test_blunders_to_ws                                 #
 # ------------------------------------------------------------------------------------ #
 @pytest.mark.parametrize("blunders_event", blunders_events())
 def test_blunders_to_db(
@@ -135,6 +138,20 @@ def test_blunders_to_db(
     blunders = blunders_table.scan()
 
     snapshot.assert_match(blunders)
+
+
+@pytest.mark.skip(reason="Can't mock apigatewaymanagementapi AWS service")
+@pytest.mark.parametrize("blunders_event", blunders_events())
+def test_blunders_to_ws(
+    blunders_event,
+    null_context,
+    websocket_api_url,
+    snapshot,
+):
+    from chess_blunders.app.api import handlers
+
+    response = handlers.blunders_to_ws(blunders_event, null_context)
+    snapshot.assert_match(response)
 
 
 # ------------------------------------------------------------------------------------ #
