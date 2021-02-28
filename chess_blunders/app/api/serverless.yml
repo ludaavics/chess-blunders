@@ -11,6 +11,9 @@ provider:
   name: aws
   stage: ${opt:stage, "dev"}
   runtime: python3.8
+  memorySize: 128
+  logs:
+    websocket: false
   lambdaHashingVersion: 20201221
   websocketsApiRouteSelectionExpression: $request.body.action
   environment:
@@ -27,6 +30,7 @@ provider:
           Action: sns:Publish
           Resource:
             - Ref: BlundersJobsTopic
+            - Ref: BlundersTopic
         - Effect: Allow
           Action:
             - dynamodb:*
@@ -34,6 +38,11 @@ provider:
             - Fn::GetAtt:
               - BlundersTable
               - Arn
+        - Effect: Allow
+          Action:
+            - logs:*
+          Resource:
+            - "*"
 
 functions:
   connect:
@@ -63,13 +72,13 @@ functions:
       - websocket:
           route: request-blunders
 
-  blunders_worker:
+  blunders-worker:
     handler: handlers.blunders_worker
-    timeout: 300
+    timeout: 60
     memorySize: 5120
     environment:
-      BLUNDERS_TABLE_NAME:
-        Ref: BlundersTable
+      BLUNDERS_TOPIC_ARN:
+        Ref: BlundersTopic
     events:
       - sns:
           arn:
@@ -105,19 +114,25 @@ functions:
           path: /blunders/{job_name}
 
 resources:
-  Description: "CloudFormation template for Chess-Blunders' API service."
+  Description: CloudFormation template for Chess-Blunders' API service.
 
   Resources:
     BlundersJobsTopic:
       Type: AWS::SNS::Topic
       Properties:
-        TopicName: "${self:provider.stage}-blunders-jobs-topic"
-        DisplayName: "Blunders jobs to be processed."
+        TopicName: ${self:provider.stage}-blunders-jobs-topic
+        DisplayName: Blunders jobs to be processed.
+
+    BlundersTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        TopicName: ${self:provider.stage}-blunders-topic
+        DisplayName: Blunders found during game analysis.
 
     BlundersTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: "${self:provider.stage}-blunders-table"
+        TableName: ${self:provider.stage}-blunders-table
         AttributeDefinitions:
           - AttributeName: job_name
             AttributeType: S
@@ -138,6 +153,7 @@ package:
 
 custom:
   pythonRequirements:
+    noDeploy: []
     slim: true
     pythonBin: python
     invalidateCaches: true

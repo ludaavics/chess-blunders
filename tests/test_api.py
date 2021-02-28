@@ -50,13 +50,14 @@ def test_get_games_chessdotcom_invalid_query_params(
 #                                   test_get_blunders                                  #
 # ------------------------------------------------------------------------------------ #
 def test_request_blunders(
-    request_blunders_events, null_context, sns, jobs_topic_arn, sqs
+    request_blunders_events,
+    null_context,
+    jobs_topic,
+    queue,
 ):
     from chess_blunders.app.api import handlers
 
     for request_blunder_event in request_blunders_events:
-        queue = sqs.create_queue(QueueName="test-queue")
-        jobs_topic = sns.Topic(jobs_topic_arn)
         jobs_topic.subscribe(
             Protocol="sqs",
             Endpoint=queue.attributes["QueueArn"],
@@ -80,13 +81,28 @@ def test_post_blunders(post_blunders_events, null_context, jobs_topic_arn):
 
 
 def test_blunders_worker(
-    blunders_worker_sns_events, null_context, blunders_table, snapshot
+    blunders_worker_sns_events,
+    null_context,
+    blunders_topic,
+    queue,
+    snapshot,
 ):
     from chess_blunders.app.api import handlers
 
     for sns_event in blunders_worker_sns_events:
+        blunders_topic.subscribe(
+            Protocol="sqs",
+            Endpoint=queue.attributes["QueueArn"],
+        )
         response = handlers.blunders_worker(sns_event, null_context)
         snapshot.assert_match(response)
+
+        messages = queue.receive_messages(MaxNumberOfMessages=1)
+        enveloppe = json.loads(messages[0].body)
+        message = json.loads(enveloppe["Message"])
+        message_attributes = enveloppe["MessageAttributes"]
+        snapshot.assert_match(message)
+        snapshot.assert_match(message_attributes)
 
 
 def test_get_blunders(get_blunders_events, null_context, blunders_table, snapshot):

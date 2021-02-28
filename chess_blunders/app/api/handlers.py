@@ -5,10 +5,8 @@ import logging
 import os
 import random
 import time
-from datetime import datetime
 from typing import Any, List, Optional
 
-import aioboto3
 import boto3
 import httpx
 import wrapt
@@ -136,31 +134,32 @@ async def blunders_worker(
     nodes: PositiveInt = 500_000,
     max_variation_plies: Optional[PositiveInt] = None,
     logistic_scale: PositiveFloat = 0.004,
+    connection_id: Optional[str] = None,
 ):
-    results: asyncio.Queue = asyncio.Queue()
+    sns = boto3.resource("sns")
+    blunders_topic = sns.Topic(os.environ["BLUNDERS_TOPIC_ARN"])
 
     async def publish_blunder(queue: asyncio.Queue):
-        async with aioboto3.resource("dynamodb") as dynamodb:
-            blunders_table = await dynamodb.Table(os.getenv("BLUNDERS_TABLE_NAME"))
-            while True:
-                blunder = await queue.get()
+        while True:
+            blunder = await queue.get()
+            message = blunder.dict()
+            message.update({"job_name": job_name})
+            attributes = {
+                "connection_id": {
+                    "DataType": "String",
+                    "StringValue": str(connection_id),
+                }
+            }
+            try:
+                blunders_topic.publish(
+                    Message=json.dumps(message), MessageAttributes=attributes
+                )
+            except Exception as e:
+                logger.exception(e)
+            finally:
+                queue.task_done()
 
-                now = datetime.utcnow().isoformat()
-                item = blunder.dict()
-                item.update({"job_name": job_name, "created_at": now})
-
-                # dynamo db refuses python floats
-                # https://github.com/boto/boto3/pull/2699
-                item["cp_loss"] = str(round(item["cp_loss"], 0))
-                item["probability_loss"] = str(round(item["probability_loss"], 4))
-
-                try:
-                    await blunders_table.put_item(Item=item)
-                except Exception as e:
-                    logger.exception(e)
-                finally:
-                    queue.task_done()
-
+    results: asyncio.Queue = asyncio.Queue()
     producers = asyncio.create_task(
         core.blunders.raw_function(
             games,
@@ -369,6 +368,7 @@ async def request_blunders_chessdotcom(
                 )
                 logger.debug(msg)
                 await asyncio.sleep(sleep)
+                sleep *= 2
                 games_in_month = await client.get(games_in_month.url)
 
             games_in_month.raise_for_status()
@@ -392,6 +392,7 @@ async def request_blunders_chessdotcom(
             jobs_topic = sns.Topic(jobs_topic_arn)
             job = {
                 "job_name": connection_id,
+                "connection_id": connection_id,
                 "games": [Game(**game).dict()],
                 "colors": [color],
                 "threshold": threshold,

@@ -19,6 +19,7 @@ def games():
 # ------------------------------------------------------------------------------------ #
 #                                  Mock AWS Resources                                  #
 # ------------------------------------------------------------------------------------ #
+# ------------------------------------ Credentials ----------------------------------- #
 @pytest.fixture
 def aws_credentials():
     """Mocked AWS Credentials for moto."""
@@ -29,22 +30,11 @@ def aws_credentials():
     os.environ["AWS_SESSION_TOKEN"] = "testing"
 
 
+# ---------------------------------------- SNS --------------------------------------- #
 @pytest.fixture
 def sns(aws_credentials):
     with moto.mock_sns():
         yield boto3.resource("sns")
-
-
-@pytest.fixture
-def sqs(aws_credentials):
-    with moto.mock_sqs():
-        yield boto3.resource("sqs")
-
-
-@pytest.fixture
-def dynamodb(aws_credentials):
-    with moto.mock_dynamodb2():
-        yield boto3.resource("dynamodb")
 
 
 @pytest.fixture
@@ -58,6 +48,48 @@ def jobs_topic_arn(sns):
         os.environ.pop("JOBS_TOPIC_ARN")
     else:
         os.environ["JOBS_TOPIC_ARN"] = original
+
+
+@pytest.fixture
+def jobs_topic(sns, jobs_topic_arn):
+    yield sns.Topic(jobs_topic_arn)
+
+
+@pytest.fixture
+def blunders_topic_arn(sns):
+    original = os.getenv("BLUNDERS_TOPIC_ARN")
+
+    topic = sns.create_topic(Name="test-blunders-topic")
+    os.environ["BLUNDERS_TOPIC_ARN"] = topic.attributes["TopicArn"]
+    yield topic.attributes["TopicArn"]
+    if original is None:
+        os.environ.pop("BLUNDERS_TOPIC_ARN")
+    else:
+        os.environ["BLUNDERS_TOPIC_ARN"] = original
+
+
+@pytest.fixture
+def blunders_topic(sns, blunders_topic_arn):
+    yield sns.Topic(blunders_topic_arn)
+
+
+# ---------------------------------------- SQS --------------------------------------- #
+@pytest.fixture
+def sqs(aws_credentials):
+    with moto.mock_sqs():
+        yield boto3.resource("sqs")
+
+
+@pytest.fixture
+def queue(sqs):
+    yield sqs.create_queue(QueueName="test-queue")
+
+
+# ------------------------------------- DynamoDB ------------------------------------- #
+@pytest.fixture
+def dynamodb(aws_credentials):
+    with moto.mock_dynamodb2():
+        yield boto3.resource("dynamodb")
 
 
 @pytest.fixture
