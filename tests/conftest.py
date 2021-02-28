@@ -93,11 +93,23 @@ def dynamodb(aws_credentials):
 
 
 @pytest.fixture
-def blunders_table(dynamodb):
-
+def blunders_table_name():
     table_name = "test-blunders-table"
+    original = os.getenv("BLUNDERS_TABLE_NAME")
+    os.environ["BLUNDERS_TABLE_NAME"] = table_name
+    yield table_name
+    if original is None:
+        os.environ.pop("BLUNDERS_TABLE_NAME")
+    else:
+        os.environ["BLUNDERS_TABLE_NAME"] = original
+
+    return
+
+
+@pytest.fixture
+def empty_blunders_table(dynamodb, blunders_table_name):
     table = dynamodb.create_table(
-        TableName=table_name,
+        TableName=blunders_table_name,
         AttributeDefinitions=[
             {"AttributeName": "job_name", "AttributeType": "S"},
             {"AttributeName": "created_at", "AttributeType": "S"},
@@ -112,6 +124,12 @@ def blunders_table(dynamodb):
         },
     )
 
+    yield table
+
+
+@pytest.fixture
+def blunders_table(empty_blunders_table):
+    table = empty_blunders_table
     with open(
         pathlib.Path(__file__)
         .parent.absolute()
@@ -121,14 +139,6 @@ def blunders_table(dynamodb):
 
     for item in data:
         table.put_item(Item=item)
-
-    original = os.getenv("BLUNDERS_TABLE_NAME")
-    os.environ["BLUNDERS_TABLE_NAME"] = table_name
-    yield
-    if original is None:
-        os.environ.pop("BLUNDERS_TABLE_NAME")
-    else:
-        os.environ["BLUNDERS_TABLE_NAME"] = original
 
 
 # ------------------------------------------------------------------------------------ #
@@ -175,13 +185,17 @@ def post_blunders_events():
 
 
 @pytest.fixture
-def blunders_worker_sns_events():
-    return event("blunders_worker_sns_events")
+def get_blunders_events():
+    return event("get_blunders_events")
 
 
 @pytest.fixture
-def get_blunders_events():
-    return event("get_blunders_events")
+def blunders_job_events():
+    return event("blunders_job_events")
+
+
+def blunders_events():
+    return event("blunders_events")
 
 
 # ------------------------------------------------------------------------------------ #

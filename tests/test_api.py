@@ -4,6 +4,8 @@ import re
 import pytest
 import requests_mock
 
+from .conftest import blunders_events
+
 
 # ------------------------------------------------------------------------------------ #
 #                                         Games                                        #
@@ -42,7 +44,7 @@ def test_get_games_chessdotcom_invalid_query_params(
 
 
 # ------------------------------------------------------------------------------------ #
-#                                       Blunders                                       #
+#                                    Create Blunders                                   #
 #                                                                                      #
 #                                 test_request_blunders                                #
 #                                  test_post_blunders                                  #
@@ -81,7 +83,7 @@ def test_post_blunders(post_blunders_events, null_context, jobs_topic_arn):
 
 
 def test_blunders_worker(
-    blunders_worker_sns_events,
+    blunders_job_events,
     null_context,
     blunders_topic,
     queue,
@@ -89,7 +91,7 @@ def test_blunders_worker(
 ):
     from chess_blunders.app.api import handlers
 
-    for sns_event in blunders_worker_sns_events:
+    for sns_event in blunders_job_events:
         blunders_topic.subscribe(
             Protocol="sqs",
             Endpoint=queue.attributes["QueueArn"],
@@ -111,6 +113,28 @@ def test_get_blunders(get_blunders_events, null_context, blunders_table, snapsho
     for event in get_blunders_events:
         response = handlers.get_blunders(event, null_context)
         snapshot.assert_match(response)
+
+
+# ------------------------------------------------------------------------------------ #
+#                                   Publish Blunders                                   #
+# ------------------------------------------------------------------------------------ #
+@pytest.mark.parametrize("blunders_event", blunders_events())
+def test_blunders_to_db(
+    blunders_event,
+    null_context,
+    empty_blunders_table,
+    snapshot,
+):
+    from chess_blunders.app.api import handlers
+
+    response = handlers.blunders_to_db(blunders_event, null_context)
+    response.pop("created_at")
+    snapshot.assert_match(response)
+
+    blunders_table = empty_blunders_table
+    blunders = blunders_table.scan()
+
+    snapshot.assert_match(blunders)
 
 
 # ------------------------------------------------------------------------------------ #

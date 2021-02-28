@@ -201,6 +201,8 @@ def blunders_to_db(job_name: str, blunder: Blunder, **kwargs: Any):
     except Exception as e:
         logger.exception(e)
 
+    return item
+
 
 @sns_handler
 def blunders_to_ws(connection_id: str, blunder: Blunder, **kwargs: Any):
