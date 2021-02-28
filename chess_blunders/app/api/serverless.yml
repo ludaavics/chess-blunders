@@ -18,6 +18,21 @@ provider:
   websocketsApiRouteSelectionExpression: $request.body.action
   environment:
     CHESS_BLUNDERS_ENGINE: bin/stockfish
+    WEBSOCKET_API_URL:
+      Fn::Join:
+        - ""
+        - - https://
+          - Ref: WebsocketsApi
+          - .execute-api.
+          - Ref: AWS::Region
+          - .amazonaws.com/
+          - ${self:provider.stage}
+    JOBS_TOPIC_ARN:
+      Ref: BlundersJobsTopic
+    BLUNDERS_TOPIC_ARN:
+      Ref: BlundersTopic
+    BLUNDERS_TABLE_NAME:
+      Ref: BlundersTable
   iam:
     role:
       statements:
@@ -47,38 +62,36 @@ provider:
 functions:
   connect:
     handler: handlers.connect
+    memorySize: 128
     events:
       - websocket:
           route: $connect
 
   disconnect:
     handler: handlers.disconnect
+    memorySize: 128
     events:
       - websocket:
           route: $disconnect
 
   default:
     handler: handlers.default
+    memorySize: 128
     events:
       - websocket:
           route: $default
 
   request-blunders:
     handler: handlers.request_blunders
-    environment:
-      JOBS_TOPIC_ARN:
-        Ref: BlundersJobsTopic
+    timeout: 60
     events:
       - websocket:
           route: request-blunders
 
   blunders-worker:
     handler: handlers.blunders_worker
-    timeout: 60
+    timeout: 90
     memorySize: 5120
-    environment:
-      BLUNDERS_TOPIC_ARN:
-        Ref: BlundersTopic
     events:
       - sns:
           arn:
@@ -87,14 +100,22 @@ functions:
 
   blunders-to-db:
     handler: handlers.blunders_to_db
-    environment:
-      BLUNDERS_TABLE_NAME:
-        Ref: BlundersTable
     events:
       - sns:
           arn:
             Ref: BlundersTopic
           topicName: ${self:provider.stage}-blunder-jobs
+
+  blunders-to-ws:
+    handler: handlers.blunders_to_ws
+    events:
+      - sns:
+          arn:
+            Ref: BlundersTopic
+          topicName: ${self:provider.stage}-blunder-jobs
+          filterPolicy:
+            connection_id:
+              - exists: true
 
   get_games_chessdotcom:
     handler: handlers.get_games_chessdotcom
@@ -105,9 +126,6 @@ functions:
 
   post_blunders:
     handler: handlers.post_blunders
-    environment:
-      JOBS_TOPIC_ARN:
-        Ref: BlundersJobsTopic
     events:
       - httpApi:
           method: POST
@@ -116,9 +134,6 @@ functions:
   get_blunders:
     handler: handlers.get_blunders
     timeout: 28
-    environment:
-      BLUNDERS_TABLE_NAME:
-        Ref: BlundersTable
     events:
       - httpApi:
           method: GET

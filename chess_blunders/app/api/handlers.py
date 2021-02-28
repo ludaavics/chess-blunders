@@ -45,14 +45,19 @@ def make_response(status_code, body):
 
 
 @wrapt.decorator
-def http_handler(handler, instance, args, kwargs):
+def ws_handler(handler, instance, args, kwargs):
     assert len(args) == 2
     assert not kwargs
     event, context = args
-    handler_kwargs = {}
-    handler_kwargs.update(event.get("pathParameters", {}))
-    handler_kwargs.update(event.get("queryStringParameters", {}))
-    handler_kwargs.update(json.loads(event.get("body", "{}")))
+
+    handler_kwargs = {"connection_id": event["requestContext"]["connectionId"]}
+    body = event.get("body", "{}")
+    try:
+        body = json.loads(body)
+    except ValueError:
+        body = {"body": body}
+    body.pop("action", None)
+    handler_kwargs.update(body)
 
     async def handle():
         try:
@@ -62,10 +67,10 @@ def http_handler(handler, instance, args, kwargs):
             return _handler(**handler_kwargs)
         except ValidationError as exc:
             logger.exception(exc.errors())
-            return make_response(400, exc.errors())
+            return make_response(200, "")
         except HTTPError as exc:
             logger.exception(exc)
-            return requests_http_error_handler(exc)
+            return make_response(200, "")
 
     return asyncio.run(handle())
 
@@ -94,23 +99,14 @@ def sns_handler(handler, instance, args, kwargs):
 
 
 @wrapt.decorator
-def ws_handler(handler, instance, args, kwargs):
+def http_handler(handler, instance, args, kwargs):
     assert len(args) == 2
     assert not kwargs
     event, context = args
-
-    connection_id = event["requestContext"]["connectionId"]
-    domain_name = event["requestContext"]["domainName"]
-    stage = event["requestContext"]["stage"]
-    api_endpoint = f"https://{domain_name}/{stage}"
-    handler_kwargs = {"connection_id": connection_id, "api_endpoint": api_endpoint}
-    body = event.get("body", "{}")
-    try:
-        body = json.loads(body)
-    except ValueError:
-        body = {"body": body}
-    body.pop("action", None)
-    handler_kwargs.update(body)
+    handler_kwargs = {}
+    handler_kwargs.update(event.get("pathParameters", {}))
+    handler_kwargs.update(event.get("queryStringParameters", {}))
+    handler_kwargs.update(json.loads(event.get("body", "{}")))
 
     async def handle():
         try:
@@ -187,7 +183,7 @@ async def blunders_worker(
 
 
 @sns_handler
-def blunders_to_db(job_name: str, blunder: Blunder, **_):
+def blunders_to_db(job_name: str, blunder: Blunder, **kwargs: Any):
     dynamodb = boto3.resource("dynamodb")
     blunders_table = dynamodb.Table(os.getenv("BLUNDERS_TABLE_NAME"))
 
@@ -204,6 +200,16 @@ def blunders_to_db(job_name: str, blunder: Blunder, **_):
         blunders_table.put_item(Item=item)
     except Exception as e:
         logger.exception(e)
+
+
+@sns_handler
+def blunders_to_ws(connection_id: str, blunder: Blunder, **kwargs: Any):
+    api_endpoint = os.environ["WEBSOCKET_API_URL"]
+    gatewayapi = boto3.client("apigatewaymanagementapi", endpoint_url=api_endpoint)
+    gatewayapi.post_to_connection(
+        ConnectionId=connection_id,
+        Data=json.dumps(blunder.dict(), indent=2).encode("utf-8"),
+    )
 
 
 # ------------------------------------------------------------------------------------ #
@@ -315,25 +321,29 @@ def get_blunders(job_name: str) -> List[Blunder]:
 #                                   request_blunders                                   #
 # ------------------------------------------------------------------------------------ #
 @ws_handler
-async def connect(connection_id: str, api_endpoint: str):
+async def connect(connection_id: str):
     return make_response(200, "")
 
 
 @ws_handler
-async def disconnect(connection_id: str, api_endpoint: str):
+async def disconnect(connection_id: str):
     return make_response(200, "")
 
 
 @ws_handler
-def default(connection_id: str, api_endpoint: str, **kwargs: Any):
+def default(connection_id: str, **kwargs: Any):
+    api_endpoint = os.environ["WEBSOCKET_API_URL"]
     msg = {"error": "Action not found.", "body": kwargs}
-    return make_response(404, msg)
+    gatewayapi = boto3.client("apigatewaymanagementapi", endpoint_url=api_endpoint)
+    gatewayapi.post_to_connection(
+        ConnectionId=connection_id, Data=json.dumps(msg, indent=2).encode("utf-8")
+    )
+    return make_response(200, "")
 
 
 @ws_handler
 async def request_blunders(
     connection_id: str,
-    api_endpoint: str,
     username: str,
     source: str,
     *,
