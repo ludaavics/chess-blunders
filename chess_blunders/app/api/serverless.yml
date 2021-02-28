@@ -83,7 +83,18 @@ functions:
       - sns:
           arn:
             Ref: BlundersJobsTopic
-          topicName: blunders-jobs-topic
+          topicName: ${self:provider.stage}-blunders-jobs-topic
+
+  blunders-to-db:
+    handler: handlers.blunders_to_db
+    environment:
+      BLUNDERS_TABLE_NAME:
+        Ref: BlundersTable
+    events:
+      - sns:
+          arn:
+            Ref: BlundersTopic
+          topicName: ${self:provider.stage}-blunder-jobs
 
   get_games_chessdotcom:
     handler: handlers.get_games_chessdotcom

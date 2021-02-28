@@ -5,6 +5,7 @@ import logging
 import os
 import random
 import time
+from datetime import datetime
 from typing import Any, List, Optional
 
 import boto3
@@ -76,13 +77,18 @@ def sns_handler(handler, instance, args, kwargs):
     event, context = args
     assert len(event["Records"]) == 1
 
-    message = json.loads(event["Records"][0]["Sns"]["Message"])
+    enveloppe = event["Records"][0]["Sns"]
+    handler_kwargs = json.loads(enveloppe["Message"])
+    message_attributes = enveloppe.get("MessageAttributes", {})
+    handler_kwargs.update(
+        {k: message_attributes[k]["Value"] for k in message_attributes}
+    )
 
     async def handle():
         _handler = validate_arguments(handler)
         if inspect.iscoroutinefunction(handler):
-            return await _handler(**message)
-        return _handler(**message)
+            return await _handler(**handler_kwargs)
+        return _handler(**handler_kwargs)
 
     return asyncio.run(handle())
 
@@ -142,8 +148,7 @@ async def blunders_worker(
     async def publish_blunder(queue: asyncio.Queue):
         while True:
             blunder = await queue.get()
-            message = blunder.dict()
-            message.update({"job_name": job_name})
+            message = {"job_name": job_name, "blunder": blunder.dict()}
             attributes = {
                 "connection_id": {
                     "DataType": "String",
@@ -179,6 +184,26 @@ async def blunders_worker(
     consumers.cancel()
 
     return [blunder.dict() for blunder in blunders]
+
+
+@sns_handler
+def blunders_to_db(job_name: str, blunder: Blunder, **_):
+    dynamodb = boto3.resource("dynamodb")
+    blunders_table = dynamodb.Table(os.getenv("BLUNDERS_TABLE_NAME"))
+
+    now = datetime.utcnow().isoformat()
+    item = blunder.dict()
+    item.update({"job_name": job_name, "created_at": now})
+
+    # dynamo db refuses python floats
+    # https://github.com/boto/boto3/pull/2699
+    item["cp_loss"] = str(round(item["cp_loss"], 0))
+    item["probability_loss"] = str(round(item["probability_loss"], 4))
+
+    try:
+        blunders_table.put_item(Item=item)
+    except Exception as e:
+        logger.exception(e)
 
 
 # ------------------------------------------------------------------------------------ #
