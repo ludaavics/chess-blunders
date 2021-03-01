@@ -29,6 +29,7 @@ pytest-cov = "^2.11.1"
 pytest-rerunfailures = "^9.1.1"
 requests-mock = "^1.8.0"
 snapshottest = "^0.6.0"
+freezegun = "^1.1.0"
 
 [tool.dephell.main]
 from = {format = "poetry", path = "pyproject.toml"}

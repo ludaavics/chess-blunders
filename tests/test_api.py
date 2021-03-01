@@ -3,6 +3,7 @@ import re
 
 import pytest
 import requests_mock
+from freezegun import freeze_time
 
 from .conftest import aws_events
 
@@ -123,6 +124,7 @@ def test_get_blunders(event, null_context, blunders_table, snapshot):
 #                                  test_blunders_to_ws                                 #
 # ------------------------------------------------------------------------------------ #
 @pytest.mark.parametrize("event", aws_events("blunders_events"))
+@freeze_time("2021-01-27")
 def test_blunders_to_db(
     event,
     null_context,
@@ -137,6 +139,7 @@ def test_blunders_to_db(
 
     blunders_table = empty_blunders_table
     blunders = blunders_table.scan()
+    blunders.pop("ResponseMetadata")  # contains volatile id
 
     snapshot.assert_match(blunders)
 
