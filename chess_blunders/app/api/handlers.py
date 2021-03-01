@@ -50,8 +50,6 @@ def ws_handler(handler, instance, args, kwargs):
     assert not kwargs
     event, context = args
 
-    print(event)
-
     handler_kwargs = {"connection_id": event["requestContext"]["connectionId"]}
     body = event.get("body", "{}")
     try:
@@ -70,7 +68,7 @@ def ws_handler(handler, instance, args, kwargs):
         except ValidationError as exc:
             logger.exception(exc.errors())
             return make_response(200, "")
-        except HTTPError as exc:
+        except Exception as exc:
             logger.exception(exc)
             return make_response(200, "")
 
@@ -187,7 +185,7 @@ async def blunders_worker(
 @sns_handler
 def blunders_to_db(job_name: str, blunder: Blunder, **kwargs: Any):
     dynamodb = boto3.resource("dynamodb")
-    blunders_table = dynamodb.Table(os.getenv("BLUNDERS_TABLE_NAME"))
+    blunders_table = dynamodb.Table(os.environ["BLUNDERS_TABLE_NAME"])
 
     now = datetime.utcnow().isoformat()
     item = blunder.dict()
@@ -197,11 +195,7 @@ def blunders_to_db(job_name: str, blunder: Blunder, **kwargs: Any):
     # https://github.com/boto/boto3/pull/2699
     item["cp_loss"] = str(round(item["cp_loss"], 0))
     item["probability_loss"] = str(round(item["probability_loss"], 4))
-
-    try:
-        blunders_table.put_item(Item=item)
-    except Exception as e:
-        logger.exception(e)
+    blunders_table.put_item(Item=item)
 
     return item
 
@@ -269,7 +263,7 @@ def get_games_chessdotcom(username: str, limit: PositiveInt = 10) -> dict:
 
 
 @http_handler
-def post_blunders(
+async def post_blunders(
     games: List[Game],
     colors: Optional[List[Color]] = None,
     threshold: confloat(gt=0.0, lt=1.0) = 0.25,  # type: ignore
@@ -327,12 +321,12 @@ def get_blunders(job_name: str) -> List[Blunder]:
 #                                   request_blunders                                   #
 # ------------------------------------------------------------------------------------ #
 @ws_handler
-async def ws_connect(connection_id: str):
+def ws_connect(connection_id: str):
     return make_response(200, "")
 
 
 @ws_handler
-async def ws_disconnect(connection_id: str):
+def ws_disconnect(connection_id: str):
     return make_response(200, "")
 
 

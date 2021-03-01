@@ -15,6 +15,7 @@ from .conftest import aws_events
 #                      test_get_games_chessdotcom_invalid_username                     #
 # ------------------------------------------------------------------------------------ #
 @pytest.mark.parametrize("event", aws_events("get_games_chessdotcom_events"))
+@pytest.mark.flaky(reruns=3)
 def test_get_games_chessdotcom(event, null_context):
     from chess_blunders.app.api import handlers
 
@@ -109,7 +110,7 @@ def test_blunders_worker(
     snapshot.assert_match(message_attributes)
 
 
-@pytest.mark.parametrize("event", aws_events("blunders_events"))
+@pytest.mark.parametrize("event", aws_events("get_blunders_events"))
 def test_get_blunders(event, null_context, blunders_table, snapshot):
     from chess_blunders.app.api import handlers
 
@@ -189,10 +190,12 @@ def test_ws_default(event, null_context):
 # ------------------------------------------------------------------------------------ #
 #                                      Exceptions                                      #
 #                                                                                      #
-#                                test_exception_handling                               #
+#                                    test_http_error                                   #
+#                        test_request_blunders_validation_error                        #
+#                              test_http_validation_error                              #
 # ------------------------------------------------------------------------------------ #
 @pytest.mark.parametrize("event", aws_events("get_games_chessdotcom_events"))
-def test_exception_handling(event, null_context):
+def test_http_http_error(event, null_context):
     from chess_blunders.app.api import handlers
 
     with requests_mock.Mocker(real_http=True) as m:
@@ -200,3 +203,48 @@ def test_exception_handling(event, null_context):
         response = handlers.get_games_chessdotcom(event, null_context)
         assert response["statusCode"] == 503
         assert response["body"]["error"]["type"] == "ThirdPartyRequestError"
+
+
+@pytest.mark.parametrize("event", aws_events("blunders_events")[:1])
+def test_http_validation_error(event, null_context, blunders_table, snapshot):
+    from chess_blunders.app.api import handlers
+
+    # NB: this is the wrong event for this route
+    response = handlers.get_blunders(event, null_context)
+    assert response["statusCode"] == 400
+    snapshot.assert_match(response)
+
+
+@pytest.mark.parametrize("event", aws_events("request_blunders_events")[:1])
+def test_websocket_validation_error(event, null_context, caplog):
+    from chess_blunders.app.api import handlers
+
+    body = json.loads(event["body"])
+    body.pop("username")
+    event["body"] = json.dumps(body)
+
+    handlers.request_blunders(event, null_context)
+    assert caplog.records
+    for record in caplog.records:
+        assert "field required" in record.message
+
+
+@pytest.mark.parametrize("event", aws_events("request_blunders_events")[:1])
+def test_websocket_runtime_error(
+    event,
+    null_context,
+    caplog,
+):
+    from chess_blunders.app.api import handlers
+
+    # NB: we don't have the job_topic fixture, so the below will choke
+    response = handlers.request_blunders(event, null_context)
+
+    # the api gateweay should still get a 200 status code ...
+    assert response["statusCode"] == 200
+
+    # but we should have an error in the log
+    assert caplog.records
+    for record in caplog.records:
+        assert isinstance(record.msg, KeyError)
+        assert record.message == "'JOBS_TOPIC_ARN'"
