@@ -6,16 +6,105 @@ from snapshottest import Snapshot
 
 snapshots = Snapshot()
 
-snapshots["test_blunders_worker 1"] = [
+snapshots["test_blunders_to_db[event0] 1"] = {
+    "cp_loss": "-862.0",
+    "job_name": "beUJ2csbIAMCLUg=",
+    "pgn": "18... Qh4 { [%clk 0:02:50.9] } 19. Qxb7 { [%clk 0:01:03.6] } ( { Refutation (-567) } 19. Qxb7 Rd6 ) ( { Solution (295) } 19. f3 Nf6 ) 19... Ndxf2 { [%clk 0:02:41.3] } 20. Qxa7 { [%clk 0:00:55.8] } 20... Nxh3+ { [%clk 0:02:27.4] } 21. gxh3 { [%clk 0:00:41.8] } 21... Qxh3 { [%clk 0:02:22.5] } 22. Rf2 { [%clk 0:00:35.3] } 22... Nxf2 { [%clk 0:02:09.6] } 23. Qxf2 { [%clk 0:00:32.9] } 23... Qg4+ { [%clk 0:01:54.4] } 24. Qg2 { [%clk 0:00:29] } 24... Qd1+ { [%clk 0:01:51.6] } 25. Qf1 { [%clk 0:00:20.6] } 25... Qg4+ { [%clk 0:01:35.2] } 26. Qg2 { [%clk 0:00:19.6] } 26... Qf4 { [%clk 0:01:30.6] } 27. d4 { [%clk 0:00:16.9] } 27... exd4 { [%clk 0:01:28.4] } 28. cxd4 { [%clk 0:00:15.4] } 28... Rxd4 { [%clk 0:01:26.6] } 29. b5 { [%clk 0:00:14.9] } 29... Rd1+ { [%clk 0:01:24.9] } 30. Qf1 { [%clk 0:00:10.7] } 30... Qxf1# { [%clk 0:01:23.7] }",
+    "probability_loss": "-0.6711",
+    "starting_fen": "3r1rk1/pQ3ppp/8/4p3/PP2P1nq/2Pn3N/3P1PPP/RN3RK1 b - - 0 19",
+}
+
+snapshots["test_blunders_to_db[event0] 2"] = {
+    "ConsumedCapacity": {"CapacityUnits": 1, "TableName": "test-blunders-table"},
+    "Count": 1,
+    "Items": [
+        {
+            "cp_loss": "-862.0",
+            "created_at": "2021-01-27T00:00:00",
+            "job_name": "beUJ2csbIAMCLUg=",
+            "pgn": "18... Qh4 { [%clk 0:02:50.9] } 19. Qxb7 { [%clk 0:01:03.6] } ( { Refutation (-567) } 19. Qxb7 Rd6 ) ( { Solution (295) } 19. f3 Nf6 ) 19... Ndxf2 { [%clk 0:02:41.3] } 20. Qxa7 { [%clk 0:00:55.8] } 20... Nxh3+ { [%clk 0:02:27.4] } 21. gxh3 { [%clk 0:00:41.8] } 21... Qxh3 { [%clk 0:02:22.5] } 22. Rf2 { [%clk 0:00:35.3] } 22... Nxf2 { [%clk 0:02:09.6] } 23. Qxf2 { [%clk 0:00:32.9] } 23... Qg4+ { [%clk 0:01:54.4] } 24. Qg2 { [%clk 0:00:29] } 24... Qd1+ { [%clk 0:01:51.6] } 25. Qf1 { [%clk 0:00:20.6] } 25... Qg4+ { [%clk 0:01:35.2] } 26. Qg2 { [%clk 0:00:19.6] } 26... Qf4 { [%clk 0:01:30.6] } 27. d4 { [%clk 0:00:16.9] } 27... exd4 { [%clk 0:01:28.4] } 28. cxd4 { [%clk 0:00:15.4] } 28... Rxd4 { [%clk 0:01:26.6] } 29. b5 { [%clk 0:00:14.9] } 29... Rd1+ { [%clk 0:01:24.9] } 30. Qf1 { [%clk 0:00:10.7] } 30... Qxf1# { [%clk 0:01:23.7] }",
+            "probability_loss": "-0.6711",
+            "starting_fen": "3r1rk1/pQ3ppp/8/4p3/PP2P1nq/2Pn3N/3P1PPP/RN3RK1 b - - 0 19",
+        }
+    ],
+    "ScannedCount": 1,
+}
+
+snapshots["test_blunders_to_db[event1] 1"] = {
+    "cp_loss": "-533.0",
+    "job_name": "beUJ2csbIAMCLUg=",
+    "pgn": "9... Qxd4 { [%clk 0:04:20.1] } 10. Nb5 { [%clk 0:04:30.1] } ( { Refutation (-388) } 10. Nb5 Qe5+ ) ( { Solution (145) } 10. f4 e6 ) 10... Qd5 { [%clk 0:04:15.9] } 11. Nxc7+ { [%clk 0:04:28.6] } 11... Kd8 { [%clk 0:04:07.3] } 12. Nxd5 { [%clk 0:04:28.5] } 12... e6 { [%clk 0:03:59.9] } 13. Nf4 { [%clk 0:04:21.2] } 13... Be7 { [%clk 0:03:50.3] } 14. Nxg6 { [%clk 0:04:18.2] } 14... hxg6 { [%clk 0:03:48.6] } 15. Qf3 { [%clk 0:04:11.6] } 15... Rb8 { [%clk 0:03:43.7] } 16. O-O-O { [%clk 0:04:10.4] } 16... Nf6 { [%clk 0:03:37.4] } 17. Ba5+ { [%clk 0:03:35.6] } 17... b6 { [%clk 0:03:33.4] } 18. Bc3 { [%clk 0:03:23.4] } 18... Nd5 { [%clk 0:03:28.5] } 19. Bxg7 { [%clk 0:03:20.4] } 19... Rh7 { [%clk 0:03:24.4] } 20. Be5 { [%clk 0:03:14] } 20... Bg5+ { [%clk 0:03:19.9] } 21. Kb1 { [%clk 0:03:07.6] } 21... Rc8 { [%clk 0:03:15.5] } 22. Qg3 { [%clk 0:02:40.7] } 22... Nb4 { [%clk 0:03:08] } 23. c3 { [%clk 0:02:37.3] } 23... Nc6 { [%clk 0:02:55] } 24. f4 { [%clk 0:02:31.8] } 24... Bh4 { [%clk 0:02:48.8] } 25. Qe3 { [%clk 0:02:24] } 25... g5 { [%clk 0:02:27.1] } 26. f5 { [%clk 0:02:17.4] } 26... Rh6 { [%clk 0:02:16.3] } 27. d4 { [%clk 0:01:51.1] } 27... exf5 { [%clk 0:02:09.9] } 28. d5 { [%clk 0:01:38.7] } 28... Nxe5 { [%clk 0:02:01.7] } 29. Qxe5 { [%clk 0:01:34.9] } 29... fxg4 { [%clk 0:01:56.3] } 30. d6 { [%clk 0:01:21.9] } 30... Rc5 { [%clk 0:01:37.1] } 31. Qe7+ { [%clk 0:01:16.6] } 31... Kc8 { [%clk 0:01:33.6] } 32. d7+ { [%clk 0:01:13] } 32... Kc7 { [%clk 0:01:26.3] } 33. d8=Q+ { [%clk 0:01:07.2] } 33... Kc6 { [%clk 0:01:24.5] } 34. Qde8# { [%clk 0:00:48] }",
+    "probability_loss": "-0.4663",
+    "starting_fen": "r3kbnr/ppp1pppp/6b1/1N6/3q2P1/3P3P/PPPB1P2/R2QKB1R b KQkq - 1 10",
+}
+
+snapshots["test_blunders_to_db[event1] 2"] = {
+    "ConsumedCapacity": {"CapacityUnits": 1, "TableName": "test-blunders-table"},
+    "Count": 1,
+    "Items": [
+        {
+            "cp_loss": "-533.0",
+            "created_at": "2021-01-27T00:00:00",
+            "job_name": "beUJ2csbIAMCLUg=",
+            "pgn": "9... Qxd4 { [%clk 0:04:20.1] } 10. Nb5 { [%clk 0:04:30.1] } ( { Refutation (-388) } 10. Nb5 Qe5+ ) ( { Solution (145) } 10. f4 e6 ) 10... Qd5 { [%clk 0:04:15.9] } 11. Nxc7+ { [%clk 0:04:28.6] } 11... Kd8 { [%clk 0:04:07.3] } 12. Nxd5 { [%clk 0:04:28.5] } 12... e6 { [%clk 0:03:59.9] } 13. Nf4 { [%clk 0:04:21.2] } 13... Be7 { [%clk 0:03:50.3] } 14. Nxg6 { [%clk 0:04:18.2] } 14... hxg6 { [%clk 0:03:48.6] } 15. Qf3 { [%clk 0:04:11.6] } 15... Rb8 { [%clk 0:03:43.7] } 16. O-O-O { [%clk 0:04:10.4] } 16... Nf6 { [%clk 0:03:37.4] } 17. Ba5+ { [%clk 0:03:35.6] } 17... b6 { [%clk 0:03:33.4] } 18. Bc3 { [%clk 0:03:23.4] } 18... Nd5 { [%clk 0:03:28.5] } 19. Bxg7 { [%clk 0:03:20.4] } 19... Rh7 { [%clk 0:03:24.4] } 20. Be5 { [%clk 0:03:14] } 20... Bg5+ { [%clk 0:03:19.9] } 21. Kb1 { [%clk 0:03:07.6] } 21... Rc8 { [%clk 0:03:15.5] } 22. Qg3 { [%clk 0:02:40.7] } 22... Nb4 { [%clk 0:03:08] } 23. c3 { [%clk 0:02:37.3] } 23... Nc6 { [%clk 0:02:55] } 24. f4 { [%clk 0:02:31.8] } 24... Bh4 { [%clk 0:02:48.8] } 25. Qe3 { [%clk 0:02:24] } 25... g5 { [%clk 0:02:27.1] } 26. f5 { [%clk 0:02:17.4] } 26... Rh6 { [%clk 0:02:16.3] } 27. d4 { [%clk 0:01:51.1] } 27... exf5 { [%clk 0:02:09.9] } 28. d5 { [%clk 0:01:38.7] } 28... Nxe5 { [%clk 0:02:01.7] } 29. Qxe5 { [%clk 0:01:34.9] } 29... fxg4 { [%clk 0:01:56.3] } 30. d6 { [%clk 0:01:21.9] } 30... Rc5 { [%clk 0:01:37.1] } 31. Qe7+ { [%clk 0:01:16.6] } 31... Kc8 { [%clk 0:01:33.6] } 32. d7+ { [%clk 0:01:13] } 32... Kc7 { [%clk 0:01:26.3] } 33. d8=Q+ { [%clk 0:01:07.2] } 33... Kc6 { [%clk 0:01:24.5] } 34. Qde8# { [%clk 0:00:48] }",
+            "probability_loss": "-0.4663",
+            "starting_fen": "r3kbnr/ppp1pppp/6b1/1N6/3q2P1/3P3P/PPPB1P2/R2QKB1R b KQkq - 1 10",
+        }
+    ],
+    "ScannedCount": 1,
+}
+
+snapshots["test_blunders_worker[event0] 1"] = [
     {
-        "cp_loss": -100644.0,
-        "pgn": "30... Kg8 { [%clk 0:01:21.2] } 31. Rd3 { [%clk 0:00:03.3] } ( { Refutation (-99998) } 31. Rd3 Ra1+ 32. Rd1 Rxd1# ) ( { Solution (646) } 31. h3 Rf8 ) 31... Ra1+ { [%clk 0:01:21.4] }",
-        "probability_loss": -0.9298247211092094,
+        "cp_loss": -509.0,
+        "pgn": "15... Nd5 { [%clk 0:01:59.4] } 16. Be3 { [%clk 0:00:25.7] } ( { Refutation (162) } 16. Be3 Nxe3 ) ( { Solution (671) } 16. Rd1 ) 16... Qb6 { [%clk 0:01:39.8] } 17. Bxc5+ { [%clk 0:00:18.6] } 17... Qxc5 { [%clk 0:01:40.4] } 18. a4 { [%clk 0:00:18.4] } 18... a6 { [%clk 0:01:29.9] } 19. axb5 { [%clk 0:00:16.5] } 19... axb5 { [%clk 0:01:30.3] } 20. Rxa8 { [%clk 0:00:11.7] } 20... Rxa8 { [%clk 0:01:31.7] } 21. Rd1 { [%clk 0:00:10.6] } 21... Ke6 { [%clk 0:01:27.1] } 22. Qg4+ { [%clk 0:00:08.9] } 22... Kf6 { [%clk 0:01:23.3] } 23. Qf3+ { [%clk 0:00:05.5] } 23... Ke6 { [%clk 0:01:20.8] } 24. Qg4+ { [%clk 0:00:05.7] } 24... Kf6 { [%clk 0:01:21.2] } 25. Qf3+ { [%clk 0:00:06.8] } 25... Ke7 { [%clk 0:01:21.8] } 26. Qg3 { [%clk 0:00:02.7] } 26... Kf8 { [%clk 0:01:21] } 27. Qf3+ { [%clk 0:00:02.3] } 27... Kg8 { [%clk 0:01:22] } 28. Qg4 { [%clk 0:00:02.3] } 28... h5 { [%clk 0:01:22] } 29. Qe6+ { [%clk 0:00:03.3] } 29... Kh8 { [%clk 0:01:22] } 30. Qg6 { [%clk 0:00:02.1] } 30... Kg8 { [%clk 0:01:21.2] } 31. Rd3 { [%clk 0:00:03.3] } 31... Ra1+ { [%clk 0:01:21.4] }",
+        "probability_loss": -0.2795162669459942,
+        "starting_fen": "r2q3r/p5pp/2pk4/1pbnp3/4Q3/PBP1B3/1PP2PPP/R4RK1 b - - 2 16",
+    },
+    {
+        "cp_loss": -100674.0,
+        "pgn": "30... Kg8 { [%clk 0:01:21.2] } 31. Rd3 { [%clk 0:00:03.3] } ( { Refutation (-99998) } 31. Rd3 Ra1+ 32. Rd1 Rxd1# ) ( { Solution (676) } 31. Qe6+ Kh7 ) 31... Ra1+ { [%clk 0:01:21.4] }",
+        "probability_loss": -0.937262262592271,
         "starting_fen": "r5k1/6p1/2p3Q1/1pqnp2p/8/1BPR4/1PP2PPP/6K1 b - - 5 31",
+    },
+]
+
+snapshots["test_blunders_worker[event0] 2"] = {
+    "blunder": {
+        "cp_loss": -509.0,
+        "pgn": "15... Nd5 { [%clk 0:01:59.4] } 16. Be3 { [%clk 0:00:25.7] } ( { Refutation (162) } 16. Be3 Nxe3 ) ( { Solution (671) } 16. Rd1 ) 16... Qb6 { [%clk 0:01:39.8] } 17. Bxc5+ { [%clk 0:00:18.6] } 17... Qxc5 { [%clk 0:01:40.4] } 18. a4 { [%clk 0:00:18.4] } 18... a6 { [%clk 0:01:29.9] } 19. axb5 { [%clk 0:00:16.5] } 19... axb5 { [%clk 0:01:30.3] } 20. Rxa8 { [%clk 0:00:11.7] } 20... Rxa8 { [%clk 0:01:31.7] } 21. Rd1 { [%clk 0:00:10.6] } 21... Ke6 { [%clk 0:01:27.1] } 22. Qg4+ { [%clk 0:00:08.9] } 22... Kf6 { [%clk 0:01:23.3] } 23. Qf3+ { [%clk 0:00:05.5] } 23... Ke6 { [%clk 0:01:20.8] } 24. Qg4+ { [%clk 0:00:05.7] } 24... Kf6 { [%clk 0:01:21.2] } 25. Qf3+ { [%clk 0:00:06.8] } 25... Ke7 { [%clk 0:01:21.8] } 26. Qg3 { [%clk 0:00:02.7] } 26... Kf8 { [%clk 0:01:21] } 27. Qf3+ { [%clk 0:00:02.3] } 27... Kg8 { [%clk 0:01:22] } 28. Qg4 { [%clk 0:00:02.3] } 28... h5 { [%clk 0:01:22] } 29. Qe6+ { [%clk 0:00:03.3] } 29... Kh8 { [%clk 0:01:22] } 30. Qg6 { [%clk 0:00:02.1] } 30... Kg8 { [%clk 0:01:21.2] } 31. Rd3 { [%clk 0:00:03.3] } 31... Ra1+ { [%clk 0:01:21.4] }",
+        "probability_loss": -0.2795162669459942,
+        "starting_fen": "r2q3r/p5pp/2pk4/1pbnp3/4Q3/PBP1B3/1PP2PPP/R4RK1 b - - 2 16",
+    },
+    "job_name": "morning-tree-0821",
+}
+
+snapshots["test_blunders_worker[event0] 3"] = {}
+
+snapshots["test_blunders_worker[event1] 1"] = [
+    {
+        "cp_loss": -417.0,
+        "pgn": "6. e3 Qh4 ( { Refutation (-510) } 6... Qh4 7. exd4 ) ( { Solution (-93) } 6... Nf5 ) 7. exd4 Qe4+ 8. Ne2 Nf6 9. Nc3 Qf5 10. Nb5 O-O 11. Nxc7",
+        "probability_loss": -0.29299110755486085,
+        "starting_fen": "r1b1k1nr/pppp1ppp/8/3Pp3/2Pn3q/4P3/PP1Q1PPP/RN2KBNR w KQkq - 1 7",
     }
 ]
 
-snapshots["test_get_blunders 1"] = {
+snapshots["test_blunders_worker[event1] 2"] = {
+    "blunder": {
+        "cp_loss": -417.0,
+        "pgn": "6. e3 Qh4 ( { Refutation (-510) } 6... Qh4 7. exd4 ) ( { Solution (-93) } 6... Nf5 ) 7. exd4 Qe4+ 8. Ne2 Nf6 9. Nc3 Qf5 10. Nb5 O-O 11. Nxc7",
+        "probability_loss": -0.29299110755486085,
+        "starting_fen": "r1b1k1nr/pppp1ppp/8/3Pp3/2Pn3q/4P3/PP1Q1PPP/RN2KBNR w KQkq - 1 7",
+    },
+    "job_name": "bg3excLCIAMCFkw=",
+}
+
+snapshots["test_blunders_worker[event1] 3"] = {
+    "connection_id": {"Type": "String", "Value": "bg3excLCIAMCFkw="}
+}
+
+snapshots["test_get_blunders[event0] 1"] = {
     "body": """[
   {
     "starting_fen": "1r1q1rk1/1b2bppp/1Nnp1n2/pB2p3/1p2P3/4BN2/PPP1RPPP/3Q1RK1 b - - 3 17",
@@ -39,7 +128,7 @@ snapshots["test_get_blunders 1"] = {
     "statusCode": 200,
 }
 
-snapshots["test_get_blunders 2"] = {
+snapshots["test_get_blunders[event1] 1"] = {
     "body": """[
   {
     "starting_fen": "r5k1/6p1/2p3Q1/1pqnp2p/8/1BPR4/1PP2PPP/6K1 b - - 5 31",
@@ -62,6 +151,19 @@ snapshots["test_get_games_chessdotcom_invalid_query_params 1"] = {
     "ctx": {
       "limit_value": 0
     }
+  }
+]""",
+    "statusCode": 400,
+}
+
+snapshots["test_http_validation_error[event0] 1"] = {
+    "body": """[
+  {
+    "loc": [
+      "job_name"
+    ],
+    "msg": "field required",
+    "type": "value_error.missing"
   }
 ]""",
     "statusCode": 400,

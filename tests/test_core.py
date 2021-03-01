@@ -10,7 +10,11 @@ import chess_blunders
 async def test_known_blunders(games, games_loc, use_queue, snapshot):
     queue = asyncio.Queue() if use_queue else None
     blunders = await chess_blunders.blunders(
-        games[games_loc], max_variation_plies=1, n_engines=-2, results=queue
+        games[games_loc],
+        nodes=100_000,
+        max_variation_plies=1,
+        n_engines=-2,
+        results=queue,
     )
     snapshot.assert_match([blunder.dict() for blunder in blunders])
 

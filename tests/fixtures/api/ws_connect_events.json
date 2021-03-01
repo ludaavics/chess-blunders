@@ -1,0 +1,76 @@
+[
+  {
+    "headers": {
+      "Host": "2kowq0tfyg.execute-api.us-east-1.amazonaws.com",
+      "Sec-WebSocket-Extensions": "permessage-deflate; client_max_window_bits",
+      "Sec-WebSocket-Key": "ohUbI5VqvdiB6yCb+XYUzQ==",
+      "Sec-WebSocket-Version": "13",
+      "User-Agent": "Python/3.9 websockets/8.1",
+      "X-Amzn-Trace-Id": "Root=1-60398b22-715edd653fe71d480123adf5",
+      "X-Forwarded-For": "173.77.239.136",
+      "X-Forwarded-Port": "443",
+      "X-Forwarded-Proto": "https"
+    },
+    "multiValueHeaders": {
+      "Host": [
+        "2kowq0tfyg.execute-api.us-east-1.amazonaws.com"
+      ],
+      "Sec-WebSocket-Extensions": [
+        "permessage-deflate; client_max_window_bits"
+      ],
+      "Sec-WebSocket-Key": [
+        "ohUbI5VqvdiB6yCb+XYUzQ=="
+      ],
+      "Sec-WebSocket-Version": [
+        "13"
+      ],
+      "User-Agent": [
+        "Python/3.9 websockets/8.1"
+      ],
+      "X-Amzn-Trace-Id": [
+        "Root=1-60398b22-715edd653fe71d480123adf5"
+      ],
+      "X-Forwarded-For": [
+        "173.77.239.136"
+      ],
+      "X-Forwarded-Port": [
+        "443"
+      ],
+      "X-Forwarded-Proto": [
+        "https"
+      ]
+    },
+    "requestContext": {
+      "routeKey": "$connect",
+      "disconnectStatusCode": null,
+      "messageId": null,
+      "eventType": "CONNECT",
+      "extendedRequestId": "bYKtZEORoAMFVkw=",
+      "requestTime": "26/Feb/2021:23:58:26 +0000",
+      "messageDirection": "IN",
+      "disconnectReason": null,
+      "stage": "dev",
+      "connectedAt": 1614383906458,
+      "requestTimeEpoch": 1614383906459,
+      "identity": {
+        "cognitoIdentityPoolId": null,
+        "cognitoIdentityId": null,
+        "principalOrgId": null,
+        "cognitoAuthenticationType": null,
+        "userArn": null,
+        "userAgent": "Python/3.9 websockets/8.1",
+        "accountId": null,
+        "caller": null,
+        "sourceIp": "173.77.239.136",
+        "accessKey": null,
+        "cognitoAuthenticationProvider": null,
+        "user": null
+      },
+      "requestId": "bYKtZEORoAMFVkw=",
+      "domainName": "2kowq0tfyg.execute-api.us-east-1.amazonaws.com",
+      "connectionId": "bYKtZfNcoAMCF4w=",
+      "apiId": "2kowq0tfyg"
+    },
+    "isBase64Encoded": false
+  }
+]

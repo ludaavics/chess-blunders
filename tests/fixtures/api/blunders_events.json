@@ -1,0 +1,56 @@
+[
+  {
+    "Records": [
+      {
+        "EventSource": "aws:sns",
+        "EventVersion": "1.0",
+        "EventSubscriptionArn": "arn:aws:sns:us-east-1:199729671587:dev-blunders-topic:a5eb1d11-9272-4a53-bc71-09e511691e2d",
+        "Sns": {
+          "Type": "Notification",
+          "MessageId": "46571994-1de2-5373-a878-41221ea18dca",
+          "TopicArn": "arn:aws:sns:us-east-1:199729671587:dev-blunders-topic",
+          "Subject": null,
+          "Message": "{\"job_name\": \"beUJ2csbIAMCLUg=\", \"blunder\": {\"starting_fen\": \"3r1rk1/pQ3ppp/8/4p3/PP2P1nq/2Pn3N/3P1PPP/RN3RK1 b - - 0 19\", \"pgn\": \"18... Qh4 { [%clk 0:02:50.9] } 19. Qxb7 { [%clk 0:01:03.6] } ( { Refutation (-567) } 19. Qxb7 Rd6 ) ( { Solution (295) } 19. f3 Nf6 ) 19... Ndxf2 { [%clk 0:02:41.3] } 20. Qxa7 { [%clk 0:00:55.8] } 20... Nxh3+ { [%clk 0:02:27.4] } 21. gxh3 { [%clk 0:00:41.8] } 21... Qxh3 { [%clk 0:02:22.5] } 22. Rf2 { [%clk 0:00:35.3] } 22... Nxf2 { [%clk 0:02:09.6] } 23. Qxf2 { [%clk 0:00:32.9] } 23... Qg4+ { [%clk 0:01:54.4] } 24. Qg2 { [%clk 0:00:29] } 24... Qd1+ { [%clk 0:01:51.6] } 25. Qf1 { [%clk 0:00:20.6] } 25... Qg4+ { [%clk 0:01:35.2] } 26. Qg2 { [%clk 0:00:19.6] } 26... Qf4 { [%clk 0:01:30.6] } 27. d4 { [%clk 0:00:16.9] } 27... exd4 { [%clk 0:01:28.4] } 28. cxd4 { [%clk 0:00:15.4] } 28... Rxd4 { [%clk 0:01:26.6] } 29. b5 { [%clk 0:00:14.9] } 29... Rd1+ { [%clk 0:01:24.9] } 30. Qf1 { [%clk 0:00:10.7] } 30... Qxf1# { [%clk 0:01:23.7] }\", \"cp_loss\": -862.0, \"probability_loss\": -0.6711397133237418}}",
+          "Timestamp": "2021-02-28T20:45:55.480Z",
+          "SignatureVersion": "1",
+          "Signature": "kO0r97aS+jpwZgAP/d/Mlig8TIAOCO2bs5pvqVlQOeNL1Yx9w4ZfjrZjYxB4M+pzv23VzDKC2VmSNJH22vTbgpTAKIDHFOBnZUVuAb3q3cT8wMdh6hURzkRvYcceDxltHXnrD3b+85HMTqKUAwfeqZk99bxegvePB3N+3OWbSVX6ZGio8MPkJoiZlap/W75gqKIi6A+LqVPWqdzRMw0VZ/IY8sltKUDjLmYLHgWInxbND3AR3IX+qLnuzQYZ3SpeAnrTc4uJXELJxbth2eXhppVrGYgXrIEHehq5DG2jZBTDrymGBTpG9bfL1WV0lfp0w9wRxr+ffVKpZnP/mHnjWw==",
+          "SigningCertUrl": "https://sns.us-east-1.amazonaws.com/SimpleNotificationService-010a507c1833636cd94bdb98bd93083a.pem",
+          "UnsubscribeUrl": "https://sns.us-east-1.amazonaws.com/?Action=Unsubscribe&SubscriptionArn=arn:aws:sns:us-east-1:199729671587:dev-blunders-topic:a5eb1d11-9272-4a53-bc71-09e511691e2d",
+          "MessageAttributes": {
+            "connection_id": {
+              "Type": "String",
+              "Value": "beUJ2csbIAMCLUg="
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "Records": [
+      {
+        "EventSource": "aws:sns",
+        "EventVersion": "1.0",
+        "EventSubscriptionArn": "arn:aws:sns:us-east-1:199729671587:dev-blunders-topic:a5eb1d11-9272-4a53-bc71-09e511691e2d",
+        "Sns": {
+          "Type": "Notification",
+          "MessageId": "247588f2-8b38-5819-b25b-d04488259ba6",
+          "TopicArn": "arn:aws:sns:us-east-1:199729671587:dev-blunders-topic",
+          "Subject": null,
+          "Message": "{\"job_name\": \"beUJ2csbIAMCLUg=\", \"blunder\": {\"starting_fen\": \"r3kbnr/ppp1pppp/6b1/1N6/3q2P1/3P3P/PPPB1P2/R2QKB1R b KQkq - 1 10\", \"pgn\": \"9... Qxd4 { [%clk 0:04:20.1] } 10. Nb5 { [%clk 0:04:30.1] } ( { Refutation (-388) } 10. Nb5 Qe5+ ) ( { Solution (145) } 10. f4 e6 ) 10... Qd5 { [%clk 0:04:15.9] } 11. Nxc7+ { [%clk 0:04:28.6] } 11... Kd8 { [%clk 0:04:07.3] } 12. Nxd5 { [%clk 0:04:28.5] } 12... e6 { [%clk 0:03:59.9] } 13. Nf4 { [%clk 0:04:21.2] } 13... Be7 { [%clk 0:03:50.3] } 14. Nxg6 { [%clk 0:04:18.2] } 14... hxg6 { [%clk 0:03:48.6] } 15. Qf3 { [%clk 0:04:11.6] } 15... Rb8 { [%clk 0:03:43.7] } 16. O-O-O { [%clk 0:04:10.4] } 16... Nf6 { [%clk 0:03:37.4] } 17. Ba5+ { [%clk 0:03:35.6] } 17... b6 { [%clk 0:03:33.4] } 18. Bc3 { [%clk 0:03:23.4] } 18... Nd5 { [%clk 0:03:28.5] } 19. Bxg7 { [%clk 0:03:20.4] } 19... Rh7 { [%clk 0:03:24.4] } 20. Be5 { [%clk 0:03:14] } 20... Bg5+ { [%clk 0:03:19.9] } 21. Kb1 { [%clk 0:03:07.6] } 21... Rc8 { [%clk 0:03:15.5] } 22. Qg3 { [%clk 0:02:40.7] } 22... Nb4 { [%clk 0:03:08] } 23. c3 { [%clk 0:02:37.3] } 23... Nc6 { [%clk 0:02:55] } 24. f4 { [%clk 0:02:31.8] } 24... Bh4 { [%clk 0:02:48.8] } 25. Qe3 { [%clk 0:02:24] } 25... g5 { [%clk 0:02:27.1] } 26. f5 { [%clk 0:02:17.4] } 26... Rh6 { [%clk 0:02:16.3] } 27. d4 { [%clk 0:01:51.1] } 27... exf5 { [%clk 0:02:09.9] } 28. d5 { [%clk 0:01:38.7] } 28... Nxe5 { [%clk 0:02:01.7] } 29. Qxe5 { [%clk 0:01:34.9] } 29... fxg4 { [%clk 0:01:56.3] } 30. d6 { [%clk 0:01:21.9] } 30... Rc5 { [%clk 0:01:37.1] } 31. Qe7+ { [%clk 0:01:16.6] } 31... Kc8 { [%clk 0:01:33.6] } 32. d7+ { [%clk 0:01:13] } 32... Kc7 { [%clk 0:01:26.3] } 33. d8=Q+ { [%clk 0:01:07.2] } 33... Kc6 { [%clk 0:01:24.5] } 34. Qde8# { [%clk 0:00:48] }\", \"cp_loss\": -533.0, \"probability_loss\": -0.46626981261969636}}",
+          "Timestamp": "2021-02-28T20:45:17.319Z",
+          "SignatureVersion": "1",
+          "Signature": "KdjTpK1VCZ27K4fHF9J+ryP992+GzhsmHSTWZpbpTheWBMxjKvmjHe9mTGNLH4MfK2Yg1GnFSTbBe0XjijqiqD4K/juqY6fBr8eaBaaCsiAJS0XL5vlPIWniP5QxcYHWkcpQgeTS1lB5g4CQFs9KfZkFVp0qpafePW0Cye4p7pkuuKqwiF/9LzjVC5Os2FU7CsDPvTtzvXml+W9ORQhUipHbS2TNq7+7pnuasNjuSyw/rBG/f49/b/EzxhAzUdzWrMIFc2r8zpLxFbF0BGZ/KJwMmoenwF8JmjLMy/wSZaR/h7SXtQg/mtdWl3LDA0yX1tUw48ty+QB6ooZg6z7hDw==",
+          "SigningCertUrl": "https://sns.us-east-1.amazonaws.com/SimpleNotificationService-010a507c1833636cd94bdb98bd93083a.pem",
+          "UnsubscribeUrl": "https://sns.us-east-1.amazonaws.com/?Action=Unsubscribe&SubscriptionArn=arn:aws:sns:us-east-1:199729671587:dev-blunders-topic:a5eb1d11-9272-4a53-bc71-09e511691e2d",
+          "MessageAttributes": {
+            "connection_id": {
+              "Type": "String",
+              "Value": "beUJ2csbIAMCLUg="
+            }
+          }
+        }
+      }
+    ]
+  }
+]

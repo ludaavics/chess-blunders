@@ -1,0 +1,46 @@
+[
+  {
+    "Records": [
+      {
+        "EventSource": "aws:sns",
+        "EventVersion": "1.0",
+        "EventSubscriptionArn": "arn:aws:sns:us-east-1:199729671587:dev-blunders-jobs-topic:36fa9075-ae1e-48c6-ae57-97b19360206d",
+        "Sns": {
+          "Type": "Notification",
+          "MessageId": "da9fd801-aa27-5ba1-a94e-80ab22ee80a7",
+          "TopicArn": "arn:aws:sns:us-east-1:199729671587:dev-blunders-jobs-topic",
+          "Subject": null,
+          "Message": "{\"job_name\": \"morning-tree-0821\", \"games\": [{\"url\": \"https://www.chess.com/live/game/6421841712\", \"white\": {\"name\": \"ludavics\", \"url\": \"https://api.chess.com/pub/player/ludavics\", \"rating\": 1047, \"result\": \"timeout\"}, \"black\": {\"name\": \"CloakerBoi\", \"url\": \"https://api.chess.com/pub/player/cloakerboi\", \"rating\": 1183, \"result\": \"win\"}, \"pgn\": \"[Event \\\"Live Chess\\\"]\\n[Site \\\"Chess.com\\\"]\\n[Date \\\"2021.02.02\\\"]\\n[Round \\\"-\\\"]\\n[White \\\"ludavics\\\"]\\n[Black \\\"CloakerBoi\\\"]\\n[Result \\\"0-1\\\"]\\n[CurrentPosition \\\"6k1/6p1/2p3Q1/1pqnp2p/8/1BPR4/1PP2PPP/r5K1 w - -\\\"]\\n[Timezone \\\"UTC\\\"]\\n[ECO \\\"C57\\\"]\\n[ECOUrl \\\"https://www.chess.com/openings/Italian-Game-Traxler-Bishop-Sacrifice-Line-5...Ke7\\\"]\\n[UTCDate \\\"2021.02.02\\\"]\\n[UTCTime \\\"01:24:40\\\"]\\n[WhiteElo \\\"1047\\\"]\\n[BlackElo \\\"1183\\\"]\\n[TimeControl \\\"180+2\\\"]\\n[Termination \\\"CloakerBoi won on time\\\"]\\n[StartTime \\\"01:24:40\\\"]\\n[EndDate \\\"2021.02.02\\\"]\\n[EndTime \\\"01:31:39\\\"]\\n[Link \\\"https://www.chess.com/live/game/6421841712\\\"]\\n\\n1. e4 {[%clk 0:03:02]} 1... e5 {[%clk 0:03:01.9]} 2. Nf3 {[%clk 0:03:01.5]} 2... Nc6 {[%clk 0:03:03.3]} 3. Bc4 {[%clk 0:03:02.5]} 3... Nf6 {[%clk 0:03:04.2]} 4. Ng5 {[%clk 0:03:03.5]} 4... Bc5 {[%clk 0:03:05.8]} 5. Bxf7+ {[%clk 0:03:01]} 5... Ke7 {[%clk 0:03:00.1]} 6. Bc4 {[%clk 0:02:56.2]} 6... d5 {[%clk 0:02:54.2]} 7. exd5 {[%clk 0:02:26.7]} 7... Nxd5 {[%clk 0:02:54.5]} 8. Qf3 {[%clk 0:02:11.6]} 8... Be6 {[%clk 0:02:45.2]} 9. Nxe6 {[%clk 0:02:10.1]} 9... Kxe6 {[%clk 0:02:46]} 10. Nc3 {[%clk 0:01:58.4]} 10... Nb4 {[%clk 0:02:36.9]} 11. Qe4 {[%clk 0:01:30.3]} 11... c6 {[%clk 0:02:30]} 12. O-O {[%clk 0:01:10.3]} 12... b5 {[%clk 0:02:23.6]} 13. Bb3 {[%clk 0:01:03.1]} 13... Kd6 {[%clk 0:02:08.9]} 14. a3 {[%clk 0:00:56.2]} 14... Nxc3 {[%clk 0:02:01.1]} 15. dxc3 {[%clk 0:00:50.2]} 15... Nd5 {[%clk 0:01:59.4]} 16. Be3 {[%clk 0:00:25.7]} 16... Qb6 {[%clk 0:01:39.8]} 17. Bxc5+ {[%clk 0:00:18.6]} 17... Qxc5 {[%clk 0:01:40.4]} 18. a4 {[%clk 0:00:18.4]} 18... a6 {[%clk 0:01:29.9]} 19. axb5 {[%clk 0:00:16.5]} 19... axb5 {[%clk 0:01:30.3]} 20. Rxa8 {[%clk 0:00:11.7]} 20... Rxa8 {[%clk 0:01:31.7]} 21. Rd1 {[%clk 0:00:10.6]} 21... Ke6 {[%clk 0:01:27.1]} 22. Qg4+ {[%clk 0:00:08.9]} 22... Kf6 {[%clk 0:01:23.3]} 23. Qf3+ {[%clk 0:00:05.5]} 23... Ke6 {[%clk 0:01:20.8]} 24. Qg4+ {[%clk 0:00:05.7]} 24... Kf6 {[%clk 0:01:21.2]} 25. Qf3+ {[%clk 0:00:06.8]} 25... Ke7 {[%clk 0:01:21.8]} 26. Qg3 {[%clk 0:00:02.7]} 26... Kf8 {[%clk 0:01:21]} 27. Qf3+ {[%clk 0:00:02.3]} 27... Kg8 {[%clk 0:01:22]} 28. Qg4 {[%clk 0:00:02.3]} 28... h5 {[%clk 0:01:22]} 29. Qe6+ {[%clk 0:00:03.3]} 29... Kh8 {[%clk 0:01:22]} 30. Qg6 {[%clk 0:00:02.1]} 30... Kg8 {[%clk 0:01:21.2]} 31. Rd3 {[%clk 0:00:03.3]} 31... Ra1+ {[%clk 0:01:21.4]} 0-1\", \"fen\": \"6k1/6p1/2p3Q1/1pqnp2p/8/1BPR4/1PP2PPP/r5K1 w - -\", \"start_time\": null, \"end_time\": 1612229499, \"time_control\": \"180+2\", \"rules\": \"chess\", \"eco_url\": null, \"tournament_url\": null, \"match_url\": null}], \"colors\": [\"white\"], \"threshold\": 0.25, \"nodes\": 100000, \"max_variation_plies\": null, \"logistic_scale\": 0.004}",
+          "Timestamp": "2021-02-20T03:48:25.060Z",
+          "SignatureVersion": "1",
+          "Signature": "j+aOlOL0CuD0RecjGVFkSLOrMxCau45NJAOlzHyu5pTVjQihvS5ABguzSKSCKLT03W/e3yXBqNnv8icKxn5Ez/DqwofTa9HLXUVdr+Er7+IEhfRxoHU3bQ4KTjeP9iinQTgIqMNefM0S1n9nb6JnRvBv6Uo4vgDX9bdfiEVOzar5WqcYsOG8Mohhnw7YP/d+iW34//uAYX+5yYPxXPDw6ZLucz0CkSpDF8yMJD3K0y91GK7OFEkPHIhXRdryOhlq/QUjm1VqSIiLSjW0GWGXBE2HQoAbOe2GFyxBWBKcTpIn4OeMc+W3fHTuUIjLGvWnsLn9xjlS46cxsFGmRaChqw==",
+          "SigningCertUrl": "https://sns.us-east-1.amazonaws.com/SimpleNotificationService-010a507c1833636cd94bdb98bd93083a.pem",
+          "UnsubscribeUrl": "https://sns.us-east-1.amazonaws.com/?Action=Unsubscribe&SubscriptionArn=arn:aws:sns:us-east-1:199729671587:dev-blunders-jobs-topic:36fa9075-ae1e-48c6-ae57-97b19360206d",
+          "MessageAttributes": {}
+        }
+      }
+    ]
+  },
+  {
+    "Records": [
+      {
+        "EventSource": "aws:sns",
+        "EventVersion": "1.0",
+        "EventSubscriptionArn": "arn:aws:sns:us-east-1:199729671587:dev-blunders-jobs-topic:5d1e7665-5471-49a6-b127-54b0f84bcc61",
+        "Sns": {
+          "Type": "Notification",
+          "MessageId": "fd2fd032-e9ce-5d29-a1f5-8885e18fb5bc",
+          "TopicArn": "arn:aws:sns:us-east-1:199729671587:dev-blunders-jobs-topic",
+          "Subject": null,
+          "Message": "{\"job_name\": \"bg3excLCIAMCFkw=\", \"connection_id\": \"bg3excLCIAMCFkw=\", \"games\": [{\"url\": \"https://www.chess.com/game/daily/195452148\", \"white\": {\"name\": \"FlashCP3\", \"url\": \"https://api.chess.com/pub/player/flashcp3\", \"rating\": 1397, \"result\": \"win\"}, \"black\": {\"name\": \"ludavics\", \"url\": \"https://api.chess.com/pub/player/ludavics\", \"rating\": 1165, \"result\": \"resigned\"}, \"pgn\": \"[Event \\\"Let's Play!\\\"]\\n[Site \\\"Chess.com\\\"]\\n[Date \\\"2018.05.23\\\"]\\n[Round \\\"-\\\"]\\n[White \\\"FlashCP3\\\"]\\n[Black \\\"ludavics\\\"]\\n[Result \\\"1-0\\\"]\\n[CurrentPosition \\\"r1b2rk1/ppNp1ppp/5n2/3Ppq2/2PP4/8/PP1QNPPP/R3KB1R b KQ - 0 11\\\"]\\n[Timezone \\\"UTC\\\"]\\n[ECO \\\"A40\\\"]\\n[ECOUrl \\\"https://www.chess.com/openings/Queens-Pawn-Opening-Mikenas-Defense-2.c4-e5-3.d5\\\"]\\n[UTCDate \\\"2018.05.23\\\"]\\n[UTCTime \\\"21:40:36\\\"]\\n[WhiteElo \\\"1397\\\"]\\n[BlackElo \\\"1165\\\"]\\n[TimeControl \\\"1/86400\\\"]\\n[Termination \\\"FlashCP3 won by resignation\\\"]\\n[StartTime \\\"21:40:36\\\"]\\n[EndDate \\\"2018.05.24\\\"]\\n[EndTime \\\"01:09:28\\\"]\\n[Link \\\"https://www.chess.com/game/daily/195452148\\\"]\\n\\n1. d4 Nc6 2. c4 e5 3. d5 Bb4+ 4. Bd2 Bxd2+ 5. Qxd2 Nd4 6. e3 Qh4 7. exd4 Qe4+ 8. Ne2 Nf6 9. Nc3 Qf5 10. Nb5 O-O 11. Nxc7 1-0\", \"fen\": \"r1b2rk1/ppNp1ppp/5n2/3Ppq2/2PP4/8/PP1QNPPP/R3KB1R b KQ - 0 11\", \"start_time\": 1527111636, \"end_time\": 1527124168, \"time_control\": \"1/86400\", \"rules\": \"chess\", \"eco_url\": null, \"tournament_url\": null, \"match_url\": null}], \"colors\": [\"black\"], \"threshold\": 0.25, \"nodes\": 500000, \"max_variation_plies\": null, \"logistic_scale\": 0.004}",
+          "Timestamp": "2021-03-01T15:19:29.666Z",
+          "SignatureVersion": "1",
+          "Signature": "q6AgCm8FB0ZxclGm0xd04vVOGMkJiG4m+4tmw1Hp5yEJk6+tiCJLdOk7xZfa6pcCqEbOD2UNn/wzFjtkr0pUi7KXCbv53H53XUCG4aUxEVSdE1ABaas9bDKbPRlsLm1lcD8bX1FzlJtDINhE617KrXyciRkoUkjcvvMvoN9rNtEGyToByT2oNaN18STrhAVEtre/pSo5O2c0zZKcCXzuiqOdlz6FKhNVQ9+x02/Lm06/a186LvJ53XLB5pp1wZqvDBq0kxUNb9QKwye99cs88yGF6ZvRv61GMR8Y+9KlkPV+l+qMLFaPEd7cgr8+Bf9Sm7SPW9oK4j8E0xvQpfPe4g==",
+          "SigningCertUrl": "https://sns.us-east-1.amazonaws.com/SimpleNotificationService-010a507c1833636cd94bdb98bd93083a.pem",
+          "UnsubscribeUrl": "https://sns.us-east-1.amazonaws.com/?Action=Unsubscribe&SubscriptionArn=arn:aws:sns:us-east-1:199729671587:dev-blunders-jobs-topic:5d1e7665-5471-49a6-b127-54b0f84bcc61",
+          "MessageAttributes": {}
+        }
+      }
+    ]
+  }
+]
