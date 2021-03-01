@@ -1,0 +1,56 @@
+[
+  {
+    "headers": {
+      "Host": "so6khh47cg.execute-api.us-east-1.amazonaws.com",
+      "x-api-key": "",
+      "X-Forwarded-For": "",
+      "x-restapi": ""
+    },
+    "multiValueHeaders": {
+      "Host": [
+        "so6khh47cg.execute-api.us-east-1.amazonaws.com"
+      ],
+      "x-api-key": [
+        ""
+      ],
+      "X-Forwarded-For": [
+        ""
+      ],
+      "x-restapi": [
+        ""
+      ]
+    },
+    "requestContext": {
+      "routeKey": "$disconnect",
+      "disconnectStatusCode": 1000,
+      "messageId": null,
+      "eventType": "DISCONNECT",
+      "extendedRequestId": "bez8MEO6IAMFl9w=",
+      "requestTime": "01/Mar/2021:00:21:21 +0000",
+      "messageDirection": "IN",
+      "disconnectReason": "",
+      "stage": "dev",
+      "connectedAt": 1614558076307,
+      "requestTimeEpoch": 1614558081117,
+      "identity": {
+        "cognitoIdentityPoolId": null,
+        "cognitoIdentityId": null,
+        "principalOrgId": null,
+        "cognitoAuthenticationType": null,
+        "userArn": null,
+        "userAgent": "Python/3.9 websockets/8.1",
+        "accountId": null,
+        "caller": null,
+        "sourceIp": "173.77.239.136",
+        "accessKey": null,
+        "cognitoAuthenticationProvider": null,
+        "user": null
+      },
+      "requestId": "bez8MEO6IAMFl9w=",
+      "domainName": "so6khh47cg.execute-api.us-east-1.amazonaws.com",
+      "connectionId": "bez7cf_6IAMCJvg=",
+      "apiId": "so6khh47cg"
+    },
+    "isBase64Encoded": false
+  }
+]

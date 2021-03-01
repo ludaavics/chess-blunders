@@ -61,28 +61,26 @@ provider:
 
 functions:
   connect:
-    handler: handlers.connect
-    memorySize: 128
+    handler: handlers.ws_connect
     events:
       - websocket:
           route: $connect
 
   disconnect:
-    handler: handlers.disconnect
-    memorySize: 128
+    handler: handlers.ws_disconnect
     events:
       - websocket:
           route: $disconnect
 
   default:
-    handler: handlers.default
-    memorySize: 128
+    handler: handlers.ws_default
     events:
       - websocket:
           route: $default
 
   request-blunders:
     handler: handlers.request_blunders
+    memorySize: 512
     timeout: 60
     events:
       - websocket:
@@ -90,8 +88,8 @@ functions:
 
   blunders-worker:
     handler: handlers.blunders_worker
-    timeout: 90
     memorySize: 5120
+    timeout: 180
     events:
       - sns:
           arn:

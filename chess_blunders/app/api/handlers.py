@@ -50,6 +50,8 @@ def ws_handler(handler, instance, args, kwargs):
     assert not kwargs
     event, context = args
 
+    print(event)
+
     handler_kwargs = {"connection_id": event["requestContext"]["connectionId"]}
     body = event.get("body", "{}")
     try:
@@ -319,23 +321,23 @@ def get_blunders(job_name: str) -> List[Blunder]:
 # ------------------------------------------------------------------------------------ #
 #                                  WebSocket Endpoints                                 #
 #                                                                                      #
-#                                        connect                                       #
-#                                      disconnect                                      #
-#                                        default                                       #
+#                                      ws_connect                                      #
+#                                     ws_disconnect                                    #
+#                                      ws_default                                      #
 #                                   request_blunders                                   #
 # ------------------------------------------------------------------------------------ #
 @ws_handler
-async def connect(connection_id: str):
+async def ws_connect(connection_id: str):
     return make_response(200, "")
 
 
 @ws_handler
-async def disconnect(connection_id: str):
+async def ws_disconnect(connection_id: str):
     return make_response(200, "")
 
 
 @ws_handler
-def default(connection_id: str, **kwargs: Any):
+def ws_default(connection_id: str, **kwargs: Any):
     api_endpoint = os.environ["WEBSOCKET_API_URL"]
     msg = {"error": "Action not found.", "body": kwargs}
     gatewayapi = boto3.client("apigatewaymanagementapi", endpoint_url=api_endpoint)

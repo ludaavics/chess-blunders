@@ -13,13 +13,11 @@ from .conftest import aws_events
 #                              test_get_games_chessdotcom                              #
 #                      test_get_games_chessdotcom_invalid_username                     #
 # ------------------------------------------------------------------------------------ #
-@pytest.mark.parametrize(
-    "get_games_chessdotcom_event", aws_events("get_games_chessdotcom_events")
-)
-def test_get_games_chessdotcom(get_games_chessdotcom_event, null_context):
+@pytest.mark.parametrize("event", aws_events("get_games_chessdotcom_events"))
+def test_get_games_chessdotcom(event, null_context):
     from chess_blunders.app.api import handlers
 
-    response = handlers.get_games_chessdotcom(get_games_chessdotcom_event, null_context)
+    response = handlers.get_games_chessdotcom(event, null_context)
     assert response["statusCode"] == 200
 
 
@@ -54,11 +52,9 @@ def test_get_games_chessdotcom_invalid_query_params(
 #                                 test_blunders_worker                                 #
 #                                   test_get_blunders                                  #
 # ------------------------------------------------------------------------------------ #
-@pytest.mark.parametrize(
-    "request_blunders_event", aws_events("request_blunders_events")
-)
+@pytest.mark.parametrize("event", aws_events("request_blunders_events"))
 def test_request_blunders(
-    request_blunders_event,
+    event,
     null_context,
     jobs_topic,
     queue,
@@ -69,27 +65,27 @@ def test_request_blunders(
         Protocol="sqs",
         Endpoint=queue.attributes["QueueArn"],
     )
-    response = handlers.request_blunders(request_blunders_event, null_context)
+    response = handlers.request_blunders(event, null_context)
     assert response["statusCode"] == 200
 
-    connection_id = request_blunders_event["requestContext"]["connectionId"]
+    connection_id = event["requestContext"]["connectionId"]
     messages = queue.receive_messages(MaxNumberOfMessages=1)
     message = json.loads(json.loads(messages[0].body)["Message"])
     assert message["job_name"] == connection_id
 
 
-@pytest.mark.parametrize("post_blunders_event", aws_events("post_blunders_events"))
-def test_post_blunders(post_blunders_event, null_context, jobs_topic_arn):
+@pytest.mark.parametrize("event", aws_events("post_blunders_events"))
+def test_post_blunders(event, null_context, jobs_topic_arn):
     from chess_blunders.app.api import handlers
 
-    response = handlers.post_blunders(post_blunders_event, null_context)
+    response = handlers.post_blunders(event, null_context)
     assert response["statusCode"] == 202
     assert "blunders" in response["body"]
 
 
-@pytest.mark.parametrize("blunders_job_event", aws_events("blunders_job_events"))
+@pytest.mark.parametrize("event", aws_events("blunders_job_events"))
 def test_blunders_worker(
-    blunders_job_event,
+    event,
     null_context,
     blunders_topic,
     queue,
@@ -101,7 +97,7 @@ def test_blunders_worker(
         Protocol="sqs",
         Endpoint=queue.attributes["QueueArn"],
     )
-    response = handlers.blunders_worker(blunders_job_event, null_context)
+    response = handlers.blunders_worker(event, null_context)
     snapshot.assert_match(response)
 
     messages = queue.receive_messages(MaxNumberOfMessages=1)
@@ -112,11 +108,11 @@ def test_blunders_worker(
     snapshot.assert_match(message_attributes)
 
 
-@pytest.mark.parametrize("blunders_event", aws_events("blunders_events"))
-def test_get_blunders(blunders_event, null_context, blunders_table, snapshot):
+@pytest.mark.parametrize("event", aws_events("blunders_events"))
+def test_get_blunders(event, null_context, blunders_table, snapshot):
     from chess_blunders.app.api import handlers
 
-    response = handlers.get_blunders(blunders_event, null_context)
+    response = handlers.get_blunders(event, null_context)
     snapshot.assert_match(response)
 
 
@@ -126,16 +122,16 @@ def test_get_blunders(blunders_event, null_context, blunders_table, snapshot):
 #                                  test_blunders_to_db                                 #
 #                                  test_blunders_to_ws                                 #
 # ------------------------------------------------------------------------------------ #
-@pytest.mark.parametrize("blunders_event", aws_events("blunders_events"))
+@pytest.mark.parametrize("event", aws_events("blunders_events"))
 def test_blunders_to_db(
-    blunders_event,
+    event,
     null_context,
     empty_blunders_table,
     snapshot,
 ):
     from chess_blunders.app.api import handlers
 
-    response = handlers.blunders_to_db(blunders_event, null_context)
+    response = handlers.blunders_to_db(event, null_context)
     response.pop("created_at")
     snapshot.assert_match(response)
 
@@ -146,17 +142,45 @@ def test_blunders_to_db(
 
 
 @pytest.mark.skip(reason="Can't mock apigatewaymanagementapi AWS service")
-@pytest.mark.parametrize("blunders_event", aws_events("blunders_events"))
+@pytest.mark.parametrize("event", aws_events("blunders_events"))
 def test_blunders_to_ws(
-    blunders_event,
+    event,
     null_context,
     websocket_api_url,
     snapshot,
 ):
     from chess_blunders.app.api import handlers
 
-    response = handlers.blunders_to_ws(blunders_event, null_context)
+    response = handlers.blunders_to_ws(event, null_context)
     snapshot.assert_match(response)
+
+
+# ------------------------------------------------------------------------------------ #
+#                                 WebSocket Boilerplate                                #
+# ------------------------------------------------------------------------------------ #
+@pytest.mark.parametrize("event", aws_events("ws_connect_events"))
+def test_ws_connect(event, null_context):
+    from chess_blunders.app.api import handlers
+
+    response = handlers.ws_connect(event, null_context)
+    assert response["statusCode"] == 200
+
+
+@pytest.mark.parametrize("event", aws_events("ws_disconnect_events"))
+def test_ws_disconnect(event, null_context):
+    from chess_blunders.app.api import handlers
+
+    response = handlers.ws_disconnect(event, null_context)
+    assert response["statusCode"] == 200
+
+
+@pytest.mark.skip(reason="Can't mock apigatewaymanagementapi AWS service")
+@pytest.mark.parametrize("event", aws_events("ws_default_events"))
+def test_ws_default(event, null_context):
+    from chess_blunders.app.api import handlers
+
+    response = handlers.ws_default(event, null_context)
+    assert response["statusCode"] == 200
 
 
 # ------------------------------------------------------------------------------------ #
@@ -164,16 +188,12 @@ def test_blunders_to_ws(
 #                                                                                      #
 #                                test_exception_handling                               #
 # ------------------------------------------------------------------------------------ #
-@pytest.mark.parametrize(
-    "get_games_chessdotcom_event", aws_events("get_games_chessdotcom_events")
-)
-def test_exception_handling(get_games_chessdotcom_event, null_context):
+@pytest.mark.parametrize("event", aws_events("get_games_chessdotcom_events"))
+def test_exception_handling(event, null_context):
     from chess_blunders.app.api import handlers
 
     with requests_mock.Mocker(real_http=True) as m:
         m.get(re.compile(handlers.CHESSDOTCOM_API_HOST), status_code=500)
-        response = handlers.get_games_chessdotcom(
-            get_games_chessdotcom_event, null_context
-        )
+        response = handlers.get_games_chessdotcom(event, null_context)
         assert response["statusCode"] == 503
         assert response["body"]["error"]["type"] == "ThirdPartyRequestError"

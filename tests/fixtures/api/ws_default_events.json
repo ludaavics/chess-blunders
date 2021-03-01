@@ -1,0 +1,72 @@
+[
+  {
+    "requestContext": {
+      "routeKey": "$default",
+      "disconnectStatusCode": null,
+      "messageId": "bez7ucBoIAMCJvg=",
+      "eventType": "MESSAGE",
+      "extendedRequestId": "bez7uFMSoAMFr8w=",
+      "requestTime": "01/Mar/2021:00:21:18 +0000",
+      "messageDirection": "IN",
+      "disconnectReason": null,
+      "stage": "dev",
+      "connectedAt": 1614558076307,
+      "requestTimeEpoch": 1614558078143,
+      "identity": {
+        "cognitoIdentityPoolId": null,
+        "cognitoIdentityId": null,
+        "principalOrgId": null,
+        "cognitoAuthenticationType": null,
+        "userArn": null,
+        "userAgent": "Python/3.9 websockets/8.1",
+        "accountId": null,
+        "caller": null,
+        "sourceIp": "173.77.239.136",
+        "accessKey": null,
+        "cognitoAuthenticationProvider": null,
+        "user": null
+      },
+      "requestId": "bez7uFMSoAMFr8w=",
+      "domainName": "so6khh47cg.execute-api.us-east-1.amazonaws.com",
+      "connectionId": "bez7cf_6IAMCJvg=",
+      "apiId": "so6khh47cg"
+    },
+    "body": "{\"username\": \"ludaavics\", \"source\": \"chess.com\"}",
+    "isBase64Encoded": false
+  },
+  {
+    "requestContext": {
+      "routeKey": "$default",
+      "disconnectStatusCode": null,
+      "messageId": "bez8KcEiIAMCJvg=",
+      "eventType": "MESSAGE",
+      "extendedRequestId": "bez8KE0zIAMFuww=",
+      "requestTime": "01/Mar/2021:00:21:20 +0000",
+      "messageDirection": "IN",
+      "disconnectReason": null,
+      "stage": "dev",
+      "connectedAt": 1614558076307,
+      "requestTimeEpoch": 1614558080920,
+      "identity": {
+        "cognitoIdentityPoolId": null,
+        "cognitoIdentityId": null,
+        "principalOrgId": null,
+        "cognitoAuthenticationType": null,
+        "userArn": null,
+        "userAgent": "Python/3.9 websockets/8.1",
+        "accountId": null,
+        "caller": null,
+        "sourceIp": "173.77.239.136",
+        "accessKey": null,
+        "cognitoAuthenticationProvider": null,
+        "user": null
+      },
+      "requestId": "bez8KE0zIAMFuww=",
+      "domainName": "so6khh47cg.execute-api.us-east-1.amazonaws.com",
+      "connectionId": "bez7cf_6IAMCJvg=",
+      "apiId": "so6khh47cg"
+    },
+    "body": "{'invalid': Invalid { JSON message.",
+    "isBase64Encoded": false
+  }
+]
