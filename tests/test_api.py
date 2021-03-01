@@ -190,9 +190,10 @@ def test_ws_default(event, null_context):
 # ------------------------------------------------------------------------------------ #
 #                                      Exceptions                                      #
 #                                                                                      #
-#                                    test_http_error                                   #
-#                        test_request_blunders_validation_error                        #
+#                                 test_http_http_error                                 #
 #                              test_http_validation_error                              #
+#                            test_websocket_validation_error                           #
+#                             test_websocket_runtime_error                             #
 # ------------------------------------------------------------------------------------ #
 @pytest.mark.parametrize("event", aws_events("get_games_chessdotcom_events"))
 def test_http_http_error(event, null_context):

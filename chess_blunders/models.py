@@ -7,6 +7,10 @@ from pydantic import BaseModel, Field
 # ------------------------------------------------------------------------------------ #
 #                                         Games                                        #
 # ------------------------------------------------------------------------------------ #
+class Source(str, Enum):
+    chessdotcom = "chess.com"
+
+
 class Color(str, Enum):
     white = "white"
     black = "black"

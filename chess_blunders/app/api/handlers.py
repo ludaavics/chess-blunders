@@ -26,7 +26,7 @@ from requests_futures.sessions import FuturesSession
 
 from chess_blunders import __version__, core
 from chess_blunders.app.api.exc import requests_http_error_handler
-from chess_blunders.models import Blunder, Color, Game
+from chess_blunders.models import Blunder, Color, Game, Source
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -345,7 +345,7 @@ def ws_default(connection_id: str, **kwargs: Any):
 async def request_blunders(
     connection_id: str,
     username: str,
-    source: str,
+    source: Source,
     *,
     threshold: confloat(gt=0.0, lt=1.0) = 0.25,  # type: ignore
     nodes: PositiveInt = 500_000,
@@ -354,7 +354,7 @@ async def request_blunders(
     n_games: int = 5,
 ):
     jobs_topic_arn = os.environ["JOBS_TOPIC_ARN"]
-    if source == "chess.com":
+    if source == "chess.com":  # pragma: no branch
         return await request_blunders_chessdotcom(
             connection_id,
             username,
@@ -365,9 +365,6 @@ async def request_blunders(
             jobs_topic_arn=jobs_topic_arn,
             n_games=n_games,
         )
-    else:
-        # send an error message and kill the connection
-        pass
 
 
 async def request_blunders_chessdotcom(
