@@ -155,7 +155,7 @@ def websocket_api_url():
 # ------------------------------------------------------------------------------------ #
 #                                      AWS events                                      #
 # ------------------------------------------------------------------------------------ #
-def event(name: str):
+def aws_events(name: str):
     name = name if name.endswith(".json") else name + ".json"
     with open(
         pathlib.Path(__file__).parent.absolute().joinpath("fixtures", "api", name)
@@ -164,49 +164,18 @@ def event(name: str):
 
 
 @pytest.fixture
-def request_blunders_events():
-    return event("request_blunders_events")
-
-
-@pytest.fixture
-def get_games_chessdotcom_event():
-    return event("get_games_chessdotcom_event")
-
-
-@pytest.fixture
-def get_games_chessdotcom_invalid_username_event(get_games_chessdotcom_event):
-    event = get_games_chessdotcom_event
+def get_games_chessdotcom_invalid_username_event():
+    event = aws_events("get_games_chessdotcom_events")[0]
     bad_username = "".join(random.choices("abcdefghijklmnopqrstuvwxyz", k=40))
     original_username = event["pathParameters"]["username"]
-    return json.loads(
-        json.dumps(get_games_chessdotcom_event).replace(original_username, bad_username)
-    )
+    return json.loads(json.dumps(event).replace(original_username, bad_username))
 
 
 @pytest.fixture
-def get_games_chessdotcom_invalid_query_params_event(get_games_chessdotcom_event):
-    event = get_games_chessdotcom_event
+def get_games_chessdotcom_invalid_query_params_event():
+    event = aws_events("get_games_chessdotcom_events")[0]
     event["queryStringParameters"] = {"limit": -1}
     return event
-
-
-@pytest.fixture
-def post_blunders_events():
-    return event("post_blunders_events")
-
-
-@pytest.fixture
-def get_blunders_events():
-    return event("get_blunders_events")
-
-
-@pytest.fixture
-def blunders_job_events():
-    return event("blunders_job_events")
-
-
-def blunders_events():
-    return event("blunders_events")
 
 
 # ------------------------------------------------------------------------------------ #
