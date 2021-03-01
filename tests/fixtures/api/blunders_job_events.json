@@ -20,5 +20,27 @@
         }
       }
     ]
+  },
+  {
+    "Records": [
+      {
+        "EventSource": "aws:sns",
+        "EventVersion": "1.0",
+        "EventSubscriptionArn": "arn:aws:sns:us-east-1:199729671587:dev-blunders-jobs-topic:5d1e7665-5471-49a6-b127-54b0f84bcc61",
+        "Sns": {
+          "Type": "Notification",
+          "MessageId": "fd2fd032-e9ce-5d29-a1f5-8885e18fb5bc",
+          "TopicArn": "arn:aws:sns:us-east-1:199729671587:dev-blunders-jobs-topic",
+          "Subject": null,
+          "Message": "{\"job_name\": \"bg3excLCIAMCFkw=\", \"connection_id\": \"bg3excLCIAMCFkw=\", \"games\": [{\"url\": \"https://www.chess.com/game/daily/195452148\", \"white\": {\"name\": \"FlashCP3\", \"url\": \"https://api.chess.com/pub/player/flashcp3\", \"rating\": 1397, \"result\": \"win\"}, \"black\": {\"name\": \"ludavics\", \"url\": \"https://api.chess.com/pub/player/ludavics\", \"rating\": 1165, \"result\": \"resigned\"}, \"pgn\": \"[Event \\\"Let's Play!\\\"]\\n[Site \\\"Chess.com\\\"]\\n[Date \\\"2018.05.23\\\"]\\n[Round \\\"-\\\"]\\n[White \\\"FlashCP3\\\"]\\n[Black \\\"ludavics\\\"]\\n[Result \\\"1-0\\\"]\\n[CurrentPosition \\\"r1b2rk1/ppNp1ppp/5n2/3Ppq2/2PP4/8/PP1QNPPP/R3KB1R b KQ - 0 11\\\"]\\n[Timezone \\\"UTC\\\"]\\n[ECO \\\"A40\\\"]\\n[ECOUrl \\\"https://www.chess.com/openings/Queens-Pawn-Opening-Mikenas-Defense-2.c4-e5-3.d5\\\"]\\n[UTCDate \\\"2018.05.23\\\"]\\n[UTCTime \\\"21:40:36\\\"]\\n[WhiteElo \\\"1397\\\"]\\n[BlackElo \\\"1165\\\"]\\n[TimeControl \\\"1/86400\\\"]\\n[Termination \\\"FlashCP3 won by resignation\\\"]\\n[StartTime \\\"21:40:36\\\"]\\n[EndDate \\\"2018.05.24\\\"]\\n[EndTime \\\"01:09:28\\\"]\\n[Link \\\"https://www.chess.com/game/daily/195452148\\\"]\\n\\n1. d4 Nc6 2. c4 e5 3. d5 Bb4+ 4. Bd2 Bxd2+ 5. Qxd2 Nd4 6. e3 Qh4 7. exd4 Qe4+ 8. Ne2 Nf6 9. Nc3 Qf5 10. Nb5 O-O 11. Nxc7 1-0\", \"fen\": \"r1b2rk1/ppNp1ppp/5n2/3Ppq2/2PP4/8/PP1QNPPP/R3KB1R b KQ - 0 11\", \"start_time\": 1527111636, \"end_time\": 1527124168, \"time_control\": \"1/86400\", \"rules\": \"chess\", \"eco_url\": null, \"tournament_url\": null, \"match_url\": null}], \"colors\": [\"black\"], \"threshold\": 0.25, \"nodes\": 500000, \"max_variation_plies\": null, \"logistic_scale\": 0.004}",
+          "Timestamp": "2021-03-01T15:19:29.666Z",
+          "SignatureVersion": "1",
+          "Signature": "q6AgCm8FB0ZxclGm0xd04vVOGMkJiG4m+4tmw1Hp5yEJk6+tiCJLdOk7xZfa6pcCqEbOD2UNn/wzFjtkr0pUi7KXCbv53H53XUCG4aUxEVSdE1ABaas9bDKbPRlsLm1lcD8bX1FzlJtDINhE617KrXyciRkoUkjcvvMvoN9rNtEGyToByT2oNaN18STrhAVEtre/pSo5O2c0zZKcCXzuiqOdlz6FKhNVQ9+x02/Lm06/a186LvJ53XLB5pp1wZqvDBq0kxUNb9QKwye99cs88yGF6ZvRv61GMR8Y+9KlkPV+l+qMLFaPEd7cgr8+Bf9Sm7SPW9oK4j8E0xvQpfPe4g==",
+          "SigningCertUrl": "https://sns.us-east-1.amazonaws.com/SimpleNotificationService-010a507c1833636cd94bdb98bd93083a.pem",
+          "UnsubscribeUrl": "https://sns.us-east-1.amazonaws.com/?Action=Unsubscribe&SubscriptionArn=arn:aws:sns:us-east-1:199729671587:dev-blunders-jobs-topic:5d1e7665-5471-49a6-b127-54b0f84bcc61",
+          "MessageAttributes": {}
+        }
+      }
+    ]
   }
 ]

@@ -81,6 +81,29 @@ snapshots["test_blunders_worker[event0] 2"] = {
 
 snapshots["test_blunders_worker[event0] 3"] = {}
 
+snapshots["test_blunders_worker[event1] 1"] = [
+    {
+        "cp_loss": -417.0,
+        "pgn": "6. e3 Qh4 ( { Refutation (-510) } 6... Qh4 7. exd4 ) ( { Solution (-93) } 6... Nf5 ) 7. exd4 Qe4+ 8. Ne2 Nf6 9. Nc3 Qf5 10. Nb5 O-O 11. Nxc7",
+        "probability_loss": -0.29299110755486085,
+        "starting_fen": "r1b1k1nr/pppp1ppp/8/3Pp3/2Pn3q/4P3/PP1Q1PPP/RN2KBNR w KQkq - 1 7",
+    }
+]
+
+snapshots["test_blunders_worker[event1] 2"] = {
+    "blunder": {
+        "cp_loss": -417.0,
+        "pgn": "6. e3 Qh4 ( { Refutation (-510) } 6... Qh4 7. exd4 ) ( { Solution (-93) } 6... Nf5 ) 7. exd4 Qe4+ 8. Ne2 Nf6 9. Nc3 Qf5 10. Nb5 O-O 11. Nxc7",
+        "probability_loss": -0.29299110755486085,
+        "starting_fen": "r1b1k1nr/pppp1ppp/8/3Pp3/2Pn3q/4P3/PP1Q1PPP/RN2KBNR w KQkq - 1 7",
+    },
+    "job_name": "bg3excLCIAMCFkw=",
+}
+
+snapshots["test_blunders_worker[event1] 3"] = {
+    "connection_id": {"Type": "String", "Value": "bg3excLCIAMCFkw="}
+}
+
 snapshots["test_get_blunders[event0] 1"] = {
     "body": """[
   {
