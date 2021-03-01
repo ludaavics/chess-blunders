@@ -1,4 +1,5 @@
 import json
+import os
 import re
 
 import pytest
@@ -105,7 +106,7 @@ def test_blunders_worker(
     messages = queue.receive_messages(MaxNumberOfMessages=1)
     enveloppe = json.loads(messages[0].body)
     message = json.loads(enveloppe["Message"])
-    message_attributes = enveloppe["MessageAttributes"]
+    message_attributes = enveloppe.get("MessageAttributes", {})
     snapshot.assert_match(message)
     snapshot.assert_match(message_attributes)
 
@@ -194,6 +195,7 @@ def test_ws_default(event, null_context):
 #                              test_http_validation_error                              #
 #                            test_websocket_validation_error                           #
 #                             test_websocket_runtime_error                             #
+#                            test_async_queue_runtime_error                            #
 # ------------------------------------------------------------------------------------ #
 @pytest.mark.parametrize("event", aws_events("get_games_chessdotcom_events"))
 def test_http_http_error(event, null_context):
@@ -249,3 +251,19 @@ def test_websocket_runtime_error(
     for record in caplog.records:
         assert isinstance(record.msg, KeyError)
         assert record.message == "'JOBS_TOPIC_ARN'"
+
+
+@pytest.mark.parametrize("event", aws_events("blunders_job_events")[:1])
+def test_async_queue_runtime_error(
+    event,
+    null_context,
+    blunders_topic,
+    caplog,
+):
+    from chess_blunders.app.api import handlers
+
+    os.environ["BLUNDERS_TOPIC_ARN"] = "foo"
+    handlers.blunders_worker(event, null_context)
+    assert caplog.records
+    for record in caplog.records:
+        assert "Endpoint with arn foo not found" in record.message

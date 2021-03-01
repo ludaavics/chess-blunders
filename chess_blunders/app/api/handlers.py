@@ -1,4 +1,5 @@
 import asyncio
+import contextlib
 import inspect
 import json
 import logging
@@ -124,6 +125,17 @@ def http_handler(handler, instance, args, kwargs):
     return asyncio.run(handle())
 
 
+@contextlib.asynccontextmanager
+async def next_item(queue: asyncio.Queue):
+    item = await queue.get()
+    try:
+        yield item
+    except Exception as exc:
+        logger.exception(exc)
+    finally:
+        queue.task_done()
+
+
 # ------------------------------------------------------------------------------------ #
 #                                        Workers                                       #
 # ------------------------------------------------------------------------------------ #
@@ -143,22 +155,21 @@ async def blunders_worker(
 
     async def publish_blunder(queue: asyncio.Queue):
         while True:
-            blunder = await queue.get()
-            message = {"job_name": job_name, "blunder": blunder.dict()}
-            attributes = {
-                "connection_id": {
-                    "DataType": "String",
-                    "StringValue": str(connection_id),
-                }
-            }
-            try:
+            async with next_item(queue) as blunder:
+                message = {"job_name": job_name, "blunder": blunder.dict()}
+                attributes = {}
+                if connection_id is not None:
+                    attributes.update(
+                        {
+                            "connection_id": {
+                                "DataType": "String",
+                                "StringValue": connection_id,
+                            }
+                        }
+                    )
                 blunders_topic.publish(
                     Message=json.dumps(message), MessageAttributes=attributes
                 )
-            except Exception as e:
-                logger.exception(e)
-            finally:
-                queue.task_done()
 
     results: asyncio.Queue = asyncio.Queue()
     producers = asyncio.create_task(

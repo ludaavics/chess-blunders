@@ -73,9 +73,7 @@ snapshots["test_blunders_worker[event0] 2"] = {
     "job_name": "morning-tree-0821",
 }
 
-snapshots["test_blunders_worker[event0] 3"] = {
-    "connection_id": {"Type": "String", "Value": "None"}
-}
+snapshots["test_blunders_worker[event0] 3"] = {}
 
 snapshots["test_get_blunders[event0] 1"] = {
     "body": """[
