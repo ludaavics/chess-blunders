@@ -6,7 +6,7 @@ python:
 branches:
   # avoid duplicate jobs on updated PRs
   only:
-    - master
+    - main
 cache:
   pip: true
   directories:
@@ -35,6 +35,6 @@ deploy:
   script: make deploy-api-prod
   skip_cleanup: true
   on:
-    branch: master
+    branch: main
     python: "3.8"
     condition: $TRAVIS_PULL_REQUEST = "false"
