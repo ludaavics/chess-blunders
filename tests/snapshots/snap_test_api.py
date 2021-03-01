@@ -56,19 +56,25 @@ snapshots["test_blunders_to_db[event1] 2"] = {
 
 snapshots["test_blunders_worker[event0] 1"] = [
     {
-        "cp_loss": -100644.0,
-        "pgn": "30... Kg8 { [%clk 0:01:21.2] } 31. Rd3 { [%clk 0:00:03.3] } ( { Refutation (-99998) } 31. Rd3 Ra1+ 32. Rd1 Rxd1# ) ( { Solution (646) } 31. h3 Rf8 ) 31... Ra1+ { [%clk 0:01:21.4] }",
-        "probability_loss": -0.9298247211092094,
+        "cp_loss": -509.0,
+        "pgn": "15... Nd5 { [%clk 0:01:59.4] } 16. Be3 { [%clk 0:00:25.7] } ( { Refutation (162) } 16. Be3 Nxe3 ) ( { Solution (671) } 16. Rd1 ) 16... Qb6 { [%clk 0:01:39.8] } 17. Bxc5+ { [%clk 0:00:18.6] } 17... Qxc5 { [%clk 0:01:40.4] } 18. a4 { [%clk 0:00:18.4] } 18... a6 { [%clk 0:01:29.9] } 19. axb5 { [%clk 0:00:16.5] } 19... axb5 { [%clk 0:01:30.3] } 20. Rxa8 { [%clk 0:00:11.7] } 20... Rxa8 { [%clk 0:01:31.7] } 21. Rd1 { [%clk 0:00:10.6] } 21... Ke6 { [%clk 0:01:27.1] } 22. Qg4+ { [%clk 0:00:08.9] } 22... Kf6 { [%clk 0:01:23.3] } 23. Qf3+ { [%clk 0:00:05.5] } 23... Ke6 { [%clk 0:01:20.8] } 24. Qg4+ { [%clk 0:00:05.7] } 24... Kf6 { [%clk 0:01:21.2] } 25. Qf3+ { [%clk 0:00:06.8] } 25... Ke7 { [%clk 0:01:21.8] } 26. Qg3 { [%clk 0:00:02.7] } 26... Kf8 { [%clk 0:01:21] } 27. Qf3+ { [%clk 0:00:02.3] } 27... Kg8 { [%clk 0:01:22] } 28. Qg4 { [%clk 0:00:02.3] } 28... h5 { [%clk 0:01:22] } 29. Qe6+ { [%clk 0:00:03.3] } 29... Kh8 { [%clk 0:01:22] } 30. Qg6 { [%clk 0:00:02.1] } 30... Kg8 { [%clk 0:01:21.2] } 31. Rd3 { [%clk 0:00:03.3] } 31... Ra1+ { [%clk 0:01:21.4] }",
+        "probability_loss": -0.2795162669459942,
+        "starting_fen": "r2q3r/p5pp/2pk4/1pbnp3/4Q3/PBP1B3/1PP2PPP/R4RK1 b - - 2 16",
+    },
+    {
+        "cp_loss": -100674.0,
+        "pgn": "30... Kg8 { [%clk 0:01:21.2] } 31. Rd3 { [%clk 0:00:03.3] } ( { Refutation (-99998) } 31. Rd3 Ra1+ 32. Rd1 Rxd1# ) ( { Solution (676) } 31. Qe6+ Kh7 ) 31... Ra1+ { [%clk 0:01:21.4] }",
+        "probability_loss": -0.937262262592271,
         "starting_fen": "r5k1/6p1/2p3Q1/1pqnp2p/8/1BPR4/1PP2PPP/6K1 b - - 5 31",
-    }
+    },
 ]
 
 snapshots["test_blunders_worker[event0] 2"] = {
     "blunder": {
-        "cp_loss": -100644.0,
-        "pgn": "30... Kg8 { [%clk 0:01:21.2] } 31. Rd3 { [%clk 0:00:03.3] } ( { Refutation (-99998) } 31. Rd3 Ra1+ 32. Rd1 Rxd1# ) ( { Solution (646) } 31. h3 Rf8 ) 31... Ra1+ { [%clk 0:01:21.4] }",
-        "probability_loss": -0.9298247211092094,
-        "starting_fen": "r5k1/6p1/2p3Q1/1pqnp2p/8/1BPR4/1PP2PPP/6K1 b - - 5 31",
+        "cp_loss": -509.0,
+        "pgn": "15... Nd5 { [%clk 0:01:59.4] } 16. Be3 { [%clk 0:00:25.7] } ( { Refutation (162) } 16. Be3 Nxe3 ) ( { Solution (671) } 16. Rd1 ) 16... Qb6 { [%clk 0:01:39.8] } 17. Bxc5+ { [%clk 0:00:18.6] } 17... Qxc5 { [%clk 0:01:40.4] } 18. a4 { [%clk 0:00:18.4] } 18... a6 { [%clk 0:01:29.9] } 19. axb5 { [%clk 0:00:16.5] } 19... axb5 { [%clk 0:01:30.3] } 20. Rxa8 { [%clk 0:00:11.7] } 20... Rxa8 { [%clk 0:01:31.7] } 21. Rd1 { [%clk 0:00:10.6] } 21... Ke6 { [%clk 0:01:27.1] } 22. Qg4+ { [%clk 0:00:08.9] } 22... Kf6 { [%clk 0:01:23.3] } 23. Qf3+ { [%clk 0:00:05.5] } 23... Ke6 { [%clk 0:01:20.8] } 24. Qg4+ { [%clk 0:00:05.7] } 24... Kf6 { [%clk 0:01:21.2] } 25. Qf3+ { [%clk 0:00:06.8] } 25... Ke7 { [%clk 0:01:21.8] } 26. Qg3 { [%clk 0:00:02.7] } 26... Kf8 { [%clk 0:01:21] } 27. Qf3+ { [%clk 0:00:02.3] } 27... Kg8 { [%clk 0:01:22] } 28. Qg4 { [%clk 0:00:02.3] } 28... h5 { [%clk 0:01:22] } 29. Qe6+ { [%clk 0:00:03.3] } 29... Kh8 { [%clk 0:01:22] } 30. Qg6 { [%clk 0:00:02.1] } 30... Kg8 { [%clk 0:01:21.2] } 31. Rd3 { [%clk 0:00:03.3] } 31... Ra1+ { [%clk 0:01:21.4] }",
+        "probability_loss": -0.2795162669459942,
+        "starting_fen": "r2q3r/p5pp/2pk4/1pbnp3/4Q3/PBP1B3/1PP2PPP/R4RK1 b - - 2 16",
     },
     "job_name": "morning-tree-0821",
 }
