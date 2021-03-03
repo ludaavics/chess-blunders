@@ -8,7 +8,66 @@
   </head>
 
   <body>
-    <div id="chessground"></div>
+    <div class="container">
+
+      <div class="row mb-3">
+        <form
+          name="blunders-form"
+          class="row g-2 justify-content-center"
+        >
+          <div class="col-auto">
+            <input
+              type="text"
+              id="username"
+              class="form-control"
+              placeholder="username"
+            >
+          </div>
+          <div class="col-auto">
+            <select
+              id="source"
+              class="form-select"
+              aria-label="Source select"
+            >
+              <option
+                value="chess.com"
+                selected
+              >chess.com</option>
+              <option
+                value="lichess"
+                disabled
+              >lichess</option>
+            </select>
+          </div>
+          <div class="col-auto">
+            <button
+              id="btn-request-blunders"
+              type="submit"
+              class="btn btn-primary"
+            >Generate</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="row justify-content-center">
+        <div class="col-auto">
+          <div id="puzzle"></div>
+        </div>
+      </div>
+
+      <!-- Received blunders -->
+      <div class="row g-2 justify-content-center">
+        <div
+          class="col-8"
+          style="background-color:gainsboro;"
+        >
+          <pre><code id="blunders">
+        </code></pre>
+        </div>
+      </div>
+
+    </div>
+
     <script type="module" src="./index.ts"></script>
   </body>
 </html>
