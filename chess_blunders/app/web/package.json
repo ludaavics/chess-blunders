@@ -1,0 +1,19 @@
+{
+  "name": "chess-blunders-web-app",
+  "version": "0.1.0",
+  "description": "Chess Blunders Web App",
+  "main": "index.js",
+  "scripts": {
+    "start": "parcel serve ./src/index.html",
+    "build": "parcel build ./src/index.html"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "chessground": "^7.11.0"
+  },
+  "devDependencies": {
+    "parcel": "^2.0.0-beta.1"
+  }
+}
