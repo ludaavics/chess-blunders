@@ -20,7 +20,18 @@ function updateNextBlunderBtn(nextBlunders) {
     btn.classList.remove('text-muted');
     btn.innerHTML = `Next Blunder <span class="badge bg-secondary">${nextBlunders.length}</span>`;
   }
-  console.log(`We now have ${nextBlunders.length} blunders`);
+}
+
+function spinRequestButton() {
+  const btn = document.getElementById('btn-request-blunders');
+  btn.classList.add('disabled');
+  btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Generating...';
+}
+
+function stopRequestButton() {
+  const btn = document.getElementById('btn-request-blunders');
+  btn.classList.remove('disabled');
+  btn.innerHTML = 'Generate';
 }
 
 function showNextBlunder(cg: Api) {
@@ -60,6 +71,7 @@ function requestBlunders(
   nGames: number = 3,
   nodes: number = 500000,
 ) {
+  spinRequestButton();
   const outgoingMessage = {
     action: 'request-blunders',
     n_games: nGames,
@@ -67,7 +79,6 @@ function requestBlunders(
     source,
     nodes,
   };
-  console.log(outgoingMessage);
   socket.send(JSON.stringify(outgoingMessage));
 }
 document.forms['blunders-form'].onsubmit = function () {
@@ -88,14 +99,15 @@ socket.onmessage = (event) => {
 
   const message = JSON.parse(event.data);
   if (message.action === 'blunder') {
-    console.log(`Adding a blunder to a list of ${nextBlunders.length}`);
     nextBlunders.push(message.blunder);
     window.sessionStorage.setItem('nextBlunders', JSON.stringify(nextBlunders));
 
-    if (cg.getFen() === STARTING_FEN) {
+    const isFirstBlunder = cg.getFen() === STARTING_FEN;
+    if (isFirstBlunder) {
       showNextBlunder(cg);
     } else {
       updateNextBlunderBtn(nextBlunders);
     }
+    stopRequestButton();
   }
 };
