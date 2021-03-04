@@ -12,6 +12,7 @@
   "license": "MIT",
   "dependencies": {
     "bootstrap": "^5.0.0-beta2",
+    "chess.js": "^0.11.0",
     "chessground": "^7.11.0"
   },
   "devDependencies": {

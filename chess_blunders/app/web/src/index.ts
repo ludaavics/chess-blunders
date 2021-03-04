@@ -1,15 +1,64 @@
+import { Chess } from 'chess.js';
 import { Chessground } from 'chessground';
+import { Api } from 'chessground/api';
+import { playOtherSide, toDests } from './utilities';
 import './styles/chessground.css';
 import './styles/chessground-theme.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-const config = {};
-Chessground(document.getElementById('puzzle'), config);
-
+const STARTING_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR';
 const socket = new WebSocket('wss://so6khh47cg.execute-api.us-east-1.amazonaws.com/dev');
 
+function updateNextBlunderBtn(nextBlunders) {
+  const btn = document.getElementById('next-blunder');
+  if (nextBlunders.length === 0) {
+    btn.classList.add('disabled');
+    btn.classList.add('text-muted');
+    btn.innerHTML = 'Next Blunder';
+  } else {
+    btn.classList.remove('disabled');
+    btn.classList.remove('text-muted');
+    btn.innerHTML = `Next Blunder <span class="badge bg-secondary">${nextBlunders.length}</span>`;
+  }
+  console.log(`We now have ${nextBlunders.length} blunders`);
+}
+
+function showNextBlunder(cg: Api) {
+  const nextBlunders: Array<any> = JSON.parse(window.sessionStorage.getItem('nextBlunders')) ?? [];
+  const nextBlunder = nextBlunders.pop();
+  if (nextBlunder === undefined) {
+    return false;
+  }
+  cg.set({ fen: nextBlunder.starting_fen });
+  window.sessionStorage.setItem('nextBlunders', JSON.stringify(nextBlunders));
+  updateNextBlunderBtn(nextBlunders);
+  return nextBlunder;
+}
+
+function initializeBoard() {
+  const chess = new Chess();
+  const cg = Chessground(document.getElementById('puzzle'), {
+    coordinates: false,
+    movable: {
+      free: false,
+      color: 'white',
+      dests: toDests(chess),
+    },
+  });
+  cg.set({
+    movable: { events: { after: playOtherSide(cg, chess) } },
+  });
+
+  showNextBlunder(cg);
+
+  return cg;
+}
+
 function requestBlunders(
-  username: string, source: string, nGames: number = 3, nodes: number = 500000,
+  username: string,
+  source: string,
+  nGames: number = 3,
+  nodes: number = 500000,
 ) {
   const outgoingMessage = {
     action: 'request-blunders',
@@ -22,8 +71,16 @@ function requestBlunders(
   socket.send(JSON.stringify(outgoingMessage));
 }
 document.forms['blunders-form'].onsubmit = function () {
+  if (this === undefined) {
+    return false;
+  }
   requestBlunders(this.username.value, this.source.value);
   return false;
+};
+
+const cg = initializeBoard();
+document.getElementById('next-blunder').onclick = () => {
+  showNextBlunder(cg);
 };
 
 socket.onmessage = (event) => {
@@ -31,8 +88,14 @@ socket.onmessage = (event) => {
 
   const message = JSON.parse(event.data);
   if (message.action === 'blunder') {
+    console.log(`Adding a blunder to a list of ${nextBlunders.length}`);
     nextBlunders.push(message.blunder);
     window.sessionStorage.setItem('nextBlunders', JSON.stringify(nextBlunders));
-    console.log(`We now have ${nextBlunders.length} blunders in store..`);
+
+    if (cg.getFen() === STARTING_FEN) {
+      showNextBlunder(cg);
+    } else {
+      updateNextBlunderBtn(nextBlunders);
+    }
   }
 };
