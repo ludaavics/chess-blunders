@@ -7,8 +7,10 @@ import './styles/chessground-theme.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const STARTING_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR';
+const BLUNDERS_BUFFER_SIZE = 5;
 const socket = new WebSocket('wss://so6khh47cg.execute-api.us-east-1.amazonaws.com/dev');
 
+/* ------------------------------------ Handlers ------------------------------------ */
 function updateNextBlunderBtn(nextBlunders) {
   const btn = document.getElementById('next-blunder');
   if (nextBlunders.length === 0) {
@@ -18,14 +20,19 @@ function updateNextBlunderBtn(nextBlunders) {
   } else {
     btn.classList.remove('disabled');
     btn.classList.remove('text-muted');
-    btn.innerHTML = `Next Blunder <span class="badge bg-secondary">${nextBlunders.length}</span>`;
+    btn.innerHTML = (
+      `Next Blunder <span class="badge bg-secondary">\
+      ${nextBlunders.length}</span>`);
   }
 }
 
 function spinRequestButton() {
   const btn = document.getElementById('btn-request-blunders');
   btn.classList.add('disabled');
-  btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Generating...';
+  btn.innerHTML = (
+    '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true">'
+    + '</span> Generating...'
+  );
 }
 
 function stopRequestButton() {
@@ -35,7 +42,9 @@ function stopRequestButton() {
 }
 
 function showNextBlunder(cg: Api) {
-  const nextBlunders: Array<any> = JSON.parse(window.sessionStorage.getItem('nextBlunders')) ?? [];
+  const nextBlunders: Array<any> = JSON.parse(
+    window.sessionStorage.getItem('nextBlunders'),
+  ) ?? [];
   const nextBlunder = nextBlunders.pop();
   if (nextBlunder === undefined) {
     return false;
@@ -71,7 +80,6 @@ function requestBlunders(
   nGames: number = 3,
   nodes: number = 500000,
 ) {
-  spinRequestButton();
   const outgoingMessage = {
     action: 'request-blunders',
     n_games: nGames,
@@ -80,22 +88,40 @@ function requestBlunders(
     nodes,
   };
   socket.send(JSON.stringify(outgoingMessage));
+  window.sessionStorage.setItem('username', username);
+  window.sessionStorage.setItem('source', source);
 }
+
+/* ------------------------------------- Binding ------------------------------------ */
+const cg = initializeBoard();
+
 document.forms['blunders-form'].onsubmit = function () {
   if (this === undefined) {
     return false;
   }
+  spinRequestButton();
   requestBlunders(this.username.value, this.source.value);
   return false;
 };
 
-const cg = initializeBoard();
 document.getElementById('next-blunder').onclick = () => {
   showNextBlunder(cg);
+
+  const nextBlunders: Array<any> = JSON.parse(
+    window.sessionStorage.getItem('nextBlunders'),
+  ) ?? [];
+  const runningLowOnBlunders = nextBlunders.length <= BLUNDERS_BUFFER_SIZE;
+  if (runningLowOnBlunders) {
+    const username = window.sessionStorage.getItem('username');
+    const source = window.sessionStorage.getItem('source');
+    requestBlunders(username, source);
+  }
 };
 
 socket.onmessage = (event) => {
-  const nextBlunders: Array<any> = JSON.parse(window.sessionStorage.getItem('nextBlunders')) ?? [];
+  const nextBlunders: Array<any> = JSON.parse(
+    window.sessionStorage.getItem('nextBlunders'),
+  ) ?? [];
 
   const message = JSON.parse(event.data);
   if (message.action === 'blunder') {
