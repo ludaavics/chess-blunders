@@ -1,0 +1,5 @@
+[build]
+  command = "make build-web"
+  publish = "chess_blunders/app/web/dist/"
+
+  ## more info on configuring this file: https://www.netlify.com/docs/netlify-toml-reference/

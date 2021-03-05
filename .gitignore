@@ -46,3 +46,6 @@ tox.ini
 *.pem
 *.key
 *.crt
+
+# Local Netlify folder
+.netlify
