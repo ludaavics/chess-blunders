@@ -54,6 +54,9 @@ deps-api-pip:
 #                                         tests                                        #
 #                                    deploy-api-prod                                   #
 #                                    deploy-api-dev                                    #
+#                                       build-web                                      #
+#                                    deploy-web-prod                                   #
+#                                    deploy-web-dev                                    #
 #                                       ci-tests                                       #
 #                                    ci-integration                                    #
 #                                     ci-deployment                                    #
@@ -66,6 +69,15 @@ deploy-api-prod:
 
 deploy-api-dev:
 	@cd chess_blunders/app/api && sls deploy --stage dev
+
+build-web:
+	@npm --prefix chess_blunders/app/web run build
+
+deploy-web-prod:
+	@netlify deploy --prod
+
+deploy-web-dev:
+	@netlify deploy
 
 ci-tests:
 	@make tests

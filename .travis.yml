@@ -32,7 +32,9 @@ after_success:
   - bash <(curl -s https://codecov.io/bash) -y .ci/codecov.yml
 deploy:
   provider: script
-  script: make deploy-api-prod
+  script:
+    - make deploy-api-prod
+    - make deploy-web-prod
   skip_cleanup: true
   on:
     branch: main

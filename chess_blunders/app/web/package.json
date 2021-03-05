@@ -2,7 +2,7 @@
   "name": "chess-blunders-web-app",
   "version": "0.1.0",
   "description": "Chess Blunders Web App",
-  "main": "index.js",
+  "private": true,
   "scripts": {
     "start": "parcel serve ./src/index.html",
     "build": "parcel build ./src/index.html"
