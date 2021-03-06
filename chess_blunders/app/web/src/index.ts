@@ -8,7 +8,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 const STARTING_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR';
 const BLUNDERS_BUFFER_SIZE = 5;
-const socket = new WebSocket('wss://so6khh47cg.execute-api.us-east-1.amazonaws.com/dev');
+const socket = new WebSocket(process.env.API_URL);
 
 /* ------------------------------------ Handlers ------------------------------------ */
 function updateNextBlunderBtn(nextBlunders) {
