@@ -163,10 +163,9 @@ async def blunders(
         while True:
             async with next_item(jobs_queue) as (game_iloc, node):
                 ply = node.ply()
-                if ply >= 2:
-                    starting_fen = node.parent.parent.board().fen()
-                else:
-                    starting_fen = chess.STARTING_FEN
+                starting_fen = (
+                    node.parent.parent.board().fen() if ply >= 2 else chess.STARTING_FEN
+                )
                 leading_move = node.parent.move
                 blunder_move = node.move
 

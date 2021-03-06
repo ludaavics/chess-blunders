@@ -300,31 +300,9 @@ snapshots["test_blunders_worker[event1] 3"] = {
     "connection_id": {"Type": "String", "Value": "bg3excLCIAMCFkw="}
 }
 
-snapshots["test_get_blunders[event0] 1"] = {
-    "body": """[
-  {
-    "loc": [
-      "solution"
-    ],
-    "msg": "field required",
-    "type": "value_error.missing"
-  }
-]""",
-    "statusCode": 400,
-}
+snapshots["test_get_blunders[event0] 1"] = {"body": "[]", "statusCode": 200}
 
-snapshots["test_get_blunders[event1] 1"] = {
-    "body": """[
-  {
-    "loc": [
-      "solution"
-    ],
-    "msg": "field required",
-    "type": "value_error.missing"
-  }
-]""",
-    "statusCode": 400,
-}
+snapshots["test_get_blunders[event1] 1"] = {"body": "[]", "statusCode": 200}
 
 snapshots["test_get_games_chessdotcom_invalid_query_params 1"] = {
     "body": """[

@@ -44,6 +44,7 @@ def test_get_games_chessdotcom_invalid_query_params(
     response = handlers.get_games_chessdotcom(
         get_games_chessdotcom_invalid_query_params_event, null_context
     )
+    assert response["statusCode"] == 400
     snapshot.assert_match(response)
 
 
@@ -116,6 +117,7 @@ def test_get_blunders(event, null_context, blunders_table, snapshot):
     from chess_blunders.app.api import handlers
 
     response = handlers.get_blunders(event, null_context)
+    assert response["statusCode"] == 200
     snapshot.assert_match(response)
 
 
