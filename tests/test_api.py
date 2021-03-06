@@ -264,6 +264,10 @@ def test_async_queue_runtime_error(
 
     os.environ["BLUNDERS_TOPIC_ARN"] = "foo"
     handlers.blunders_worker(event, null_context)
-    assert caplog.records
     for record in caplog.records:
-        assert "Endpoint with arn foo not found" in record.message
+        try:
+            assert "Endpoint with arn foo not found" in record.message
+            return
+        except AssertionError:
+            pass
+    assert False

@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Optional
+from typing import List, Optional, Tuple
 
 from pydantic import BaseModel, Field
 
@@ -47,6 +47,8 @@ class Game(BaseModel):
 class Puzzle(BaseModel):
     starting_fen: str
     pgn: str
+    solution: List[Tuple[str, str]]
+    refutations: Optional[List[List[Tuple[str, str]]]]
 
 
 class Blunder(Puzzle):
