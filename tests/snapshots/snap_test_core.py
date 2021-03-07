@@ -9,6 +9,7 @@ snapshots = Snapshot()
 snapshots["test_known_blunders[0-False] 1"] = [
     {
         "cp_loss": -821.0,
+        "leading_move": ("a2", "b2"),
         "pgn": """[Event "Live Chess"]
 [Site "Chess.com"]
 [Date "2021.01.03"]
@@ -44,6 +45,7 @@ snapshots["test_known_blunders[0-False] 1"] = [
 snapshots["test_known_blunders[games_loc1-True] 1"] = [
     {
         "cp_loss": -507.0,
+        "leading_move": ("e5", "d4"),
         "pgn": """[Event "Live Chess"]
 [Site "Chess.com"]
 [Date "2021.01.03"]
@@ -76,6 +78,7 @@ snapshots["test_known_blunders[games_loc1-True] 1"] = [
     },
     {
         "cp_loss": -536.0,
+        "leading_move": ("f4", "c7"),
         "pgn": """[Event "Live Chess"]
 [Site "Chess.com"]
 [Date "2021.01.03"]
@@ -108,6 +111,7 @@ snapshots["test_known_blunders[games_loc1-True] 1"] = [
     },
     {
         "cp_loss": -874.0,
+        "leading_move": ("f8", "b8"),
         "pgn": """[Event "Live Chess"]
 [Site "Chess.com"]
 [Date "2021.01.03"]
@@ -140,6 +144,7 @@ snapshots["test_known_blunders[games_loc1-True] 1"] = [
     },
     {
         "cp_loss": -99754.0,
+        "leading_move": ("a5", "c7"),
         "pgn": """[Event "Live Chess"]
 [Site "Chess.com"]
 [Date "2021.01.03"]
@@ -172,6 +177,7 @@ snapshots["test_known_blunders[games_loc1-True] 1"] = [
     },
     {
         "cp_loss": -278.0,
+        "leading_move": ("d8", "d6"),
         "pgn": """[Event "Live Chess"]
 [Site "Chess.com"]
 [Date "2021.01.03"]
@@ -204,6 +210,7 @@ snapshots["test_known_blunders[games_loc1-True] 1"] = [
     },
     {
         "cp_loss": -99827.0,
+        "leading_move": ("c6", "d4"),
         "pgn": """[Event "Live Chess"]
 [Site "Chess.com"]
 [Date "2021.01.03"]

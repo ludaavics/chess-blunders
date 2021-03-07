@@ -44,11 +44,15 @@ class Game(BaseModel):
 # ------------------------------------------------------------------------------------ #
 #                                        Puzzles                                       #
 # ------------------------------------------------------------------------------------ #
+Move = Tuple[str, str]
+
+
 class Puzzle(BaseModel):
     starting_fen: str
     pgn: str
-    solution: List[Tuple[str, str]]
-    refutations: Optional[List[List[Tuple[str, str]]]]
+    leading_move: Move
+    solution: List[Move]
+    refutations: Optional[List[List[Move]]]
 
 
 class Blunder(Puzzle):
