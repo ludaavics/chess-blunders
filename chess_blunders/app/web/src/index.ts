@@ -6,7 +6,7 @@ import './styles/chessground.css';
 import './styles/chessground-theme.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-const STARTING_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR';
+const INITIAL_POSITION_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR';
 const BLUNDERS_BUFFER_SIZE = 5;
 const socket = new WebSocket(process.env.API_URL);
 
@@ -41,16 +41,62 @@ function stopRequestButton() {
   btn.innerHTML = 'Generate';
 }
 
+function updatePrompt(prompt) {
+  document.getElementById('prompt').innerHTML = prompt;
+}
 function showNextBlunder(cg: Api) {
   const nextBlunders: Array<any> = JSON.parse(
     window.sessionStorage.getItem('nextBlunders'),
   ) ?? [];
   const nextBlunder = nextBlunders.pop();
+  window.sessionStorage.setItem('nextBlunders', JSON.stringify(nextBlunders));
   if (nextBlunder === undefined) {
     return false;
   }
-  cg.set({ fen: nextBlunder.starting_fen });
-  window.sessionStorage.setItem('nextBlunders', JSON.stringify(nextBlunders));
+
+  // get the game details from the headers
+  const fullGame = new Chess();
+  fullGame.load_pgn(nextBlunder.pgn); // final position
+  const black = fullGame.header().Black;
+  const username = window.sessionStorage.getItem('username');
+  const userColor = username === black ? 'black' : 'white';
+  const opponentColor = username === black ? 'white' : 'black';
+
+  // reset the board to the setup position and make the leading move
+  const chess = new Chess(nextBlunder.starting_fen);
+  if (chess.turn() !== opponentColor[0]) {
+    throw new Error('Something went wrong while parsing the game.');
+  }
+  cg.set({
+    fen: nextBlunder.starting_fen,
+    orientation: userColor,
+    turnColor: opponentColor,
+    movable: {
+      free: false,
+      color: opponentColor,
+      events: {
+        after: playOtherSide(cg, chess),
+      },
+    },
+  });
+  const leadingMoveFrom = nextBlunder.leading_move[0];
+  const leadingMoveTo = nextBlunder.leading_move[1];
+  cg.move(leadingMoveFrom, leadingMoveTo);
+  playOtherSide(cg, chess)(leadingMoveFrom, leadingMoveTo);
+
+  // set up the prompt
+  const blunderMove = nextBlunder.refutations[0][0];
+  chess.move({ from: blunderMove[0], to: blunderMove[1] });
+  const blunderMoveSAN = chess.history()[chess.history().length - 1];
+  const fen = chess.fen().split(' ');
+  const fullMoveCount = fen[fen.length - 1];
+  const ellipsis = userColor === 'black' ? '...' : '';
+  const prompt = (
+    '<small>Find the alternative to </small><br /><br /> '
+    + `${fullMoveCount}. ${ellipsis}<strong>${blunderMoveSAN}??</strong>`
+  );
+  updatePrompt(prompt);
+
   updateNextBlunderBtn(nextBlunders);
   return nextBlunder;
 }
@@ -58,15 +104,12 @@ function showNextBlunder(cg: Api) {
 function initializeBoard() {
   const chess = new Chess();
   const cg = Chessground(document.getElementById('puzzle'), {
-    coordinates: false,
+    coordinates: true,
     movable: {
       free: false,
       color: 'white',
       dests: toDests(chess),
     },
-  });
-  cg.set({
-    movable: { events: { after: playOtherSide(cg, chess) } },
   });
 
   showNextBlunder(cg);
@@ -128,7 +171,7 @@ socket.onmessage = (event) => {
     nextBlunders.push(message.blunder);
     window.sessionStorage.setItem('nextBlunders', JSON.stringify(nextBlunders));
 
-    const isFirstBlunder = cg.getFen() === STARTING_FEN;
+    const isFirstBlunder = cg.getFen() === INITIAL_POSITION_FEN;
     if (isFirstBlunder) {
       showNextBlunder(cg);
     } else {
