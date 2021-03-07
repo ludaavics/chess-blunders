@@ -92,8 +92,8 @@ function showNextBlunder(cg: Api) {
   const fullMoveCount = fen[fen.length - 1];
   const ellipsis = userColor === 'black' ? '...' : '';
   const prompt = (
-    '<small>Find the alternative to </small><br /><br /> '
-    + `${fullMoveCount}. ${ellipsis}<strong>${blunderMoveSAN}??</strong>`
+    '<small>Find the alternative to <br /><br /> '
+    + `${fullMoveCount}. ${ellipsis}<strong>${blunderMoveSAN}??</strong></small>`
   );
   updatePrompt(prompt);
 
