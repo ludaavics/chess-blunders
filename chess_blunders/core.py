@@ -1,4 +1,5 @@
 import asyncio
+import contextlib
 import io
 import logging
 import multiprocessing
@@ -118,22 +119,17 @@ async def blunders(
         """
         Worker that scores positions.
         """
-        try:
-            _, engine = await chess.engine.popen_uci(engine_path)
-            await engine.configure(engine_options)
+        async with chess_engine(engine_path, engine_options) as (_, engine):
             while True:
-                game_iloc, ply, position = await queue.get()
-                scores[game_iloc][ply] = await analyse_position(
-                    position,
-                    colors[game_iloc],  # type: ignore
-                    engine,
-                    nodes=nodes,
-                    logistic_scale=logistic_scale,
-                    clear_hash=True,
-                )
-                queue.task_done()
-        finally:
-            await engine.quit()
+                async with next_item(queue) as (game_iloc, ply, position):
+                    scores[game_iloc][ply] = await analyse_position(
+                        position,
+                        colors[game_iloc],  # type: ignore
+                        engine,
+                        nodes=nodes,
+                        logistic_scale=logistic_scale,
+                        clear_hash=True,
+                    )
 
     # create the fen of each position and push it in the work queue
     positions: asyncio.Queue = asyncio.Queue()
@@ -156,7 +152,7 @@ async def blunders(
     [worker.cancel() for worker in workers]
     await asyncio.gather(*workers, return_exceptions=True)
 
-    blunders = []
+    blunders: List[Blunder] = []
 
     async def annotate_blunders(
         jobs_queue: asyncio.Queue, results_queue: Optional[asyncio.Queue]
@@ -164,47 +160,70 @@ async def blunders(
         """
         Worker that creates blunder objects with solution and refutation lines.
         """
-        try:
-            _, engine = await chess.engine.popen_uci(engine_path)
-            await engine.configure(engine_options)
-            while True:
-                game_iloc, node = await jobs_queue.get()
-
+        while True:
+            async with next_item(jobs_queue) as (game_iloc, node):
                 ply = node.ply()
+                starting_fen = (
+                    node.parent.parent.board().fen() if ply >= 2 else chess.STARTING_FEN
+                )
+                leading_move = node.parent.move
+                blunder_move = node.move
+
                 refutation = scores[game_iloc][ply]
-                solution = scores[game_iloc][ply - 1]
-
-                solution_score = solution["pov_score"]
                 refutation_score = refutation["pov_score"]
+                solution = scores[game_iloc][ply - 1]
+                solution_score = solution["pov_score"]
                 cp_loss = refutation_score - solution_score
-
                 probability_loss = (
                     refutation["win_probability"] - solution["win_probability"]
                 )
-                node.parent.add_line(
-                    [node.move] + refutation["pv"][:max_variation_plies],
-                    starting_comment=f"Refutation ({refutation_score})",
+
+                solution_line = solution["pv"][:max_variation_plies]
+                solution_moves = [
+                    (
+                        chess.square_name(move.from_square),
+                        chess.square_name(move.to_square),
+                    )
+                    for move in solution_line
+                ]
+                refutation_line = [blunder_move] + refutation["pv"][
+                    :max_variation_plies
+                ]
+                refutation_moves = [
+                    (
+                        chess.square_name(move.from_square),
+                        chess.square_name(move.to_square),
+                    )
+                    for move in refutation_line
+                ]
+
+                starting_node = chess.pgn.Game(headers=node.game().headers)
+                starting_node.setup(starting_fen)
+                leading_node = starting_node.add_variation(leading_move)
+                leading_node.add_line(solution_line)
+                refutation_comment = (
+                    f"Refutation ({refutation_score / 100.} vs. "
+                    f"{solution_score / 100.} in solution)"
                 )
-                node.parent.add_line(
-                    solution["pv"][:max_variation_plies],
-                    starting_comment=f"Solution ({solution_score})",
+                leading_node.add_line(
+                    refutation_line,
+                    starting_comment=refutation_comment,
                 )
+
                 blunder = Blunder(
                     **{
-                        "starting_fen": node.board().fen(),
+                        "starting_fen": starting_fen,
                         "cp_loss": cp_loss,
                         "probability_loss": probability_loss,
-                        "pgn": str(node.parent),
+                        "pgn": str(starting_node),
+                        "solution": solution_moves,
+                        "refutations": [refutation_moves],
                     }
                 )
 
                 if results_queue is not None:
                     results_queue.put_nowait(blunder)
                 blunders.append(blunder)
-
-                jobs_queue.task_done()
-        finally:
-            await engine.quit()
 
     # look for blunders by the player we're interested in
     blunder_nodes: asyncio.Queue = asyncio.Queue()
@@ -238,3 +257,29 @@ async def blunders(
     await asyncio.gather(*workers, return_exceptions=True)
 
     return blunders
+
+
+# ------------------------------------------------------------------------------------ #
+#                                        Helpers                                       #
+# ------------------------------------------------------------------------------------ #
+@contextlib.asynccontextmanager
+async def next_item(queue: asyncio.Queue):
+    item = await queue.get()
+    try:
+        yield item
+    except Exception as exc:
+        logger.exception(exc)
+    finally:
+        queue.task_done()
+
+
+@contextlib.asynccontextmanager
+async def chess_engine(path: str, options: dict):
+    transport, engine = await chess.engine.popen_uci(path)
+    await engine.configure(options)
+    try:
+        yield transport, engine
+    except Exception as exc:
+        logger.exception(exc)
+    finally:
+        await engine.quit()

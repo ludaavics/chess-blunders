@@ -44,6 +44,7 @@ def test_get_games_chessdotcom_invalid_query_params(
     response = handlers.get_games_chessdotcom(
         get_games_chessdotcom_invalid_query_params_event, null_context
     )
+    assert response["statusCode"] == 400
     snapshot.assert_match(response)
 
 
@@ -116,6 +117,7 @@ def test_get_blunders(event, null_context, blunders_table, snapshot):
     from chess_blunders.app.api import handlers
 
     response = handlers.get_blunders(event, null_context)
+    assert response["statusCode"] == 200
     snapshot.assert_match(response)
 
 
@@ -264,6 +266,10 @@ def test_async_queue_runtime_error(
 
     os.environ["BLUNDERS_TOPIC_ARN"] = "foo"
     handlers.blunders_worker(event, null_context)
-    assert caplog.records
     for record in caplog.records:
-        assert "Endpoint with arn foo not found" in record.message
+        try:
+            assert "Endpoint with arn foo not found" in record.message
+            return
+        except AssertionError:
+            pass
+    assert False
