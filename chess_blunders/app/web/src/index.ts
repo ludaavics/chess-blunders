@@ -1,7 +1,9 @@
 import { Chess } from 'chess.js';
 import { Chessground } from 'chessground';
 import { Api } from 'chessground/api';
-import { giveHandToOtherSide, toDests, toColor } from './utilities';
+import {
+  giveHandToOtherSide, toDests, toColor, resizeChessground,
+} from './utilities';
 import './styles/chessground.css';
 import './styles/chessground-theme.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -147,6 +149,9 @@ function initializeBoard() {
       dests: toDests(chess),
     },
   });
+  resizeChessground(window.innerWidth, window.innerHeight);
+
+  window.cg = cg; // for messing up with it from the browser console
 
   showNextBlunder(cg);
 
@@ -215,4 +220,8 @@ socket.onmessage = (event) => {
     }
     stopRequestButton();
   }
+};
+
+window.onresize = () => {
+  resizeChessground(window.innerWidth, window.innerHeight);
 };

@@ -30,3 +30,13 @@ export function giveHandToOtherSide(cg: Api, chess, afterMove) {
     });
   };
 }
+
+export function resizeChessground(width: number, height: number) {
+  const el = document.querySelector('.cg-wrap') as HTMLElement;
+  if (el) {
+    const px = `${Math.min(width, height) * 0.75}px`;
+    el.style.width = px;
+    el.style.height = px;
+    document.body.dispatchEvent(new Event('chessground.resize'));
+  }
+}
