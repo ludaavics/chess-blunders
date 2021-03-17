@@ -1,7 +1,7 @@
 import { Chess } from 'chess.js';
 import { Chessground } from 'chessground';
 import { Api } from 'chessground/api';
-import { playOtherSide, toDests } from './utilities';
+import { giveHandToOtherSide, toDests, toColor } from './utilities';
 import './styles/chessground.css';
 import './styles/chessground-theme.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -44,10 +44,45 @@ function stopRequestButton() {
 function updatePrompt(prompt) {
   document.getElementById('prompt').innerHTML = prompt;
 }
+
+function checkAgainstSolution(cg: Api, chess, blunder) {
+  return (orig, dest, metadata) => {
+    const ply = chess.history().length - 1;
+    const solutionMoveFrom = blunder.solution[ply][0];
+    const solutionMoveTo = blunder.solution[ply][1];
+    if ((orig === solutionMoveFrom) && (dest === solutionMoveTo)) {
+      giveHandToOtherSide(cg, chess, null)(solutionMoveFrom, solutionMoveTo);
+      if (blunder.solution.length > ply + 2) {
+        const responseMoveFrom = blunder.solution[ply + 1][0];
+        const responseMoveTo = blunder.solution[ply + 1][1];
+        cg.move(responseMoveFrom, responseMoveTo);
+        const afterMove = checkAgainstSolution(cg, chess, blunder);
+        giveHandToOtherSide(cg, chess, afterMove)(responseMoveFrom, responseMoveTo);
+        updatePrompt('Go on...');
+      } else {
+        updatePrompt('Well done.');
+      }
+    } else {
+      setTimeout(() => {
+        cg.move(dest, orig);
+        if ('captured' in metadata) {
+          cg.newPiece(metadata.captured, dest);
+        }
+        cg.set({
+          turnColor: toColor(chess),
+          movable: {
+            color: toColor(chess),
+            dests: toDests(chess),
+          },
+        });
+      }, 350);
+      updatePrompt("That's not the best move!");
+    }
+  };
+}
+
 function showNextBlunder(cg: Api) {
-  const nextBlunders: Array<any> = JSON.parse(
-    window.sessionStorage.getItem('nextBlunders'),
-  ) ?? [];
+  const nextBlunders: Array<any> = JSON.parse(window.sessionStorage.getItem('nextBlunders')) ?? [];
   const nextBlunder = nextBlunders.pop();
   window.sessionStorage.setItem('nextBlunders', JSON.stringify(nextBlunders));
   if (nextBlunder === undefined) {
@@ -62,7 +97,7 @@ function showNextBlunder(cg: Api) {
   const userColor = username === black ? 'black' : 'white';
   const opponentColor = username === black ? 'white' : 'black';
 
-  // reset the board to the setup position and make the leading move
+  // reset the board to the setup position
   const chess = new Chess(nextBlunder.starting_fen);
   if (chess.turn() !== opponentColor[0]) {
     throw new Error('Something went wrong while parsing the game.');
@@ -71,24 +106,21 @@ function showNextBlunder(cg: Api) {
     fen: nextBlunder.starting_fen,
     orientation: userColor,
     turnColor: opponentColor,
-    movable: {
-      free: false,
-      color: opponentColor,
-      events: {
-        after: playOtherSide(cg, chess),
-      },
-    },
   });
+
+  // make the opponent's move right before our blunder
   const leadingMoveFrom = nextBlunder.leading_move[0];
   const leadingMoveTo = nextBlunder.leading_move[1];
   cg.move(leadingMoveFrom, leadingMoveTo);
-  playOtherSide(cg, chess)(leadingMoveFrom, leadingMoveTo);
+  const afterMove = checkAgainstSolution(cg, chess, nextBlunder);
+  giveHandToOtherSide(cg, chess, afterMove)(leadingMoveFrom, leadingMoveTo);
 
   // set up the prompt
   const blunderMove = nextBlunder.refutations[0][0];
   chess.move({ from: blunderMove[0], to: blunderMove[1] });
   const blunderMoveSAN = chess.history()[chess.history().length - 1];
   const fen = chess.fen().split(' ');
+  chess.undo();
   const fullMoveCount = fen[fen.length - 1];
   const ellipsis = userColor === 'black' ? '...' : '';
   const prompt = (
@@ -105,6 +137,10 @@ function initializeBoard() {
   const chess = new Chess();
   const cg = Chessground(document.getElementById('puzzle'), {
     coordinates: true,
+    animation: {
+      enabled: true,
+      duration: 750,
+    },
     movable: {
       free: false,
       color: 'white',

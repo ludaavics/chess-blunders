@@ -14,14 +14,18 @@ export function toColor(chess: any): Color {
   return (chess.turn() === 'w') ? 'white' : 'black';
 }
 
-export function playOtherSide(cg: Api, chess) {
+export function giveHandToOtherSide(cg: Api, chess, afterMove) {
   return (orig, dest) => {
     chess.move({ from: orig, to: dest });
     cg.set({
       turnColor: toColor(chess),
       movable: {
+        free: false,
         color: toColor(chess),
         dests: toDests(chess),
+        events: {
+          after: afterMove,
+        },
       },
     });
   };
