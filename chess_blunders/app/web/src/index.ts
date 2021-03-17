@@ -83,40 +83,40 @@ function checkAgainstSolution(cg: Api, chess, blunder) {
 
 function showNextBlunder(cg: Api) {
   const nextBlunders: Array<any> = JSON.parse(window.sessionStorage.getItem('nextBlunders')) ?? [];
-  const nextBlunder = nextBlunders.pop();
+  const blunder = nextBlunders.pop();
   window.sessionStorage.setItem('nextBlunders', JSON.stringify(nextBlunders));
-  if (nextBlunder === undefined) {
+  if (blunder === undefined) {
     return false;
   }
 
   // get the game details from the headers
   const fullGame = new Chess();
-  fullGame.load_pgn(nextBlunder.pgn); // final position
+  fullGame.load_pgn(blunder.pgn); // final position
   const black = fullGame.header().Black;
   const username = window.sessionStorage.getItem('username');
   const userColor = username === black ? 'black' : 'white';
   const opponentColor = username === black ? 'white' : 'black';
 
   // reset the board to the setup position
-  const chess = new Chess(nextBlunder.starting_fen);
+  const chess = new Chess(blunder.starting_fen);
   if (chess.turn() !== opponentColor[0]) {
     throw new Error('Something went wrong while parsing the game.');
   }
   cg.set({
-    fen: nextBlunder.starting_fen,
+    fen: blunder.starting_fen,
     orientation: userColor,
     turnColor: opponentColor,
   });
 
   // make the opponent's move right before our blunder
-  const leadingMoveFrom = nextBlunder.leading_move[0];
-  const leadingMoveTo = nextBlunder.leading_move[1];
+  const leadingMoveFrom = blunder.leading_move[0];
+  const leadingMoveTo = blunder.leading_move[1];
   cg.move(leadingMoveFrom, leadingMoveTo);
-  const afterMove = checkAgainstSolution(cg, chess, nextBlunder);
+  const afterMove = checkAgainstSolution(cg, chess, blunder);
   giveHandToOtherSide(cg, chess, afterMove)(leadingMoveFrom, leadingMoveTo);
 
   // set up the prompt
-  const blunderMove = nextBlunder.refutations[0][0];
+  const blunderMove = blunder.refutations[0][0];
   chess.move({ from: blunderMove[0], to: blunderMove[1] });
   const blunderMoveSAN = chess.history()[chess.history().length - 1];
   const fen = chess.fen().split(' ');
@@ -130,7 +130,7 @@ function showNextBlunder(cg: Api) {
   updatePrompt(prompt);
 
   updateNextBlunderBtn(nextBlunders);
-  return nextBlunder;
+  return blunder;
 }
 
 function initializeBoard() {
