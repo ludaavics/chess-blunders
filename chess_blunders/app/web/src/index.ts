@@ -82,9 +82,9 @@ function checkAgainstSolution(cg: Api, chess, blunder) {
 }
 
 function showNextBlunder(cg: Api) {
-  const nextBlunders: Array<any> = JSON.parse(window.sessionStorage.getItem('nextBlunders')) ?? [];
+  const nextBlunders: Array<any> = JSON.parse(window.sessionStorage.getItem('chess-blunders.nextBlunders')) ?? [];
   const blunder = nextBlunders.pop();
-  window.sessionStorage.setItem('nextBlunders', JSON.stringify(nextBlunders));
+  window.sessionStorage.setItem('chess-blunders.nextBlunders', JSON.stringify(nextBlunders));
   if (blunder === undefined) {
     return false;
   }
@@ -93,7 +93,7 @@ function showNextBlunder(cg: Api) {
   const fullGame = new Chess();
   fullGame.load_pgn(blunder.pgn); // final position
   const black = fullGame.header().Black;
-  const username = window.sessionStorage.getItem('username');
+  const username = window.sessionStorage.getItem('chess-blunders.username');
   const userColor = username === black ? 'black' : 'white';
   const opponentColor = username === black ? 'white' : 'black';
 
@@ -167,8 +167,8 @@ function requestBlunders(
     nodes,
   };
   socket.send(JSON.stringify(outgoingMessage));
-  window.sessionStorage.setItem('username', username);
-  window.sessionStorage.setItem('source', source);
+  window.sessionStorage.setItem('chess-blunders.username', username);
+  window.sessionStorage.setItem('chess-blunders.source', source);
 }
 
 /* ------------------------------------- Binding ------------------------------------ */
@@ -187,25 +187,25 @@ document.getElementById('next-blunder').onclick = () => {
   showNextBlunder(cg);
 
   const nextBlunders: Array<any> = JSON.parse(
-    window.sessionStorage.getItem('nextBlunders'),
+    window.sessionStorage.getItem('chess-blunders.nextBlunders'),
   ) ?? [];
   const runningLowOnBlunders = nextBlunders.length <= BLUNDERS_BUFFER_SIZE;
   if (runningLowOnBlunders) {
-    const username = window.sessionStorage.getItem('username');
-    const source = window.sessionStorage.getItem('source');
+    const username = window.sessionStorage.getItem('chess-blunders.username');
+    const source = window.sessionStorage.getItem('chess-blunders.source');
     requestBlunders(username, source);
   }
 };
 
 socket.onmessage = (event) => {
   const nextBlunders: Array<any> = JSON.parse(
-    window.sessionStorage.getItem('nextBlunders'),
+    window.sessionStorage.getItem('chess-blunders.nextBlunders'),
   ) ?? [];
 
   const message = JSON.parse(event.data);
   if (message.action === 'blunder') {
     nextBlunders.push(message.blunder);
-    window.sessionStorage.setItem('nextBlunders', JSON.stringify(nextBlunders));
+    window.sessionStorage.setItem('chess-blunders.nextBlunders', JSON.stringify(nextBlunders));
 
     const isFirstBlunder = cg.getFen() === INITIAL_POSITION_FEN;
     if (isFirstBlunder) {
