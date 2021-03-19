@@ -1,73 +1,161 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="theme-color" content="#000000">
-    <title>Chess Blunders</title>
-  </head>
 
-  <body>
-    <div class="container">
+<head>
+  <meta charset="utf-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, shrink-to-fit=no"
+  />
+  <meta
+    name="theme-color"
+    content="#000000"
+  />
+  <title>Chess Blunders</title>
+</head>
 
-      <div class="row mb-3">
-        <form
-          name="blunders-form"
-          class="row g-2 justify-content-center"
-        >
-          <div class="col-auto">
-            <input
-              type="text"
-              id="username"
-              class="form-control"
-              placeholder="username"
-            >
-          </div>
-          <div class="col-auto">
-            <select
-              id="source"
-              class="form-select"
-              aria-label="Source select"
-            >
-              <option
-                value="chess.com"
-                selected
-              >chess.com</option>
-              <option
-                value="lichess"
-                disabled
-              >lichess</option>
-            </select>
-          </div>
-          <div class="col-auto">
-            <button
-              id="btn-request-blunders"
-              type="submit"
-              class="btn btn-primary"
-            >Generate</button>
-          </div>
-        </form>
+<body>
+  <div class="container">
+    <div class="row mb-3">
+      <form
+        name="blunders-form"
+        class="row g-2 justify-content-center"
+      >
+        <div class="col-auto">
+          <input
+            type="text"
+            id="username"
+            class="form-control"
+            placeholder="username"
+          />
+        </div>
+        <div class="col-auto">
+          <select
+            id="source"
+            class="form-select"
+            aria-label="Source select"
+          >
+            <option
+              value="chess.com"
+              selected
+            >chess.com</option>
+            <option
+              value="lichess"
+              disabled
+            >lichess</option>
+          </select>
+        </div>
+        <div class="col-auto">
+          <button
+            id="btn-request-blunders"
+            type="submit"
+            class="btn btn-primary"
+          >
+            Generate
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <div class="d-flex flex-column flex-md-row justify-content-center">
+      <div class="d-flex justify-content-center pe-md-2">
+        <div
+          id="puzzle"
+          class="mb-0"
+        ></div>
       </div>
 
-      <div class="row justify-content-center">
-        <div class="col-auto">
-          <div id="puzzle" class="mb-3"></div>
-        </div>
-        <div class="col-md-2">
-          <div class="card h-100">
-            <div id="card-body" class="card-body">
-              <div id="prompt"></div>
+      <div class="bg-secondary">
+        <div class="card h-100">
+          <div
+            id="card-body"
+            class="card-body"
+          >
+            <div id="prompt"></div>
+          </div>
+
+          <div class="card-footer">
+            <div class="d-flex flex-row justify-content-around fs-6">
+
+              <!-- Download PGN -->
+              <div
+                class="d-flex flex-fill"
+                data-toggle="tooltip"
+                data-placement="top"
+                title="Download PGN"
+              >
+                <button
+                  id="download-pgn"
+                  class="btn btn-outline-dark flex-fill mx-2 disabled"
+                >
+                  <i class="fas fa-cloud-download-alt fa-fw"></i>
+                </button>
+              </div>
+
+              <!-- Show Refutation-->
+              <div
+                class="d-flex flex-fill"
+                data-toggle="tooltip"
+                data-placement="top"
+                title="Show Refutation"
+              >
+                <button
+                  id="show-refutation"
+                  class="btn btn-outline-dark flex-fill mx-2 disabled"
+                >
+                  <i class="fas fa-search fa-fw"></i>
+                </button>
+              </div>
+
+
+              <!-- Make correct move -->
+              <div
+                class="d-flex flex-fill"
+                data-toggle="tooltip"
+                data-placement="top"
+                title="Make Correct Move"
+              >
+                <button
+                  id="make-correct-move"
+                  class="btn btn-outline-dark flex-fill disabled mx-2"
+                >
+                  <i class="fas fa-angle-right fa-fw"></i>
+                </button>
+              </div>
+
+
+              <!-- Next Blunder -->
+              <div
+                class="d-flex flex-fill"
+                data-toggle="tooltip"
+                data-placement="top"
+                title="Next Blunder"
+              >
+                <button
+                  id="next-blunder"
+                  class="btn btn-outline-dark flex-fill disabled"
+                >
+                  <i class="fas fa-angle-double-right fa-fw"></i>
+                </button>
+              </div>
 
             </div>
-            <div id="next-blunder" class="btn card-footer text-muted disabled">
-              Next Blunder
-            </div>
+
           </div>
         </div>
       </div>
 
     </div>
+  </div>
 
-    <script type="module" src="./index.ts"></script>
-  </body>
+  <script
+    type="module"
+    src="./index.ts"
+  ></script>
+  <script
+    src="https://kit.fontawesome.com/72afd28508.js"
+    crossorigin="anonymous"
+  ></script>
+</body>
+
 </html>
