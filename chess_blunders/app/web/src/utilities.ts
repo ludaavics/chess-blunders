@@ -31,12 +31,22 @@ export function giveHandToOtherSide(cg: Api, chess, afterMove) {
   };
 }
 
-export function resizeChessground(width: number, height: number) {
-  const el = document.querySelector('.cg-wrap') as HTMLElement;
+export function resizeChessground() {
+  const el = document.getElementById('puzzle') as HTMLElement;
   if (el) {
-    const px = `${Math.min(width, height) * 0.75}px`;
+    const width = el.parentElement.offsetWidth;
+    const height = el.parentElement.offsetHeight;
+    const px = `${Math.floor((Math.min(width, height) * 0.95) / 8) * 8}px`;
     el.style.width = px;
     el.style.height = px;
     document.body.dispatchEvent(new Event('chessground.resize'));
+
+    const sidebarMenu = document.getElementById('sidebarMenu');
+    const sidebarMenuNav = sidebarMenu.querySelector('ul');
+    if (width < height) {
+      sidebarMenu.style.position = 'relative';
+    } else {
+      sidebarMenu.style.position = 'absolute';
+    }
   }
 }

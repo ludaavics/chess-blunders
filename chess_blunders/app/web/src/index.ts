@@ -1,30 +1,46 @@
 import { Chess } from 'chess.js';
 import { Chessground } from 'chessground';
 import { Api } from 'chessground/api';
+import bootstrap from 'bootstrap';
+import feather from 'feather-icons';
 import {
   giveHandToOtherSide, toDests, toColor, resizeChessground,
 } from './utilities';
 import './styles/chessground.css';
 import './styles/chessground-theme.css';
+import './styles/layout.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const INITIAL_POSITION_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR';
 const BLUNDERS_BUFFER_SIZE = 5;
 const socket = new WebSocket(process.env.API_URL);
 
-/* ------------------------------------ Handlers ------------------------------------ */
+/* ---------------------------------------------------------------------------------- */
+/*                                      Handlers                                      */
+/* ---------------------------------------------------------------------------------- */
+
+/* ---------------------------- Update Buttons and Prompt --------------------------- */
 function updateNextBlunderBtn(nextBlunders) {
   const btn = document.getElementById('next-blunder');
   if (nextBlunders.length === 0) {
     btn.classList.add('disabled');
     btn.classList.add('text-muted');
-    btn.innerHTML = 'Next Blunder';
   } else {
     btn.classList.remove('disabled');
     btn.classList.remove('text-muted');
-    btn.innerHTML = (
-      `Next Blunder <span class="badge bg-secondary">\
-      ${nextBlunders.length}</span>`);
+  }
+}
+
+function updateMakeCorrectMoveBtn(blunder, chess) {
+  const btn = document.getElementById('make-correct-move');
+  const ply = chess.history().length - 1;
+  if (blunder.solution.length > ply) {
+    btn.classList.remove('disabled');
+    btn.classList.remove('text-muted');
+  } else {
+    btn.classList.add('disabled');
+    btn.classList.add('text-muted');
   }
 }
 
@@ -47,23 +63,43 @@ function updatePrompt(prompt) {
   document.getElementById('prompt').innerHTML = prompt;
 }
 
+/* ------------------------------- Update Chess Board ------------------------------- */
+function makeMove(cg, chess, from, to, callback) {
+  const cgFen = cg.getFen();
+  const chessFen = chess.fen();
+  const cgHasAlreadyMoved = chessFen.slice(0, cgFen.length) !== cgFen;
+  if (!cgHasAlreadyMoved) {
+    cg.move(from, to);
+  }
+  giveHandToOtherSide(cg, chess, callback)(from, to);
+}
+
+function makeCorrectMove(cg, chess, blunder) {
+  const ply = chess.history().length - 1;
+  const solutionMoveFrom = blunder.solution[ply][0];
+  const solutionMoveTo = blunder.solution[ply][1];
+  makeMove(cg, chess, solutionMoveFrom, solutionMoveTo, null);
+
+  if (blunder.solution.length > ply + 2) {
+    const responseMoveFrom = blunder.solution[ply + 1][0];
+    const responseMoveTo = blunder.solution[ply + 1][1];
+
+    const afterMove = checkAgainstSolution(cg, chess, blunder);
+    makeMove(cg, chess, responseMoveFrom, responseMoveTo, afterMove);
+    updatePrompt('Go on...');
+  } else {
+    updatePrompt('Well done!');
+  }
+}
+
 function checkAgainstSolution(cg: Api, chess, blunder) {
   return (orig, dest, metadata) => {
     const ply = chess.history().length - 1;
     const solutionMoveFrom = blunder.solution[ply][0];
     const solutionMoveTo = blunder.solution[ply][1];
-    if ((orig === solutionMoveFrom) && (dest === solutionMoveTo)) {
-      giveHandToOtherSide(cg, chess, null)(solutionMoveFrom, solutionMoveTo);
-      if (blunder.solution.length > ply + 2) {
-        const responseMoveFrom = blunder.solution[ply + 1][0];
-        const responseMoveTo = blunder.solution[ply + 1][1];
-        cg.move(responseMoveFrom, responseMoveTo);
-        const afterMove = checkAgainstSolution(cg, chess, blunder);
-        giveHandToOtherSide(cg, chess, afterMove)(responseMoveFrom, responseMoveTo);
-        updatePrompt('Go on...');
-      } else {
-        updatePrompt('Well done.');
-      }
+    const isCorrectMove = (orig === solutionMoveFrom) && (dest === solutionMoveTo);
+    if (isCorrectMove) {
+      makeCorrectMove(cg, chess, blunder);
     } else {
       setTimeout(() => {
         cg.move(dest, orig);
@@ -78,17 +114,32 @@ function checkAgainstSolution(cg: Api, chess, blunder) {
           },
         });
       }, 350);
-      updatePrompt("That's not the best move!");
+      updatePrompt("That's not the best move...");
     }
   };
 }
 
 function showNextBlunder(cg: Api) {
   const nextBlunders: Array<any> = JSON.parse(window.sessionStorage.getItem('chess-blunders.nextBlunders')) ?? [];
-  const blunder = nextBlunders.pop();
+
+  if (nextBlunders.length < 1) {
+    return;
+  }
+
+  // const blunder = nextBlunders.pop();
+  const blunder = nextBlunders[0];
+  console.log(blunder.solution);
   window.sessionStorage.setItem('chess-blunders.nextBlunders', JSON.stringify(nextBlunders));
   if (blunder === undefined) {
-    return false;
+    return;
+  }
+
+  // reload blunders in the background, if necessary
+  const runningLowOnBlunders = nextBlunders.length <= BLUNDERS_BUFFER_SIZE;
+  if (runningLowOnBlunders) {
+    const username = window.sessionStorage.getItem('chess-blunders.username');
+    const source = window.sessionStorage.getItem('chess-blunders.source');
+    requestBlunders(username, source);
   }
 
   // get the game details from the headers
@@ -131,7 +182,15 @@ function showNextBlunder(cg: Api) {
   );
   updatePrompt(prompt);
 
+  // bind the next move button to the new blunder
+  document.getElementById('make-correct-move').onclick = () => {
+    makeCorrectMove(cg, chess, blunder);
+  };
+
+  // reload blunders, if necessary
+
   updateNextBlunderBtn(nextBlunders);
+  updateMakeCorrectMoveBtn(blunder, chess);
   return blunder;
 }
 
@@ -148,8 +207,9 @@ function initializeBoard() {
       color: 'white',
       dests: toDests(chess),
     },
+    resizable: true,
   });
-  resizeChessground(window.innerWidth, window.innerHeight);
+  // resizeChessground(window.innerWidth, window.innerHeight);
 
   window.cg = cg; // for messing up with it from the browser console
 
@@ -190,16 +250,6 @@ document.forms['blunders-form'].onsubmit = function () {
 
 document.getElementById('next-blunder').onclick = () => {
   showNextBlunder(cg);
-
-  const nextBlunders: Array<any> = JSON.parse(
-    window.sessionStorage.getItem('chess-blunders.nextBlunders'),
-  ) ?? [];
-  const runningLowOnBlunders = nextBlunders.length <= BLUNDERS_BUFFER_SIZE;
-  if (runningLowOnBlunders) {
-    const username = window.sessionStorage.getItem('chess-blunders.username');
-    const source = window.sessionStorage.getItem('chess-blunders.source');
-    requestBlunders(username, source);
-  }
 };
 
 socket.onmessage = (event) => {
@@ -222,6 +272,6 @@ socket.onmessage = (event) => {
   }
 };
 
-window.onresize = () => {
-  resizeChessground(window.innerWidth, window.innerHeight);
-};
+// window.onresize = () => {
+//   resizeChessground(window.innerWidth, window.innerHeight);
+// };
