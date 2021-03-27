@@ -22,6 +22,13 @@ const defaultSettings = {
 };
 
 /* ---------------------------------------------------------------------------------- */
+/*                                       Timers                                       */
+/* ---------------------------------------------------------------------------------- */
+const AFTER_SOLUTION_MOVE = 1000;
+const AFTER_MY_REFUTATION_MOVE = 1000;
+const AFTER_THEIR_REFUTATION_MOVE = 2000;
+
+/* ---------------------------------------------------------------------------------- */
 /*                                      Handlers                                      */
 /* ---------------------------------------------------------------------------------- */
 
@@ -86,7 +93,7 @@ function makeCorrectMove(cg, chess, blunder) {
       makeMove(cg, chess, responseMoveFrom, responseMoveTo, afterMove);
       updatePrompt('Go on...');
     },
-    1000);
+    AFTER_SOLUTION_MOVE);
   } else {
     updatePrompt('Well done!');
   }
@@ -119,15 +126,33 @@ function checkAgainstSolution(cg: Api, chess, blunder) {
   };
 }
 
-function showNextBlunder(cg: Api) {
-  const nextBlunders: Array<any> = JSON.parse(window.sessionStorage.getItem('chess-blunders.nextBlunders')) ?? [];
+function makeRefutationMove(cg, chess, blunder) {
+  const btn = document.getElementById('make-correct-move');
+  btn.classList.add('disabled');
+  btn.classList.add('text-muted');
 
-  if (nextBlunders.length < 1) {
-    return;
+  const ply = chess.history().length - 1;
+  const refutationMoveFrom = blunder.refutations[0][ply][0];
+  const refutationMoveTo = blunder.refutations[0][ply][1];
+  makeMove(cg, chess, refutationMoveFrom, refutationMoveTo, null);
+
+  if (blunder.refutations[0].length > ply + 1) {
+    const timeout = (ply % 2 === 0) ? AFTER_MY_REFUTATION_MOVE : AFTER_THEIR_REFUTATION_MOVE;
+    setTimeout(() => {
+      makeRefutationMove(cg, chess, blunder);
+    }, timeout);
+  }
+}
+function showNextBlunder(cg: Api, blunder) {
+  const nextBlunders: Array<any> = JSON.parse(window.sessionStorage.getItem('chess-blunders.nextBlunders')) ?? [];
+  if (!blunder) {
+    if (nextBlunders.length < 1) {
+      return;
+    }
+    // const blunder = nextBlunders.pop();
+    blunder = nextBlunders[3];
   }
 
-  // const blunder = nextBlunders.pop();
-  const blunder = nextBlunders[3];
   console.log(blunder.solution);
   window.sessionStorage.setItem('chess-blunders.nextBlunders', JSON.stringify(nextBlunders));
   if (blunder === undefined) {
@@ -181,9 +206,17 @@ function showNextBlunder(cg: Api) {
   );
   updatePrompt(prompt);
 
-  // bind the next move button to the new blunder
+  // bind blunder-specific buttons
   document.getElementById('make-correct-move').onclick = () => {
     makeCorrectMove(cg, chess, blunder);
+  };
+
+  document.getElementById('view-refutation').onclick = () => {
+    makeRefutationMove(cg, chess, blunder);
+  };
+
+  document.getElementById('restart').onclick = () => {
+    showNextBlunder(cg, blunder);
   };
 
   updateNextBlunderBtn(nextBlunders);
