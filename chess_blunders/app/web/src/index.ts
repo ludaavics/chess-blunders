@@ -143,6 +143,21 @@ function makeRefutationMove(cg, chess, blunder) {
     }, timeout);
   }
 }
+
+function copyText(text) {
+  navigator.permissions.query({ name: 'clipboard-write' }).then((result) => {
+    if (result.state === 'granted' || result.state === 'prompt') {
+      navigator.clipboard.writeText(text).then(() => {
+        // TODO: popover sayning opcied
+      }, () => {
+        // TODO: popvers saying not copied
+      });
+    } else {
+      // TODO: popvers saying not copied
+    }
+  });
+}
+
 function showNextBlunder(cg: Api, blunder) {
   const nextBlunders: Array<any> = JSON.parse(window.sessionStorage.getItem('chess-blunders.nextBlunders')) ?? [];
   if (!blunder) {
@@ -217,6 +232,21 @@ function showNextBlunder(cg: Api, blunder) {
 
   document.getElementById('restart').onclick = () => {
     showNextBlunder(cg, blunder);
+  };
+
+  document.getElementById('copy-pgn').onclick = () => {
+    copyText(blunder.pgn);
+  };
+
+  document.getElementById('copy-all-pgn').onclick = () => {
+    let pgn = '';
+    const allBlunders : Array<any> = JSON.parse(
+      window.sessionStorage.getItem('chess-blunders.nextBlunders'),
+    ) ?? [];
+    allBlunders.forEach((item) => {
+      pgn += `\n\n${item.pgn}`;
+    });
+    copyText(pgn);
   };
 
   updateNextBlunderBtn(nextBlunders);
