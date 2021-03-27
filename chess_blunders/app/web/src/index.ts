@@ -26,7 +26,7 @@ const defaultSettings = {
 /* ---------------------------------------------------------------------------------- */
 const AFTER_SOLUTION_MOVE = 1000;
 const AFTER_MY_REFUTATION_MOVE = 1000;
-const AFTER_THEIR_REFUTATION_MOVE = 2000;
+const AFTER_THEIR_REFUTATION_MOVE = 1500;
 
 /* ---------------------------------------------------------------------------------- */
 /*                                      Handlers                                      */
@@ -79,6 +79,11 @@ function makeMove(cg, chess, from, to, callback) {
 }
 
 function makeCorrectMove(cg, chess, blunder) {
+  const refutationBtn = document.getElementById('view-refutation');
+  const makeCorrectMoveBtn = document.getElementById('make-correct-move');
+  refutationBtn.classList.add('disabled');
+  refutationBtn.classList.add('text-muted');
+
   const ply = chess.history().length - 1;
   const solutionMoveFrom = blunder.solution[ply][0];
   const solutionMoveTo = blunder.solution[ply][1];
@@ -91,11 +96,19 @@ function makeCorrectMove(cg, chess, blunder) {
     const afterMove = checkAgainstSolution(cg, chess, blunder);
     setTimeout(() => {
       makeMove(cg, chess, responseMoveFrom, responseMoveTo, afterMove);
-      updatePrompt('Go on...');
+      if (blunder.solution.length > ply + 2) {
+        updatePrompt('Go on...');
+      } else {
+        updatePrompt('Well done!');
+        makeCorrectMoveBtn.classList.add('disabled');
+        makeCorrectMoveBtn.classList.add('text-muted');
+      }
     },
     AFTER_SOLUTION_MOVE);
   } else {
     updatePrompt('Well done!');
+    makeCorrectMoveBtn.classList.add('disabled');
+    makeCorrectMoveBtn.classList.add('text-muted');
   }
 }
 
@@ -158,19 +171,20 @@ function copyText(text) {
   });
 }
 
-function showNextBlunder(cg: Api, blunder) {
+function getNextBlunder() {
   const nextBlunders: Array<any> = JSON.parse(window.sessionStorage.getItem('chess-blunders.nextBlunders')) ?? [];
-  if (!blunder) {
-    if (nextBlunders.length < 1) {
-      return;
-    }
-    // const blunder = nextBlunders.pop();
-    blunder = nextBlunders[3];
+  if (nextBlunders.length < 1) {
+    return;
   }
-
-  console.log(blunder.solution);
+  const blunder = nextBlunders.pop();
   window.sessionStorage.setItem('chess-blunders.nextBlunders', JSON.stringify(nextBlunders));
-  if (blunder === undefined) {
+  return blunder;
+}
+
+function showNextBlunder(cg: Api, blunder = getNextBlunder()) {
+  const nextBlunders: Array<any> = JSON.parse(window.sessionStorage.getItem('chess-blunders.nextBlunders')) ?? [];
+
+  if (!blunder) {
     return;
   }
 
