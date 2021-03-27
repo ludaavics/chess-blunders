@@ -56,17 +56,26 @@
           <ul class="nav flex-column">
             <li class="nav-item px-3 pb-3">
               <form id="blunders-form">
-                <input
-                  class="form-control"
-                  type="text"
-                  placeholder="chess.com username"
-                  aria-label="chess.com username"
-                />
+                <div class="d-flex align-items-center">
+                  <input
+                    id="username"
+                    class="form-control"
+                    type="text"
+                    placeholder="chess.com username"
+                    aria-label="chess.com username"
+                  />
+                  <div
+                    id="blunders-form-spinner"
+                    class="spinner-border spinner-border-sm ms-2 invisible"
+                    role="status"
+                  >
+                  </div>
+                </div>
               </form>
             </li>
-
             <li class="nav-item">
               <a
+                id="next-blunder"
                 class="nav-link disabled text-muted"
                 href="
                 #"
@@ -79,10 +88,10 @@
                   ><small id="next-blunder-counter"></small></span></span>
               </a>
             </li>
-
             <li class="nav-item">
               <a
-                class="nav-link disabled text-muted"
+                id="make-correct-move"
+                class="nav-link blunder-action disabled text-muted"
                 href="#"
               >
                 <span data-feather="chevron-right"></span>
@@ -91,7 +100,7 @@
             </li>
             <li class="nav-item">
               <a
-                class="nav-link disabled text-muted"
+                class="nav-link blunder-action disabled text-muted"
                 href="#"
               >
                 <span data-feather="shield"></span>
@@ -100,7 +109,7 @@
             </li>
             <li class="nav-item">
               <a
-                class="nav-link disabled text-muted"
+                class="nav-link blunder-action disabled text-muted"
                 href="#"
               >
                 <span data-feather="file-text"></span>
@@ -109,7 +118,7 @@
             </li>
             <li class="nav-item">
               <a
-                class="nav-link disabled text-muted"
+                class="nav-link blunder-action disabled text-muted"
                 href="#"
               >
                 <span data-feather="layers"></span>
@@ -126,6 +135,12 @@
                 <span data-feather="settings"></span>
                 Settings
               </a>
+            </li>
+            <li>
+              <div
+                id="prompt"
+                class="px-3 pt-3"
+              ></div>
             </li>
           </ul>
 

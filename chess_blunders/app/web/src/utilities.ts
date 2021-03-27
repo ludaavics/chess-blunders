@@ -23,11 +23,18 @@ export function giveHandToOtherSide(cg: Api, chess, afterMove) {
         free: false,
         color: toColor(chess),
         dests: toDests(chess),
-        events: {
-          after: afterMove,
-        },
       },
     });
+
+    if (afterMove) {
+      cg.set({
+        movable: {
+          events: {
+            after: afterMove,
+          },
+        },
+      });
+    }
   };
 }
 

@@ -15,6 +15,11 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 const INITIAL_POSITION_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR';
 const BLUNDERS_BUFFER_SIZE = 5;
 const socket = new WebSocket(process.env.API_URL);
+const defaultSettings = {
+  source: 'chess.com',
+  n_games: 3,
+  nodes: 500000,
+};
 
 /* ---------------------------------------------------------------------------------- */
 /*                                      Handlers                                      */
@@ -23,40 +28,32 @@ const socket = new WebSocket(process.env.API_URL);
 /* ---------------------------- Update Buttons and Prompt --------------------------- */
 function updateNextBlunderBtn(nextBlunders) {
   const btn = document.getElementById('next-blunder');
+  const counter = document.getElementById('next-blunder-counter');
   if (nextBlunders.length === 0) {
     btn.classList.add('disabled');
     btn.classList.add('text-muted');
+    counter.classList.add('d-none');
   } else {
     btn.classList.remove('disabled');
     btn.classList.remove('text-muted');
+    counter.classList.remove('d-none');
   }
 }
 
-function updateMakeCorrectMoveBtn(blunder, chess) {
-  const btn = document.getElementById('make-correct-move');
+function updateBlunderActionBtns(blunder, chess) {
+  const btns = document.querySelectorAll('.blunder-action');
   const ply = chess.history().length - 1;
   if (blunder.solution.length > ply) {
-    btn.classList.remove('disabled');
-    btn.classList.remove('text-muted');
+    btns.forEach((btn) => {
+      btn.classList.remove('disabled');
+      btn.classList.remove('text-muted');
+    });
   } else {
-    btn.classList.add('disabled');
-    btn.classList.add('text-muted');
+    btns.forEach((btn) => {
+      btn.classList.add('disabled');
+      btn.classList.add('text-muted');
+    });
   }
-}
-
-function spinRequestButton() {
-  const btn = document.getElementById('btn-request-blunders');
-  btn.classList.add('disabled');
-  btn.innerHTML = (
-    '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true">'
-    + '</span> Generating...'
-  );
-}
-
-function stopRequestButton() {
-  const btn = document.getElementById('btn-request-blunders');
-  btn.classList.remove('disabled');
-  btn.innerHTML = 'Generate';
 }
 
 function updatePrompt(prompt) {
@@ -80,13 +77,16 @@ function makeCorrectMove(cg, chess, blunder) {
   const solutionMoveTo = blunder.solution[ply][1];
   makeMove(cg, chess, solutionMoveFrom, solutionMoveTo, null);
 
-  if (blunder.solution.length > ply + 2) {
+  if (blunder.solution.length > ply + 1) {
     const responseMoveFrom = blunder.solution[ply + 1][0];
     const responseMoveTo = blunder.solution[ply + 1][1];
 
     const afterMove = checkAgainstSolution(cg, chess, blunder);
-    makeMove(cg, chess, responseMoveFrom, responseMoveTo, afterMove);
-    updatePrompt('Go on...');
+    setTimeout(() => {
+      makeMove(cg, chess, responseMoveFrom, responseMoveTo, afterMove);
+      updatePrompt('Go on...');
+    },
+    1000);
   } else {
     updatePrompt('Well done!');
   }
@@ -127,7 +127,7 @@ function showNextBlunder(cg: Api) {
   }
 
   // const blunder = nextBlunders.pop();
-  const blunder = nextBlunders[0];
+  const blunder = nextBlunders[3];
   console.log(blunder.solution);
   window.sessionStorage.setItem('chess-blunders.nextBlunders', JSON.stringify(nextBlunders));
   if (blunder === undefined) {
@@ -137,18 +137,17 @@ function showNextBlunder(cg: Api) {
   // reload blunders in the background, if necessary
   const runningLowOnBlunders = nextBlunders.length <= BLUNDERS_BUFFER_SIZE;
   if (runningLowOnBlunders) {
-    const username = window.sessionStorage.getItem('chess-blunders.username');
-    const source = window.sessionStorage.getItem('chess-blunders.source');
-    requestBlunders(username, source);
+    const settings = JSON.parse(window.sessionStorage.getItem('chess-blunders.settings'));
+    requestBlunders(settings.username);
   }
 
   // get the game details from the headers
   const fullGame = new Chess();
   fullGame.load_pgn(blunder.pgn); // final position
   const black = fullGame.header().Black;
-  const username = window.sessionStorage.getItem('chess-blunders.username');
-  const userColor = username === black ? 'black' : 'white';
-  const opponentColor = username === black ? 'white' : 'black';
+  const settings = JSON.parse(window.sessionStorage.getItem('chess-blunders.settings'));
+  const userColor = settings.username === black ? 'black' : 'white';
+  const opponentColor = settings.username === black ? 'white' : 'black';
 
   // reset the board to the setup position
   const chess = new Chess(blunder.starting_fen);
@@ -177,7 +176,7 @@ function showNextBlunder(cg: Api) {
   const fullMoveCount = fen[fen.length - 1];
   const ellipsis = userColor === 'black' ? '...' : '';
   const prompt = (
-    '<small>Find the alternative to <br /><br /> '
+    '<small>Find the alternative to <br/> '
     + `${fullMoveCount}. ${ellipsis}<strong>${blunderMoveSAN}??</strong></small>`
   );
   updatePrompt(prompt);
@@ -187,10 +186,8 @@ function showNextBlunder(cg: Api) {
     makeCorrectMove(cg, chess, blunder);
   };
 
-  // reload blunders, if necessary
-
   updateNextBlunderBtn(nextBlunders);
-  updateMakeCorrectMoveBtn(blunder, chess);
+  updateBlunderActionBtns(blunder, chess);
   return blunder;
 }
 
@@ -209,42 +206,53 @@ function initializeBoard() {
     },
     resizable: true,
   });
-  // resizeChessground(window.innerWidth, window.innerHeight);
-
+  cg.set({
+    movable: {
+      events: {
+        after: giveHandToOtherSide(cg, chess, null),
+      },
+    },
+  });
   window.cg = cg; // for messing up with it from the browser console
+  resizeChessground();
 
   showNextBlunder(cg);
 
   return cg;
 }
 
+function initializeSettings() {
+  const settings = JSON.parse(JSON.stringify(defaultSettings));
+  const sessionSettings = JSON.parse(window.sessionStorage.getItem('chess-blunders.settings') ?? '{}');
+  Object.assign(settings, sessionSettings);
+  window.sessionStorage.setItem('chess-blunders.settings', JSON.stringify(settings));
+}
+
 function requestBlunders(
   username: string,
-  source: string,
-  nGames: number = 3,
-  nodes: number = 500000,
 ) {
-  const outgoingMessage = {
-    action: 'request-blunders',
-    n_games: nGames,
-    username,
-    source,
-    nodes,
-  };
-  socket.send(JSON.stringify(outgoingMessage));
-  window.sessionStorage.setItem('chess-blunders.username', username);
-  window.sessionStorage.setItem('chess-blunders.source', source);
+  if (!username) {
+    throw new Error('username is a required argument.');
+  }
+  const settings = JSON.parse(window.sessionStorage.getItem('chess-blunders.settings'));
+  const request = { action: 'request-blunders', username };
+  Object.assign(request, settings);
+  Object.assign(settings, { username });
+  window.sessionStorage.setItem('chess-blunders.settings', JSON.stringify(settings));
+  socket.send(JSON.stringify(request));
 }
 
 /* ------------------------------------- Binding ------------------------------------ */
+feather.replace();
 const cg = initializeBoard();
+initializeSettings();
 
 document.forms['blunders-form'].onsubmit = function () {
   if (this === undefined) {
     return false;
   }
-  spinRequestButton();
-  requestBlunders(this.username.value, this.source.value);
+  document.getElementById('blunders-form-spinner').classList.remove('invisible');
+  requestBlunders(this.username.value);
   return false;
 };
 
@@ -268,10 +276,8 @@ socket.onmessage = (event) => {
     } else {
       updateNextBlunderBtn(nextBlunders);
     }
-    stopRequestButton();
+    document.getElementById('blunders-form-spinner').classList.add('invisible');
   }
 };
 
-// window.onresize = () => {
-//   resizeChessground(window.innerWidth, window.innerHeight);
-// };
+window.addEventListener('resize', resizeChessground);

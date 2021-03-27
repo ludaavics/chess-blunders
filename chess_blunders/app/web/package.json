@@ -13,7 +13,8 @@
   "dependencies": {
     "bootstrap": "^5.0.0-beta2",
     "chess.js": "^0.11.0",
-    "chessground": "^7.11.0"
+    "chessground": "^7.11.0",
+    "feather-icons": "^4.28.0"
   },
   "devDependencies": {
     "@parcel/optimizer-cssnano": "^2.0.0-nightly.612",
