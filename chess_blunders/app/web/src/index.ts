@@ -19,10 +19,11 @@ const defaultSettings = {
   source: 'chess.com',
   n_games: 3,
   nodes: 500000,
+  max_variation_plies: 6,
 };
 
 /* ---------------------------------------------------------------------------------- */
-/*                                       Timers                                       */
+/*                                    Configuration                                   */
 /* ---------------------------------------------------------------------------------- */
 const AFTER_SOLUTION_MOVE = 1000;
 const AFTER_MY_REFUTATION_MOVE = 1000;
