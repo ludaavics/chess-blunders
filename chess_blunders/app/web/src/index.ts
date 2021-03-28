@@ -158,10 +158,6 @@ function checkAgainstSolution(cg: Api, chess, blunder) {
 }
 
 function makeRefutationMove(cg, chess, blunder) {
-  const btn = document.getElementById('make-correct-move');
-  btn.classList.add('disabled');
-  btn.classList.add('text-muted');
-
   const ply = chess.history().length - 1;
   const refutationMoveFrom = blunder.refutations[0][ply][0];
   const refutationMoveTo = blunder.refutations[0][ply][1];
@@ -247,11 +243,11 @@ function showNextBlunder(cg: Api, blunder = getNextBlunder()) {
   chess.undo();
   const fullMoveCount = fen[fen.length - 1];
   const ellipsis = userColor === 'black' ? '...' : '';
-  const prompt = (
+  const intitialPrompt = (
     '<small>Find the alternative to <br/> '
     + `${fullMoveCount}. ${ellipsis}<strong>${blunderMoveSAN}??</strong></small>`
   );
-  updatePrompt(prompt);
+  updatePrompt(intitialPrompt);
 
   // bind blunder-specific buttons
   document.getElementById('make-correct-move').onclick = () => {
@@ -260,6 +256,18 @@ function showNextBlunder(cg: Api, blunder = getNextBlunder()) {
 
   document.getElementById('view-refutation').onclick = () => {
     makeRefutationMove(cg, chess, blunder);
+    const refutationPrompt = (
+      '<small>Here is why<br/> '
+      + `${fullMoveCount}. ${ellipsis}<strong>${blunderMoveSAN}??</strong>`
+      + ' is a blunder.</small>'
+    );
+    updatePrompt(refutationPrompt);
+
+    ['make-correct-move', 'view-refutation'].forEach((btnID) => {
+      const btn = document.getElementById(btnID);
+      btn.classList.add('disabled');
+      btn.classList.add('text-muted');
+    });
   };
 
   document.getElementById('restart').onclick = () => {
