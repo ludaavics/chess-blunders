@@ -332,6 +332,15 @@ function initializeSettings() {
   window.sessionStorage.setItem('chess-blunders.settings', JSON.stringify(settings));
 }
 
+function initializeTooltips() {
+  const tooltipsElements = [].slice.call(
+    document.querySelectorAll('[data-bs-toggle="tooltip"]'),
+  );
+  tooltipsElements.map(
+    (tooltipElement) => new bootstrap.Tooltip(tooltipElement, { boundary: 'window' }),
+  );
+}
+
 function requestBlunders(
   username: string,
 ) {
@@ -354,6 +363,7 @@ function requestBlunders(
 
 /* ------------------------------------- Binding ------------------------------------ */
 feather.replace();
+initializeTooltips();
 const cg = initializeBoard();
 initializeSettings();
 

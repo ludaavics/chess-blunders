@@ -1,5 +1,6 @@
 import { Api } from 'chessground/api';
 import { Color, Key } from 'chessground/types';
+import bootstrap from 'bootstrap';
 
 export function toDests(chess: any): Map<Key, Key[]> {
   const dests = new Map();
@@ -50,7 +51,10 @@ export function resizeChessground() {
 
     const sidebarMenu = document.getElementById('sidebarMenu');
     const sidebarMenuMain = document.getElementById('sidebarMenuMain');
-    const sidebarMenuManiNavLinks = sidebarMenuMain.querySelectorAll('.nav-link');
+    const sidebarMenuMainNavLinks = sidebarMenuMain.querySelectorAll('.nav-link');
+    const sidebarMenuMainTooltipsElements = [].slice.call(
+      sidebarMenuMain.querySelectorAll('[data-bs-toggle="tooltip"]'),
+    );
     const menuLabels = document.querySelectorAll('.menu-label');
     const sidebarMinWidth = 249;
     const buttonMinWidth = 50;
@@ -65,6 +69,10 @@ export function resizeChessground() {
         menuLabel.classList.remove('d-inline');
         menuLabel.classList.add('d-none');
       });
+      sidebarMenuMainTooltipsElements.forEach((tooltipElement) => {
+        const tooltip = bootstrap.Tooltip.getInstance(tooltipElement);
+        tooltip.enable();
+      });
     } else {
       sidebarMenu.style.position = 'absolute';
       sidebarMenuMain.classList.remove('flex-row');
@@ -73,15 +81,20 @@ export function resizeChessground() {
         menuLabel.classList.remove('d-none');
         menuLabel.classList.add('d-inline');
       });
+
+      sidebarMenuMainTooltipsElements.forEach((tooltipElement) => {
+        const tooltip = bootstrap.Tooltip.getInstance(tooltipElement);
+        tooltip.disable();
+      });
     }
 
     if ((isPortraitOrientation)
         && (sidebarMenuMain.offsetWidth < buttonMinWidth * menuLabels.length)) {
-      sidebarMenuManiNavLinks.forEach((navLink) => {
+      sidebarMenuMainNavLinks.forEach((navLink) => {
         navLink.classList.add('px-0');
       });
     } else {
-      sidebarMenuManiNavLinks.forEach((navLink) => {
+      sidebarMenuMainNavLinks.forEach((navLink) => {
         navLink.classList.remove('px-0');
       });
     }
