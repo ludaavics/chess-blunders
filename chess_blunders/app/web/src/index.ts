@@ -14,7 +14,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 const INITIAL_POSITION_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR';
 const BLUNDERS_BUFFER_SIZE = 5;
-const socket = new WebSocket(process.env.API_URL);
+let socket = new WebSocket(process.env.API_URL);
 const defaultSettings = {
   source: 'chess.com',
   n_games: 3,
@@ -27,7 +27,25 @@ const defaultSettings = {
 const AFTER_SOLUTION_MOVE = 1000;
 const AFTER_MY_REFUTATION_MOVE = 1000;
 const AFTER_THEIR_REFUTATION_MOVE = 1500;
+const SOCKET_CONNECTION_POLLING = 100;
+const SOCKET_CONNECTION_TIMEOUT = 5000;
 
+function waitForSocketConnection(ws, attempts, callback) {
+  const maxNumberOfAttempts = Math.floor(SOCKET_CONNECTION_TIMEOUT / SOCKET_CONNECTION_POLLING);
+  if (attempts > maxNumberOfAttempts) {
+    throw new Error('Could not connect to the websocket');
+  }
+
+  setTimeout(() => {
+    if (ws.readyState === ws.OPEN) {
+      if (callback) {
+        callback();
+      }
+    } else {
+      waitForSocketConnection(ws, attempts + 1, callback);
+    }
+  }, SOCKET_CONNECTION_POLLING);
+}
 /* ---------------------------------------------------------------------------------- */
 /*                                      Handlers                                      */
 /* ---------------------------------------------------------------------------------- */
@@ -316,7 +334,13 @@ function requestBlunders(
   Object.assign(request, settings);
   Object.assign(settings, { username });
   window.sessionStorage.setItem('chess-blunders.settings', JSON.stringify(settings));
-  socket.send(JSON.stringify(request));
+  try {
+    socket.send(JSON.stringify(request));
+  } catch (error) {
+    // sometimes the socket connectionc is closed unexpectedly
+    socket = new WebSocket(process.env.API_URL);
+    waitForSocketConnection(socket, 0, () => { socket.send(JSON.stringify(request)); });
+  }
 }
 
 /* ------------------------------------- Binding ------------------------------------ */
