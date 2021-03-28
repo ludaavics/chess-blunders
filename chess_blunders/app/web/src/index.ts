@@ -201,6 +201,7 @@ function getNextBlunder() {
     return;
   }
   const blunder = nextBlunders.pop();
+  console.log(nextBlunders.length);
   window.sessionStorage.setItem('chess-blunders.nextBlunders', JSON.stringify(nextBlunders));
   return blunder;
 }
@@ -381,6 +382,7 @@ document.forms['blunders-form'].onsubmit = function () {
     return false;
   }
   document.getElementById('blunders-form-spinner').classList.remove('invisible');
+  window.sessionStorage.setItem('chess-blunders.nextBlunders', JSON.stringify([]));
   requestBlunders(this.username.value);
   return false;
 };
