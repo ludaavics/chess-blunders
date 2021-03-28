@@ -1,7 +1,8 @@
 import { Chess } from 'chess.js';
 import { Chessground } from 'chessground';
 import { Api } from 'chessground/api';
-import bootstrap from 'bootstrap';
+
+import { Tooltip } from 'bootstrap';
 import feather from 'feather-icons';
 import {
   giveHandToOtherSide, toDests, toColor, resizeChessground,
@@ -326,7 +327,6 @@ function initializeBoard() {
       },
     },
   });
-  window.cg = cg; // for messing up with it from the browser console
   resizeChessground();
 
   showNextBlunder(cg);
@@ -346,7 +346,7 @@ function initializeTooltips() {
     document.querySelectorAll('[data-bs-toggle="tooltip"]'),
   );
   tooltipsElements.map(
-    (tooltipElement) => new bootstrap.Tooltip(tooltipElement, { boundary: 'window' }),
+    (tooltipElement) => new Tooltip(tooltipElement, { boundary: 'window' }),
   );
 }
 

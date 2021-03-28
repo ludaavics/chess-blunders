@@ -1,6 +1,6 @@
 import { Api } from 'chessground/api';
 import { Color, Key } from 'chessground/types';
-import bootstrap from 'bootstrap';
+import { Tooltip } from 'bootstrap';
 
 export function toDests(chess: any): Map<Key, Key[]> {
   const dests = new Map();
@@ -70,7 +70,7 @@ export function resizeChessground() {
         menuLabel.classList.add('d-none');
       });
       sidebarMenuMainTooltipsElements.forEach((tooltipElement) => {
-        const tooltip = bootstrap.Tooltip.getInstance(tooltipElement);
+        const tooltip = Tooltip.getInstance(tooltipElement);
         tooltip.enable();
       });
     } else {
@@ -83,7 +83,7 @@ export function resizeChessground() {
       });
 
       sidebarMenuMainTooltipsElements.forEach((tooltipElement) => {
-        const tooltip = bootstrap.Tooltip.getInstance(tooltipElement);
+        const tooltip = Tooltip.getInstance(tooltipElement);
         tooltip.disable();
       });
     }
