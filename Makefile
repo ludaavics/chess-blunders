@@ -30,12 +30,12 @@ init-stockfish-linux:
 init-stockfish-macosx: ;
 
 init-linux:
-	@make init-stockfish-linux
-	@make init
+	@$(MAKE) init-stockfish-linux
+	@$(MAKE) init
 
 init-macosx:
-	@make init-stockfish-macosx
-	@make init
+	@$(MAKE) init-stockfish-macosx
+	@$(MAKE) init
 
 
 # ------------------------------------------------------------------------------------ #
@@ -74,16 +74,18 @@ build-web:
 	@npm --prefix chess_blunders/app/web run build
 
 deploy-web-prod:
+	@$(MAKE) build-web
 	@netlify deploy --prod
 
 deploy-web-dev:
+	@$(MAKE) build-web
 	@netlify deploy
 
 ci-tests:
-	@make tests
+	@$(MAKE) tests
 
 ci-integration:
 	@pre-commit run --all-files
-	@make ci-tests
+	@$(MAKE) ci-tests
 
 ci-deployment: ;
