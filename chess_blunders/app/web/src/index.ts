@@ -25,6 +25,8 @@ const defaultSettings = {
 /* ---------------------------------------------------------------------------------- */
 /*                                    Configuration                                   */
 /* ---------------------------------------------------------------------------------- */
+const ANIMATION_DURATION = 750;
+const PAUSE_AFTER_WRONG_MOVE = 350;
 const AFTER_SOLUTION_MOVE = 1000;
 const AFTER_MY_REFUTATION_MOVE = 1000;
 const AFTER_THEIR_REFUTATION_MOVE = 1500;
@@ -140,6 +142,7 @@ function checkAgainstSolution(cg: Api, chess, blunder) {
     if (isCorrectMove) {
       makeCorrectMove(cg, chess, blunder);
     } else {
+      updatePrompt("That's not the best move...");
       setTimeout(() => {
         cg.move(dest, orig);
         if ('captured' in metadata) {
@@ -152,8 +155,13 @@ function checkAgainstSolution(cg: Api, chess, blunder) {
             dests: toDests(chess),
           },
         });
-      }, 350);
-      updatePrompt("That's not the best move...");
+        const intitialPrompt = window.sessionStorage.getItem(
+          'chess-blunders.initialPrompt',
+        );
+        setTimeout(() => {
+          updatePrompt(intitialPrompt);
+        }, ANIMATION_DURATION);
+      }, PAUSE_AFTER_WRONG_MOVE);
     }
   };
 }
@@ -245,9 +253,10 @@ function showNextBlunder(cg: Api, blunder = getNextBlunder()) {
   const fullMoveCount = fen[fen.length - 1];
   const ellipsis = userColor === 'black' ? '...' : '';
   const intitialPrompt = (
-    '<small>Find the alternative to <br/> '
-    + `${fullMoveCount}. ${ellipsis}<strong>${blunderMoveSAN}??</strong></small>`
+    'Find the alternative to <br/> '
+    + `${fullMoveCount}. ${ellipsis}<strong>${blunderMoveSAN}??</strong>`
   );
+  window.sessionStorage.setItem('chess-blunders.initialPrompt', intitialPrompt);
   updatePrompt(intitialPrompt);
 
   // bind blunder-specific buttons
@@ -258,9 +267,9 @@ function showNextBlunder(cg: Api, blunder = getNextBlunder()) {
   document.getElementById('view-refutation').onclick = () => {
     makeRefutationMove(cg, chess, blunder);
     const refutationPrompt = (
-      '<small>Here is why<br/> '
+      'Here is why<br/> '
       + `${fullMoveCount}. ${ellipsis}<strong>${blunderMoveSAN}??</strong>`
-      + ' is a blunder.</small>'
+      + ' is a blunder.'
     );
     updatePrompt(refutationPrompt);
 
@@ -301,7 +310,7 @@ function initializeBoard() {
     coordinates: true,
     animation: {
       enabled: true,
-      duration: 750,
+      duration: ANIMATION_DURATION,
     },
     movable: {
       free: false,
