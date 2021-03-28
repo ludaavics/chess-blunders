@@ -49,11 +49,41 @@ export function resizeChessground() {
     document.body.dispatchEvent(new Event('chessground.resize'));
 
     const sidebarMenu = document.getElementById('sidebarMenu');
-    const sidebarMenuNav = sidebarMenu.querySelector('ul');
-    if (width < height) {
+    const sidebarMenuMain = document.getElementById('sidebarMenuMain');
+    const sidebarMenuManiNavLinks = sidebarMenuMain.querySelectorAll('.nav-link');
+    const menuLabels = document.querySelectorAll('.menu-label');
+    const sidebarMinWidth = 249;
+    const buttonMinWidth = 50;
+    const isPortraitOrientation = (
+      width < parseFloat(px.substring(0, px.length - 2)) + sidebarMinWidth * 2
+    );
+    if (isPortraitOrientation) {
       sidebarMenu.style.position = 'relative';
+      sidebarMenuMain.classList.remove('flex-column');
+      sidebarMenuMain.classList.add('flex-row');
+      menuLabels.forEach((menuLabel) => {
+        menuLabel.classList.remove('d-inline');
+        menuLabel.classList.add('d-none');
+      });
     } else {
       sidebarMenu.style.position = 'absolute';
+      sidebarMenuMain.classList.remove('flex-row');
+      sidebarMenuMain.classList.add('flex-column');
+      menuLabels.forEach((menuLabel) => {
+        menuLabel.classList.remove('d-none');
+        menuLabel.classList.add('d-inline');
+      });
+    }
+
+    if ((isPortraitOrientation)
+        && (sidebarMenuMain.offsetWidth < buttonMinWidth * menuLabels.length)) {
+      sidebarMenuManiNavLinks.forEach((navLink) => {
+        navLink.classList.add('px-0');
+      });
+    } else {
+      sidebarMenuManiNavLinks.forEach((navLink) => {
+        navLink.classList.remove('px-0');
+      });
     }
   }
 }

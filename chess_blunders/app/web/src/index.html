@@ -50,10 +50,13 @@
 
       <nav
         id="sidebarMenu"
-        class="sidebar navbar-light bg-light"
+        class="sidebar navbar-light bg-light vh-100"
       >
         <div class="pt-2">
-          <ul class="nav flex-column">
+          <ul
+            id="sidebarMenuForm"
+            class="nav d-flex flex-column"
+          >
             <li class="nav-item px-3 pb-3">
               <form id="blunders-form">
                 <div class="d-flex align-items-center">
@@ -73,6 +76,11 @@
                 </div>
               </form>
             </li>
+          </ul>
+          <ul
+            id="sidebarMenuMain"
+            class="nav justify-content-between"
+          >
             <li class="nav-item">
               <a
                 id="next-blunder"
@@ -82,7 +90,7 @@
               >
                 <span data-feather="chevrons-right"></span>
                 <span class="position-relative">
-                  Next Blunder
+                  <span class="menu-label">Next Blunder</span>
                   <span
                     class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-secondary d-none"
                   ><small id="next-blunder-counter"></small></span></span>
@@ -95,7 +103,7 @@
                 href="#"
               >
                 <span data-feather="chevron-right"></span>
-                Make Correct Move
+                <span class="menu-label">Make Correct Move</span>
               </a>
             </li>
             <li class="nav-item">
@@ -105,7 +113,7 @@
                 href="#"
               >
                 <span data-feather="shield"></span>
-                View Refutation
+                <span class="menu-label">View Refutation</span>
               </a>
             </li>
             <li class="nav-item">
@@ -115,7 +123,7 @@
                 href="#"
               >
                 <span data-feather="chevrons-left"></span>
-                Start Again
+                <span class="menu-label">Start Again</span>
               </a>
             </li>
             <li class="nav-item">
@@ -125,7 +133,7 @@
                 href="#"
               >
                 <span data-feather="file-text"></span>
-                Copy PGN
+                <span class="menu-label">Copy PGN</span>
               </a>
             </li>
             <li class="nav-item">
@@ -135,7 +143,7 @@
                 href="#"
               >
                 <span data-feather="layers"></span>
-                Copy All PGN
+                <span class="menu-label">Copy All PGN</span>
               </a>
             </li>
             <li class="nav-item">
@@ -146,9 +154,14 @@
                 data-bs-target="#settingsModal"
               >
                 <span data-feather="settings"></span>
-                Settings
+                <span class="menu-label">Settings</span>
               </a>
             </li>
+          </ul>
+          <ul
+            id="sidebarMenuPrompt"
+            class="nav d-flex flex-column"
+          >
             <li>
               <div
                 id="prompt"
