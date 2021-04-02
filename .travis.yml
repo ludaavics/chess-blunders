@@ -1,8 +1,8 @@
 language: python
 python:
   - "3.7"
-  - "3.8"
-  - "3.9"
+  # - "3.8"
+  # - "3.9"
 branches:
   # avoid duplicate jobs on updated PRs
   only:
@@ -28,8 +28,16 @@ install:
   - make init
 script:
   - make ci-integration
+  - npm install netlify-cli -g
+  - echo "API_URL=$API_URL" > chess_blunders/app/web/.env.production
+  - npm install chess_blunders/app/web
+  - make deploy-web-dev
 after_success:
   - bash <(curl -s https://codecov.io/bash) -y .ci/codecov.yml
+before_deploy:
+  - npm install netlify-cli -g
+  - npm --prefix chess_blunders/app/web install
+  - echo "API_URL=$API_URL" > chess_blunders/app/web/.env.production
 deploy:
   provider: script
   script:

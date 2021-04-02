@@ -86,6 +86,6 @@ ci-tests:
 
 ci-integration:
 	@pre-commit run --all-files
-	@$(MAKE) ci-tests
+	# @$(MAKE) ci-tests
 
 ci-deployment: ;
