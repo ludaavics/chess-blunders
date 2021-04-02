@@ -9,7 +9,10 @@ parserOptions:
   sourceType: module
 plugins:
   - "@typescript-eslint"
-rules: {}
+rules:
+  {
+    "no-use-before-define": ["error", { "functions": false, "classes": false }],
+  }
 settings:
   import/resolver:
     node:

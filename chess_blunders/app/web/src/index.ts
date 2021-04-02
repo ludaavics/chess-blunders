@@ -6,7 +6,7 @@ import { Tooltip } from 'bootstrap';
 import feather from 'feather-icons';
 import {
   giveHandToOtherSide, toDests, toColor, resizeChessground,
-} from './utilities';
+} from './utilities.ts';
 import './styles/chessground.css';
 import './styles/chessground-theme.css';
 import './styles/layout.css';
@@ -198,10 +198,9 @@ function copyText(text) {
 function getNextBlunder() {
   const nextBlunders: Array<any> = JSON.parse(window.sessionStorage.getItem('chess-blunders.nextBlunders')) ?? [];
   if (nextBlunders.length < 1) {
-    return;
+    return false;
   }
   const blunder = nextBlunders.pop();
-  console.log(nextBlunders.length);
   window.sessionStorage.setItem('chess-blunders.nextBlunders', JSON.stringify(nextBlunders));
   return blunder;
 }
@@ -210,7 +209,7 @@ function showNextBlunder(cg: Api, blunder = getNextBlunder()) {
   const nextBlunders: Array<any> = JSON.parse(window.sessionStorage.getItem('chess-blunders.nextBlunders')) ?? [];
 
   if (!blunder) {
-    return;
+    return false;
   }
 
   // reload blunders in the background, if necessary
@@ -377,14 +376,13 @@ initializeTooltips();
 const cg = initializeBoard();
 initializeSettings();
 
-document.forms['blunders-form'].onsubmit = function () {
-  if (this === undefined) {
-    return false;
+document.forms['blunders-form'].onsubmit = () => {
+  const username = this?.username?.value;
+  if (username) {
+    document.getElementById('blunders-form-spinner').classList.remove('invisible');
+    window.sessionStorage.setItem('chess-blunders.nextBlunders', JSON.stringify([]));
+    requestBlunders(username);
   }
-  document.getElementById('blunders-form-spinner').classList.remove('invisible');
-  window.sessionStorage.setItem('chess-blunders.nextBlunders', JSON.stringify([]));
-  requestBlunders(this.username.value);
-  return false;
 };
 
 document.getElementById('next-blunder').onclick = () => {
