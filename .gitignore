@@ -22,6 +22,7 @@ venv/
 *.log
 *.rdb
 .netlify/
+*.cache*
 build/
 *egg-info*
 *.mypy_cache/
