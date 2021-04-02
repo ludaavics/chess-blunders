@@ -50,9 +50,93 @@ function waitForSocketConnection(ws, attempts, callback) {
     }
   }, SOCKET_CONNECTION_POLLING);
 }
-/* ---------------------------------------------------------------------------------- */
-/*                                      Handlers                                      */
-/* ---------------------------------------------------------------------------------- */
+
+/* --------------------------------- Initialization --------------------------------- */
+feather.replace();
+initializeTooltips();
+const board = initializeBoard();
+initializeSettings();
+
+function initializeBoard() {
+  const chess = new Chess();
+  const cg = Chessground(document.getElementById('puzzle'), {
+    coordinates: true,
+    animation: {
+      enabled: true,
+      duration: ANIMATION_DURATION,
+    },
+    movable: {
+      free: false,
+      color: 'white',
+      dests: toDests(chess),
+    },
+    resizable: true,
+  });
+  cg.set({
+    movable: {
+      events: {
+        after: giveHandToOtherSide(cg, chess, null),
+      },
+    },
+  });
+  resizeChessground();
+
+  showNextBlunder(cg);
+
+  return cg;
+}
+
+function initializeSettings() {
+  const settings = JSON.parse(JSON.stringify(defaultSettings));
+  const sessionSettings = JSON.parse(window.sessionStorage.getItem('chess-blunders.settings') ?? '{}');
+  Object.assign(settings, sessionSettings);
+  window.sessionStorage.setItem('chess-blunders.settings', JSON.stringify(settings));
+}
+
+function initializeTooltips() {
+  const tooltipsElements = [].slice.call(
+    document.querySelectorAll('[data-bs-toggle="tooltip"]'),
+  );
+  tooltipsElements.map(
+    (tooltipElement) => new Tooltip(tooltipElement, { boundary: 'window' }),
+  );
+}
+
+/* ------------------------------------ Bindings ------------------------------------ */
+document.forms['blunders-form'].onsubmit = () => {
+  const username = this?.username?.value;
+  if (username) {
+    document.getElementById('blunders-form-spinner').classList.remove('invisible');
+    window.sessionStorage.setItem('chess-blunders.nextBlunders', JSON.stringify([]));
+    requestBlunders(username);
+  }
+};
+
+document.getElementById('next-blunder').onclick = () => {
+  showNextBlunder(board);
+};
+
+socket.onmessage = (event) => {
+  const nextBlunders: Array<any> = JSON.parse(
+    window.sessionStorage.getItem('chess-blunders.nextBlunders'),
+  ) ?? [];
+
+  const message = JSON.parse(event.data);
+  if (message.action === 'blunder') {
+    nextBlunders.push(message.blunder);
+    window.sessionStorage.setItem('chess-blunders.nextBlunders', JSON.stringify(nextBlunders));
+
+    const isFirstBlunder = board.getFen() === INITIAL_POSITION_FEN;
+    if (isFirstBlunder) {
+      showNextBlunder(board);
+    } else {
+      updateNextBlunderBtn(nextBlunders);
+    }
+    document.getElementById('blunders-form-spinner').classList.add('invisible');
+  }
+};
+
+window.addEventListener('resize', resizeChessground);
 
 /* ---------------------------- Update Buttons and Prompt --------------------------- */
 function updateNextBlunderBtn(nextBlunders) {
@@ -90,7 +174,7 @@ function updatePrompt(prompt) {
 }
 
 /* ------------------------------- Update Chess Board ------------------------------- */
-function makeMove(cg, chess, from, to, callback) {
+function makeMove(cg: Api, chess, from, to, callback) {
   const cgFen = cg.getFen();
   const chessFen = chess.fen();
   const cgHasAlreadyMoved = chessFen.slice(0, cgFen.length) !== cgFen;
@@ -100,7 +184,7 @@ function makeMove(cg, chess, from, to, callback) {
   giveHandToOtherSide(cg, chess, callback)(from, to);
 }
 
-function makeCorrectMove(cg, chess, blunder) {
+function makeCorrectMove(cg: Api, chess, blunder) {
   const refutationBtn = document.getElementById('view-refutation');
   const makeCorrectMoveBtn = document.getElementById('make-correct-move');
   refutationBtn.classList.add('disabled');
@@ -167,7 +251,7 @@ function checkAgainstSolution(cg: Api, chess, blunder) {
   };
 }
 
-function makeRefutationMove(cg, chess, blunder) {
+function makeRefutationMove(cg: Api, chess, blunder) {
   const ply = chess.history().length - 1;
   const refutationMoveFrom = blunder.refutations[0][ply][0];
   const refutationMoveTo = blunder.refutations[0][ply][1];
@@ -193,6 +277,27 @@ function copyText(text) {
       // TODO: popvers saying not copied
     }
   });
+}
+
+/* ---------------------------------- Blunders CRUD --------------------------------- */
+function requestBlunders(
+  username: string,
+) {
+  if (!username) {
+    throw new Error('username is a required argument.');
+  }
+  const settings = JSON.parse(window.sessionStorage.getItem('chess-blunders.settings'));
+  const request = { action: 'request-blunders', username };
+  Object.assign(request, settings);
+  Object.assign(settings, { username });
+  window.sessionStorage.setItem('chess-blunders.settings', JSON.stringify(settings));
+  try {
+    socket.send(JSON.stringify(request));
+  } catch (error) {
+    // sometimes the socket connectionc is closed unexpectedly
+    socket = new WebSocket(process.env.API_URL);
+    waitForSocketConnection(socket, 0, () => { socket.send(JSON.stringify(request)); });
+  }
 }
 
 function getNextBlunder() {
@@ -304,109 +409,3 @@ function showNextBlunder(cg: Api, blunder = getNextBlunder()) {
   updateBlunderActionBtns(blunder, chess);
   return blunder;
 }
-
-function initializeBoard() {
-  const chess = new Chess();
-  const cg = Chessground(document.getElementById('puzzle'), {
-    coordinates: true,
-    animation: {
-      enabled: true,
-      duration: ANIMATION_DURATION,
-    },
-    movable: {
-      free: false,
-      color: 'white',
-      dests: toDests(chess),
-    },
-    resizable: true,
-  });
-  cg.set({
-    movable: {
-      events: {
-        after: giveHandToOtherSide(cg, chess, null),
-      },
-    },
-  });
-  resizeChessground();
-
-  showNextBlunder(cg);
-
-  return cg;
-}
-
-function initializeSettings() {
-  const settings = JSON.parse(JSON.stringify(defaultSettings));
-  const sessionSettings = JSON.parse(window.sessionStorage.getItem('chess-blunders.settings') ?? '{}');
-  Object.assign(settings, sessionSettings);
-  window.sessionStorage.setItem('chess-blunders.settings', JSON.stringify(settings));
-}
-
-function initializeTooltips() {
-  const tooltipsElements = [].slice.call(
-    document.querySelectorAll('[data-bs-toggle="tooltip"]'),
-  );
-  tooltipsElements.map(
-    (tooltipElement) => new Tooltip(tooltipElement, { boundary: 'window' }),
-  );
-}
-
-function requestBlunders(
-  username: string,
-) {
-  if (!username) {
-    throw new Error('username is a required argument.');
-  }
-  const settings = JSON.parse(window.sessionStorage.getItem('chess-blunders.settings'));
-  const request = { action: 'request-blunders', username };
-  Object.assign(request, settings);
-  Object.assign(settings, { username });
-  window.sessionStorage.setItem('chess-blunders.settings', JSON.stringify(settings));
-  try {
-    socket.send(JSON.stringify(request));
-  } catch (error) {
-    // sometimes the socket connectionc is closed unexpectedly
-    socket = new WebSocket(process.env.API_URL);
-    waitForSocketConnection(socket, 0, () => { socket.send(JSON.stringify(request)); });
-  }
-}
-
-/* ------------------------------------- Binding ------------------------------------ */
-feather.replace();
-initializeTooltips();
-const cg = initializeBoard();
-initializeSettings();
-
-document.forms['blunders-form'].onsubmit = () => {
-  const username = this?.username?.value;
-  if (username) {
-    document.getElementById('blunders-form-spinner').classList.remove('invisible');
-    window.sessionStorage.setItem('chess-blunders.nextBlunders', JSON.stringify([]));
-    requestBlunders(username);
-  }
-};
-
-document.getElementById('next-blunder').onclick = () => {
-  showNextBlunder(cg);
-};
-
-socket.onmessage = (event) => {
-  const nextBlunders: Array<any> = JSON.parse(
-    window.sessionStorage.getItem('chess-blunders.nextBlunders'),
-  ) ?? [];
-
-  const message = JSON.parse(event.data);
-  if (message.action === 'blunder') {
-    nextBlunders.push(message.blunder);
-    window.sessionStorage.setItem('chess-blunders.nextBlunders', JSON.stringify(nextBlunders));
-
-    const isFirstBlunder = cg.getFen() === INITIAL_POSITION_FEN;
-    if (isFirstBlunder) {
-      showNextBlunder(cg);
-    } else {
-      updateNextBlunderBtn(nextBlunders);
-    }
-    document.getElementById('blunders-form-spinner').classList.add('invisible');
-  }
-};
-
-window.addEventListener('resize', resizeChessground);
