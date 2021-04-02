@@ -18,6 +18,7 @@ init:
 	@pre-commit install -t pre-merge-commit
 	@npm install -g serverless
 	@npm install serverless-python-requirements
+	@npm install netlify-cli -g
 
 init-stockfish-linux:
 	@wget https://stockfishchess.org/files/stockfish_12_linux_x64_bmi2.zip
@@ -86,6 +87,6 @@ ci-tests:
 
 ci-integration:
 	@pre-commit run --all-files
-	# @$(MAKE) ci-tests
+	@$(MAKE) ci-tests
 
 ci-deployment: ;
