@@ -18,6 +18,7 @@ init:
 	@pre-commit install -t pre-merge-commit
 	@npm install -g serverless
 	@npm install serverless-python-requirements
+	@npm install netlify-cli -g
 
 init-stockfish-linux:
 	@wget https://stockfishchess.org/files/stockfish_12_linux_x64_bmi2.zip
@@ -30,12 +31,12 @@ init-stockfish-linux:
 init-stockfish-macosx: ;
 
 init-linux:
-	@make init-stockfish-linux
-	@make init
+	@$(MAKE) init-stockfish-linux
+	@$(MAKE) init
 
 init-macosx:
-	@make init-stockfish-macosx
-	@make init
+	@$(MAKE) init-stockfish-macosx
+	@$(MAKE) init
 
 
 # ------------------------------------------------------------------------------------ #
@@ -54,6 +55,9 @@ deps-api-pip:
 #                                         tests                                        #
 #                                    deploy-api-prod                                   #
 #                                    deploy-api-dev                                    #
+#                                       build-web                                      #
+#                                    deploy-web-prod                                   #
+#                                    deploy-web-dev                                    #
 #                                       ci-tests                                       #
 #                                    ci-integration                                    #
 #                                     ci-deployment                                    #
@@ -67,11 +71,22 @@ deploy-api-prod:
 deploy-api-dev:
 	@cd chess_blunders/app/api && sls deploy --stage dev
 
+build-web:
+	@npm --prefix chess_blunders/app/web run build
+
+deploy-web-prod:
+	@$(MAKE) build-web
+	@netlify deploy --prod
+
+deploy-web-dev:
+	@$(MAKE) build-web
+	@netlify deploy
+
 ci-tests:
-	@make tests
+	@$(MAKE) tests
 
 ci-integration:
 	@pre-commit run --all-files
-	@make ci-tests
+	@$(MAKE) ci-tests
 
 ci-deployment: ;

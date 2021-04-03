@@ -214,10 +214,11 @@ def blunders_to_db(job_name: str, blunder: Blunder, **kwargs: Any):
 @sns_handler
 def blunders_to_ws(connection_id: str, blunder: Blunder, **kwargs: Any):
     api_endpoint = os.environ["WEBSOCKET_API_URL"]
+    msg = {"action": "blunder", "blunder": blunder.dict()}
     gatewayapi = boto3.client("apigatewaymanagementapi", endpoint_url=api_endpoint)
     gatewayapi.post_to_connection(
         ConnectionId=connection_id,
-        Data=json.dumps(blunder.dict(), indent=2).encode("utf-8"),
+        Data=json.dumps(msg, indent=2).encode("utf-8"),
     )
 
     return blunder
@@ -344,7 +345,7 @@ def ws_disconnect(connection_id: str):
 @ws_handler
 def ws_default(connection_id: str, **kwargs: Any):
     api_endpoint = os.environ["WEBSOCKET_API_URL"]
-    msg = {"error": "Action not found.", "body": kwargs}
+    msg = {"action": "error", "body": kwargs}
     gatewayapi = boto3.client("apigatewaymanagementapi", endpoint_url=api_endpoint)
     gatewayapi.post_to_connection(
         ConnectionId=connection_id, Data=json.dumps(msg, indent=2).encode("utf-8")

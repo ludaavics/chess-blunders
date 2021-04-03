@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  />
+
+  <title>Chess Blunders</title>
+
+</head>
+
+<body>
+
+  <!-- Settings Model -->
+  <div
+    class="modal fade"
+    id="settingsModal"
+    tabindex="-1"
+    aria-labelledby="exampleModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h6 class="modal-title">Settings</h6>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">
+          TO DO: add form to allow user to set chess engine strength.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container-fluid m-0 p-0 vh-100">
+    <div class="bg-light vh-100 m-0 pt-2">
+
+      <div
+        id="puzzle"
+        class="mx-auto"
+      ></div>
+
+      <nav
+        id="sidebarMenu"
+        class="sidebar navbar-light bg-light vh-100"
+      >
+        <div class="pt-2">
+          <ul
+            id="sidebarMenuForm"
+            class="nav d-flex flex-column"
+          >
+            <li class="nav-item px-3 pb-3">
+              <form id="blunders-form">
+                <div class="d-flex align-items-center">
+                  <input
+                    id="username"
+                    class="form-control"
+                    type="text"
+                    placeholder="chess.com username"
+                    aria-label="chess.com username"
+                  />
+                  <div
+                    id="blunders-form-spinner"
+                    class="spinner-border spinner-border-sm ms-2 invisible"
+                    role="status"
+                  >
+                  </div>
+                </div>
+              </form>
+            </li>
+          </ul>
+          <ul
+            id="sidebarMenuMain"
+            class="nav justify-content-between"
+          >
+            <li
+              class="nav-item"
+              data-bs-toggle="tooltip"
+              data-bs-placement="top"
+              title="Next Blunder"
+            >
+              <a
+                id="next-blunder"
+                class="nav-link disabled text-muted"
+                href="
+                #"
+              >
+                <span data-feather="chevrons-right"></span>
+                <span class="position-relative">
+                  <span class="menu-label">Next Blunder</span>
+                  <span
+                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-secondary d-none"
+                  ><small id="next-blunder-counter"></small></span></span>
+              </a>
+            </li>
+            <li
+              class="nav-item"
+              data-bs-toggle="tooltip"
+              data-bs-placement="top"
+              title="Make Correct Move"
+            >
+              <a
+                id="make-correct-move"
+                class="nav-link blunder-action disabled text-muted"
+                href="#"
+              >
+                <span data-feather="chevron-right"></span>
+                <span class="menu-label">Make Correct Move</span>
+              </a>
+            </li>
+            <li
+              class="nav-item"
+              data-bs-toggle="tooltip"
+              data-bs-placement="top"
+              title="View Refutation"
+            >
+              <a
+                id="view-refutation"
+                class="nav-link blunder-action disabled text-muted"
+                href="#"
+              >
+                <span data-feather="shield"></span>
+                <span class="menu-label">View Refutation</span>
+              </a>
+            </li>
+            <li
+              class="nav-item"
+              data-bs-toggle="tooltip"
+              data-bs-placement="top"
+              title="Start Again"
+            >
+              <a
+                id="restart"
+                class="nav-link blunder-action disabled text-muted"
+                href="#"
+              >
+                <span data-feather="chevrons-left"></span>
+                <span class="menu-label">Start Again</span>
+              </a>
+            </li>
+            <li
+              class="nav-item"
+              data-bs-toggle="tooltip"
+              data-bs-placement="top"
+              title="Copy PGN"
+            >
+              <a
+                id="copy-pgn"
+                class="nav-link blunder-action disabled text-muted"
+                href="#"
+              >
+                <span data-feather="file-text"></span>
+                <span class="menu-label">Copy PGN</span>
+              </a>
+            </li>
+            <li
+              class="nav-item"
+              data-bs-toggle="tooltip"
+              data-bs-placement="top"
+              title="Copy All PGN"
+            >
+              <a
+                id="copy-all-pgn"
+                class="nav-link blunder-action disabled text-muted"
+                href="#"
+              >
+                <span data-feather="layers"></span>
+                <span class="menu-label">Copy All PGN</span>
+              </a>
+            </li>
+            </li>
+          </ul>
+          <ul
+            id="sidebarMenuPrompt"
+            class="nav d-flex flex-column"
+          >
+            <li>
+              <div
+                id="prompt"
+                class="prompt px-3 pt-3"
+              ></div>
+            </li>
+          </ul>
+
+        </div>
+      </nav>
+
+    </div>
+  </div>
+
+  <script
+    src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js"
+    integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE"
+    crossorigin="anonymous"
+  ></script>
+  <script
+    type="module"
+    src="./index.ts"
+  ></script>
+</body>
+
+</html>

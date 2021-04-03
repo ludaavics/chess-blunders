@@ -178,6 +178,10 @@ async def blunders(
                     refutation["win_probability"] - solution["win_probability"]
                 )
 
+                leading_move_squares = (
+                    chess.square_name(leading_move.from_square),
+                    chess.square_name(leading_move.to_square),
+                )
                 solution_line = solution["pv"][:max_variation_plies]
                 solution_moves = [
                     (
@@ -216,6 +220,7 @@ async def blunders(
                         "cp_loss": cp_loss,
                         "probability_loss": probability_loss,
                         "pgn": str(starting_node),
+                        "leading_move": leading_move_squares,
                         "solution": solution_moves,
                         "refutations": [refutation_moves],
                     }

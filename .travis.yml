@@ -30,9 +30,14 @@ script:
   - make ci-integration
 after_success:
   - bash <(curl -s https://codecov.io/bash) -y .ci/codecov.yml
+before_deploy:
+  - echo "API_URL=$API_URL" > chess_blunders/app/web/.env.production
+  - npm install chess_blunders/app/web
 deploy:
   provider: script
-  script: make deploy-api-prod
+  script:
+    - make deploy-api-prod
+    - make deploy-web-prod
   skip_cleanup: true
   on:
     branch: main

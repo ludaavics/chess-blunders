@@ -9,6 +9,7 @@ snapshots = Snapshot()
 snapshots["test_blunders_to_db[event0] 1"] = {
     "cp_loss": "-1058.0",
     "job_name": "bh2R9cS1IAMCJ_Q=",
+    "leading_move": ("d3", "e4"),
     "pgn": """[Event "Live Chess"]
 [Site "Chess.com"]
 [Date "2020.07.02"]
@@ -67,6 +68,7 @@ snapshots["test_blunders_to_db[event0] 2"] = {
             "cp_loss": "-1058.0",
             "created_at": "2021-01-27T00:00:00",
             "job_name": "bh2R9cS1IAMCJ_Q=",
+            "leading_move": ["d3", "e4"],
             "pgn": """[Event "Live Chess"]
 [Site "Chess.com"]
 [Date "2020.07.02"]
@@ -123,6 +125,7 @@ snapshots["test_blunders_to_db[event0] 2"] = {
 snapshots["test_blunders_worker[event0] 1"] = [
     {
         "cp_loss": -509.0,
+        "leading_move": ("b4", "d5"),
         "pgn": """[Event "Live Chess"]
 [Site "Chess.com"]
 [Date "2021.02.02"]
@@ -155,6 +158,7 @@ snapshots["test_blunders_worker[event0] 1"] = [
     },
     {
         "cp_loss": -100674.0,
+        "leading_move": ("h8", "g8"),
         "pgn": """[Event "Live Chess"]
 [Site "Chess.com"]
 [Date "2021.02.02"]
@@ -190,6 +194,7 @@ snapshots["test_blunders_worker[event0] 1"] = [
 snapshots["test_blunders_worker[event0] 2"] = {
     "blunder": {
         "cp_loss": -509.0,
+        "leading_move": ["b4", "d5"],
         "pgn": """[Event "Live Chess"]
 [Site "Chess.com"]
 [Date "2021.02.02"]
@@ -228,6 +233,7 @@ snapshots["test_blunders_worker[event0] 3"] = {}
 snapshots["test_blunders_worker[event1] 1"] = [
     {
         "cp_loss": -417.0,
+        "leading_move": ("e2", "e3"),
         "pgn": """[Event "Let\'s Play!"]
 [Site "Chess.com"]
 [Date "2018.05.23"]
@@ -263,6 +269,7 @@ snapshots["test_blunders_worker[event1] 1"] = [
 snapshots["test_blunders_worker[event1] 2"] = {
     "blunder": {
         "cp_loss": -417.0,
+        "leading_move": ["e2", "e3"],
         "pgn": """[Event "Let\'s Play!"]
 [Site "Chess.com"]
 [Date "2018.05.23"]
@@ -305,6 +312,10 @@ snapshots["test_get_blunders[event0] 1"] = {
   {
     "starting_fen": "3r2k1/7p/4rp2/8/1PR2P2/8/3p1KPP/3R4 w - - 0 28",
     "pgn": "[Event \\"Let\'s Play!\\"]\\n[Site \\"Chess.com\\"]\\n[Date \\"2019.01.28\\"]\\n[Round \\"-\\"]\\n[White \\"Paul6336\\"]\\n[Black \\"ludavics\\"]\\n[Result \\"1-0\\"]\\n[BlackElo \\"1378\\"]\\n[CurrentPosition \\"3r2k1/7p/5p2/5P2/1P2R3/8/3p1KPP/3R4 b - - 0 29\\"]\\n[ECO \\"D30\\"]\\n[ECOUrl \\"https://www.chess.com/openings/Queens-Gambit-Declined\\"]\\n[EndDate \\"2019.02.12\\"]\\n[EndTime \\"21:16:58\\"]\\n[FEN \\"3r2k1/7p/4rp2/8/1PR2P2/8/3p1KPP/3R4 w - - 0 28\\"]\\n[Link \\"https://www.chess.com/game/daily/217107360\\"]\\n[SetUp \\"1\\"]\\n[StartTime \\"16:38:57\\"]\\n[Termination \\"Paul6336 won by resignation\\"]\\n[TimeControl \\"1/259200\\"]\\n[Timezone \\"UTC\\"]\\n[UTCDate \\"2019.01.28\\"]\\n[UTCTime \\"16:38:57\\"]\\n[WhiteElo \\"1464\\"]\\n\\n28. f5 Re5 ( { Refutation (-8.81 vs. 0.0 in solution) } 28... Re4 29. Rxe4 Rd5 30. Rg4+ Kf7 31. Rf4 Rd3 32. Ke2 Rb3 33. Rxd2 Kg7 34. Kd1 Kh6 35. Kc2 Kg5 36. Kxb3 Kxf4 37. Rd5 Ke4 38. Kc4 h5 39. b5 Ke3 ) 29. Rc2 Rxf5+ 30. Ke3 Re5+ 31. Kf3 Rd3+ 32. Kf2 Rd4 33. Rb2 Rb5 34. Kg3 Rd3+ 35. Kf2 1-0",
+    "leading_move": [
+      "f4",
+      "f5"
+    ],
     "solution": [
       [
         "e6",
@@ -471,6 +482,10 @@ snapshots["test_get_blunders[event1] 1"] = {
   {
     "starting_fen": "r4rk1/4bpp1/1nq4p/pp1p4/2pP4/P1N1PB1P/1P3PP1/R2Q1RK1 w - - 0 19",
     "pgn": "[Event \\"Live Chess\\"]\\n[Site \\"Chess.com\\"]\\n[Date \\"2020.08.26\\"]\\n[Round \\"-\\"]\\n[White \\"abel79\\"]\\n[Black \\"ludavics\\"]\\n[Result \\"0-1\\"]\\n[BlackElo \\"984\\"]\\n[CurrentPosition \\"8/5k2/6pp/3P4/7P/1K4P1/5P2/3q4 w - -\\"]\\n[ECO \\"D30\\"]\\n[ECOUrl \\"https://www.chess.com/openings/Queens-Gambit-Declined\\"]\\n[EndDate \\"2020.08.26\\"]\\n[EndTime \\"22:35:19\\"]\\n[FEN \\"r4rk1/4bpp1/1nq4p/pp1p4/2pP4/P1N1PB1P/1P3PP1/R2Q1RK1 w - - 0 19\\"]\\n[Link \\"https://www.chess.com/live/game/5355534259\\"]\\n[SetUp \\"1\\"]\\n[StartTime \\"22:25:13\\"]\\n[Termination \\"ludavics won on time\\"]\\n[TimeControl \\"300\\"]\\n[Timezone \\"UTC\\"]\\n[UTCDate \\"2020.08.26\\"]\\n[UTCTime \\"22:25:13\\"]\\n[WhiteElo \\"949\\"]\\n\\n19. e4 Qd7 ( { Refutation (-2.97 vs. -0.02 in solution) } 19... dxe4 20. Bxe4 ) 0-1",
+    "leading_move": [
+      "e3",
+      "e4"
+    ],
     "solution": [
       [
         "c6",
