@@ -103,13 +103,14 @@ function initializeTooltips() {
 }
 
 /* ------------------------------------ Bindings ------------------------------------ */
-document.forms['blunders-form'].onsubmit = () => {
-  const username = this?.username?.value;
+document.forms['blunders-form'].onsubmit = function () {
+  const username = this.username.value;
   if (username) {
     document.getElementById('blunders-form-spinner').classList.remove('invisible');
     window.sessionStorage.setItem('chess-blunders.nextBlunders', JSON.stringify([]));
     requestBlunders(username);
   }
+  return false;
 };
 
 document.getElementById('next-blunder').onclick = () => {
