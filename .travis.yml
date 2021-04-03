@@ -34,10 +34,10 @@ before_deploy:
   - echo "API_URL=$API_URL" > chess_blunders/app/web/.env.production
   - npm install chess_blunders/app/web
 deploy:
-  provider: script
-  script:
-    - make deploy-api-prod
-    - make deploy-web-prod
+  - provider: script
+    script: make deploy-api-prod
+  - provider: script
+    script: make deploy-web-prod
   skip_cleanup: true
   on:
     branch: main
