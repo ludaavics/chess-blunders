@@ -17,8 +17,8 @@
     "feather-icons": "^4.28.0"
   },
   "devDependencies": {
-    "@parcel/optimizer-cssnano": "^2.0.0-nightly.612",
-    "@parcel/optimizer-htmlnano": "^2.0.0-nightly.612",
+    "@parcel/optimizer-cssnano": "^2.16.1",
+    "@parcel/optimizer-htmlnano": "^2.16.1",
     "@parcel/packager-css": "^2.0.0-nightly.612",
     "@parcel/packager-html": "^2.0.0-nightly.612",
     "@parcel/transformer-css": "^2.0.0-nightly.612",
@@ -26,12 +26,12 @@
     "@parcel/transformer-postcss": "^2.0.0-nightly.612",
     "@parcel/transformer-posthtml": "^2.0.0-nightly.612",
     "@types/node": "^14.14.31",
-    "@typescript-eslint/eslint-plugin": "^4.16.1",
-    "@typescript-eslint/parser": "^4.16.1",
-    "eslint": "^7.21.0",
-    "eslint-config-airbnb-base": "^14.2.1",
-    "eslint-plugin-import": "^2.22.1",
-    "parcel": "^2.0.0-beta.2",
+    "@typescript-eslint/eslint-plugin": "^8.46.4",
+    "@typescript-eslint/parser": "^8.46.4",
+    "eslint": "^9.39.1",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.32.0",
+    "parcel": "^2.16.1",
     "postcss": "^8.2.6"
   }
 }
